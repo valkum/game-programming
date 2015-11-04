@@ -1,14 +1,17 @@
-#include <Q>
+#include <QtWidgets>
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
 
-    QApplication app(argc,argv);
+    QApplication app(argc, argv);
+    MainWindow mainWin;
+    mainWin.show();
 
     return app.exec();
 
 }
-
+/**
 function loopyLoop() {
     const int TICKS_PER_SECOND = 64;
     const int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
@@ -35,3 +38,4 @@ function loopyLoop() {
         //view_position = position + (speed * interpolation)
     }
 }
+*/
