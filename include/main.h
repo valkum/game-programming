@@ -4,6 +4,6 @@
 GLFWwindow* g_window;
 
 int createWindow();
-int run();
+int run(char *argv[]);
 
 #endif

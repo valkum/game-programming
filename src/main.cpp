@@ -1,15 +1,25 @@
+#define GLFW_INCLUDE_GLCOREARB
 #include <GLFW/glfw3.h>
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <sstream>
+#include <vector>
 #include "main.h"
 #include "introstate.h"
 #include "game.h"
 
 
+using namespace std;
+
 int main(int argc, char *argv[])
 {
-    run();
+
+    // @todo: add loadLevel and version maybe
+    run(argv);
     
 
 }
@@ -25,6 +35,7 @@ int createWindow() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
     /* Create a windowed mode window and its OpenGL context */
+
     g_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!g_window)
     {
@@ -37,11 +48,16 @@ int createWindow() {
     return true;
 }
 
-int run() {
+int run(char *argv[]) {
     if ( !createWindow() ) {
         glfwTerminate();
         exit( -1 );
     }
+
+    std::vector<std::string> tmp;
+    tmp.push_back(std::string(argv[0]));
+    glfwSetWindowTitle( g_window, tmp[tmp.size()-1].c_str() );
+
     CGame game;
     game.Init();
     game.ChangeState(IntroState::Instance());
@@ -58,6 +74,7 @@ int run() {
     while (!glfwWindowShouldClose(g_window))
     {
         loops = 0;
+        double now = glfwGetTime();
         while( glfwGetTime() > newTime && loops < MAX_FRAMESKIP) {
             /* Poll for and process events */
             glfwPollEvents();
@@ -70,8 +87,15 @@ int run() {
         extrapolation = glfwGetTime() - (newTime - frameTime);
         //glfwGetFramebufferSize(g_window, &width, &height);
         game.Draw( &extrapolation );
-        glfwSwapBuffers(g_window);
 
+        // @todo betterFPS meter? maybe draw in context?
+        std::stringstream sstream (std::stringstream::in | std::stringstream::out);
+        sstream << std::setprecision(1) << std::fixed
+                << tmp[tmp.size()-1] << " - FPS: " << 1 / (glfwGetTime() - now) << " " << 1000 * (glfwGetTime() -now)/1 << " msec";
+        glfwSetWindowTitle( g_window, sstream.str().c_str() );
+
+        glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+        glfwSwapBuffers(g_window);
         
     }
 
