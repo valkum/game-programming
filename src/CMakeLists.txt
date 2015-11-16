@@ -21,7 +21,7 @@ set(SRCS
 #    library
 #)
 
-if(UNIX AND APPLE)
+if(UNIX)
 	find_package(OpenGL REQUIRED)
 
 	find_package(pkgConfig REQUIRED)
@@ -34,16 +34,19 @@ if(UNIX AND APPLE)
 	set(REQUIRED_LIBS ${GLFW_LIBRARIES} ${OPENGL_LIBRARY})
 endif()
 
-if(APPLE)
-	set(MACOSX_BUNDLE_INFO_STRING "@EXE_NAME@ - Version ${VERSION}")
-	set(MACOSX_RESOURCE_FILES ${CMAKE_SOURCE_DIR}/assets/images/icons.icns)
-	set(MACOSX_BUNDLE_VERSION ${VERSION})
-	set(MACOSX_ICON_FILE icons.icns)
-	set(MACOSX_BUNDLE_BUNDLE_NAME "@EXE_NAME@")
-	add_executable (Game MACOSX_BUNDLE
-		${SRCS}
-		${MACOSX_RESOURCE_FILES})
-endif()
+add_executable(Game ${SRCS})
+
+
+# if(APPLE)
+# 	set(MACOSX_BUNDLE_INFO_STRING "@EXE_NAME@ - Version ${VERSION}")
+# 	set(MACOSX_RESOURCE_FILES ${CMAKE_SOURCE_DIR}/assets/images/icons.icns)
+# 	set(MACOSX_BUNDLE_VERSION ${VERSION})
+# 	set(MACOSX_ICON_FILE icons.icns)
+# 	set(MACOSX_BUNDLE_BUNDLE_NAME "@EXE_NAME@")
+# 	add_executable (Game MACOSX_BUNDLE
+# 		${SRCS}
+# 		${MACOSX_RESOURCE_FILES})
+# endif()
 
 
 
