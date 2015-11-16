@@ -2,30 +2,49 @@
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
+set(C_FLAGS_COMMON "-Wall -Werror -pedantic")
+set(CMAKE_CXX_FLAGS "--std=c++14 ${C_FLAGS_COMMON}")
 
+set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
+set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
 # Hier wird definiert, welche Quellcodedateien zur Programmdatei dazugehören.
 # Bei großen Projekten ist eine logische Unterteilung sinnvoll.
-set(game_SRCS
+set(SRCS
     main.cpp
+    game.cpp
+    introstate.cpp
 )
 
-# Die auführbare Datei. Anstatt der Variablen können
-# auch noch zusätzliche Dateien angegeben werden
-add_executable (Game ${game_SRCS})
 
 # Die ausführbare Datei wird gegen diese Bibliotheken gelinkt.
 #target_link_libraries(Game
 #    library
 #)
 
-find_package(PkgConfig REQUIRED)
-pkg_search_module(GLFW REQUIRED glfw3)
-include_directories(${GLFW_INCLUDE_DIRS})
-target_link_libraries(Game ${GLFW_LIBRARIES})
+if(UNIX AND APPLE)
+	find_package(OpenGL REQUIRED)
 
-# Das Programm soll in den folgenden Unterordnern
-# installiert werden.
-install(TARGETS Game
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-)
+	find_package(pkgConfig REQUIRED)
+	pkg_search_module(GLFW REQUIRED glfw3)
+	include_directories(${GLFW_INCLUDE_DIRS})
+
+	find_package(GLM REQUIRED)
+	include_directories(${GLM_INCLUDE_DIR})
+
+	set(REQUIRED_LIBS ${GLFW_LIBRARIES} ${OPENGL_LIBRARY})
+endif()
+
+if(APPLE)
+	set(MACOSX_BUNDLE_INFO_STRING "@EXE_NAME@ - Version ${VERSION}")
+	set(MACOSX_RESOURCE_FILES ${CMAKE_SOURCE_DIR}/assets/images/icons.icns)
+	set(MACOSX_BUNDLE_VERSION ${VERSION})
+	set(MACOSX_ICON_FILE icons.icns)
+	set(MACOSX_BUNDLE_BUNDLE_NAME "@EXE_NAME@")
+	add_executable (Game MACOSX_BUNDLE
+		${SRCS}
+		${MACOSX_RESOURCE_FILES})
+endif()
+
+
+
+target_link_libraries(Game ${REQUIRED_LIBS})

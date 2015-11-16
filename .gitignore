@@ -10,3 +10,7 @@ bin/*
 
 # Qt
 .qmake*
+
+# ctags
+.tags
+tags

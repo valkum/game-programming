@@ -4,7 +4,6 @@
 GLFWwindow* g_window;
 
 int createWindow();
-int startGame();
-int draw(float delta);
+int run();
 
 #endif

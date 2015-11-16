@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "main.h"
+#include "introstate.h"
+#include "game.h"
 
 
 int main(int argc, char *argv[])
 {
-    startGame();
+    run();
     
 
 }
@@ -15,6 +17,12 @@ int createWindow() {
 /* Initialize the library */
     if (!glfwInit())
         return false;
+
+    glfwDefaultWindowHints();
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
     /* Create a windowed mode window and its OpenGL context */
     g_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
@@ -29,12 +37,14 @@ int createWindow() {
     return true;
 }
 
-int startGame() {
+int run() {
     if ( !createWindow() ) {
         glfwTerminate();
         exit( -1 );
     }
-
+    CGame game;
+    game.Init();
+    game.ChangeState(IntroState::Instance());
 
     const int TICKS_PER_SECOND = 64;
     const float frameTime = 1 / TICKS_PER_SECOND;
@@ -51,28 +61,22 @@ int startGame() {
         while( glfwGetTime() > newTime && loops < MAX_FRAMESKIP) {
             /* Poll for and process events */
             glfwPollEvents();
-            //update_game(frameTime);
+            //game.Update(frameTime);
 
             newTime += frameTime;
             loops++;
         }
 
         extrapolation = glfwGetTime() - (newTime - frameTime);
-        draw( extrapolation );
+        //glfwGetFramebufferSize(g_window, &width, &height);
+        game.Draw( &extrapolation );
+        glfwSwapBuffers(g_window);
 
         
     }
 
     glfwTerminate();
-    return 0;
-}
-
-int  draw(float delta) {
-    int width, height;
-    glfwGetFramebufferSize(g_window, &width, &height);
-    
-
-    glfwSwapBuffers(g_window);
+    return true;
 }
 
 /**
