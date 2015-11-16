@@ -5,15 +5,22 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <iostream>
 #include <vector>
 
-
+using namespace glm;
 
 IntroState IntroState::m_IntroState;
 GLuint vertexBuffer;
 GLuint colorBuffer;
-GLuint ProgramID;
+GLuint programID;
+GLuint MatrixID;
+GLuint ViewMatrixID;
+GLuint ModelMatrixID;
+vec3 gPosition1(0.0f, 0.0f, 0.0f);
+vec3 gOrientation1;
+
 
 
 static const GLfloat g_vertex_buffer_data[] = {
@@ -93,8 +100,6 @@ static const GLfloat g_color_buffer_data[] = {
     0.820f,  0.883f,  0.371f,
     0.982f,  0.099f,  0.879f
 };
-glm::mat4 MVP;
-GLuint MatrixID;
 
 void IntroState::Init() {
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
@@ -128,13 +133,13 @@ void IntroState::Init() {
 	glShaderSource (fragmentShaderID, 1, &fragment_shader, NULL);
 	glCompileShader (fragmentShaderID);
 
-	ProgramID = glCreateProgram ();
-	glAttachShader (ProgramID, fragmentShaderID);
-	glAttachShader (ProgramID, vertexShaderID);
-	glLinkProgram (ProgramID);
+	programID = glCreateProgram ();
+	glAttachShader (programID, fragmentShaderID);
+	glAttachShader (programID, vertexShaderID);
+	glLinkProgram (programID);
 
-	glDetachShader(ProgramID, vertexShaderID);
-	glDetachShader(ProgramID, fragmentShaderID);
+	glDetachShader(programID, vertexShaderID);
+	glDetachShader(programID, fragmentShaderID);
 	
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
@@ -143,21 +148,10 @@ void IntroState::Init() {
 
 
 
-	MatrixID = glGetUniformLocation(ProgramID, "MVP");
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-	// Camera matrix
-	glm::mat4 View       = glm::lookAt(
-								glm::vec3(4,3,-3), // Camera is at (4,3,-3), in World Space
-								glm::vec3(0,0,0), // and looks at the origin
-								glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-						   );
-	// Model matrix : an identity matrix (model will be at the origin)
-	glm::mat4 Model      = glm::mat4(1.0f);
-	// Our ModelViewProjection : multiplication of our 3 matrices
-	MVP        = Projection * View * Model; // Remember, matrix multiplication is the other way around
-
-
+	MatrixID = glGetUniformLocation(programID, "MVP");
+	ViewMatrixID = glGetUniformLocation(programID, "V");
+	ModelMatrixID = glGetUniformLocation(programID, "M");
+	
 
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -170,11 +164,33 @@ void IntroState::Init() {
 
 }	
 void IntroState::Draw(CGame* game, float* delta) {
-	//std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
+	std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
+
+	gOrientation1.y = 3.14159f/10.0f * (*delta);
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+	// Camera matrix
+	glm::mat4 ViewMatrix       = glm::lookAt(
+								glm::vec3(0,0,7), // Camera is at (4,3,-3), in World Space
+								glm::vec3(0,0,0), // and looks at the origin
+								glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+						   );
+	
+	// Build the model matrix
+	glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+	glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+	glm::mat4 ScalingMatrix = scale(mat4(), vec3(2.0f, 2.0f, 2.0f));
+	glm::mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScalingMatrix;
+
+	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram (ProgramID);
+	glUseProgram (programID);
 
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
