@@ -2,8 +2,9 @@
 
 
 ## Dependencies
-- GLFW
+- [GLFW](http://www.glfw.org/)
 - GLM
 - OpenGL
-- CMake
-- pkg-config
+
+## Build
+For automated build use CMake with pkg-config.
