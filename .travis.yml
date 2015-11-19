@@ -4,8 +4,8 @@ notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
 
 os:
-  - osx
   - linux
+  - osx
 addons:
   apt:
     packages:
