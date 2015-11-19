@@ -1,4 +1,4 @@
-#version 320
+#version 330
 
 in vec3 fragmentColor;
 // Ouput data
