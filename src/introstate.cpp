@@ -11,12 +11,7 @@
 using namespace glm;
 
 IntroState IntroState::m_IntroState;
-GLuint vertexBuffer;
-GLuint colorBuffer;
-GLuint programID;
-GLuint MatrixID;
-GLuint ViewMatrixID;
-GLuint ModelMatrixID;
+SharedShaderProgram normalsAsColorShader;
 vec3 gPosition1(0.0f, 0.0f, 0.0f);
 vec3 gOrientation1;
 
@@ -101,47 +96,14 @@ static const GLfloat g_color_buffer_data[] = {
 };
 
 void IntroState::Init() {
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-	glEnable(GL_DEPTH_TEST);
-	// Accept fragment if it closer to the camera than the former one
-	glDepthFunc(GL_LESS);
-
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
 
 	std::cout<<"Loading Shaders"<<std::endl;
+	// define where shaders and textures can be found:
+    Settings::the()->setResourcePath("../");
+    Settings::the()->setShaderPath("assets/shader/");
 	
-	GLint Result = GL_FALSE;
-	int InfoLogLength;
-
-	GLuint vertexShaderID = glCreateShader (GL_VERTEX_SHADER);
-	GLuint fragmentShaderID = glCreateShader (GL_FRAGMENT_SHADER);
-	glShaderSource (vertexShaderID, 1, &vertex_shader, NULL);
-	glCompileShader (vertexShaderID);
-
-	// Check Vertex Shader
-	glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(vertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
-		glGetShaderInfoLog(vertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-		printf("%s\n", &VertexShaderErrorMessage[0]);
-	}
-	
-	glShaderSource (fragmentShaderID, 1, &fragment_shader, NULL);
-	glCompileShader (fragmentShaderID);
-
-	programID = glCreateProgram ();
-	glAttachShader (programID, fragmentShaderID);
-	glAttachShader (programID, vertexShaderID);
-	glLinkProgram (programID);
-
-	glDetachShader(programID, vertexShaderID);
-	glDetachShader(programID, fragmentShaderID);
-	
-	glDeleteShader(vertexShaderID);
-	glDeleteShader(fragmentShaderID);
+	normalsAsColorShader = ShaderProgramCreator("cube").create();
+    normalsAsColorShader->use();
 
 	std::cout<<"Shaders Loaded"<<std::endl;
 
@@ -150,15 +112,6 @@ void IntroState::Init() {
 	MatrixID = glGetUniformLocation(programID, "MVP");
 	ViewMatrixID = glGetUniformLocation(programID, "V");
 	ModelMatrixID = glGetUniformLocation(programID, "M");
-	
-
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &colorBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
 
 }	
@@ -183,22 +136,5 @@ void IntroState::Draw(CGame* game, float* delta) {
 
 	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram (programID);
-
-	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glDrawArrays(GL_TRIANGLES, 0, 12*3);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	normalsAsColorShader->setUniform( "uViewMatrix", viewMatrix );
 }
