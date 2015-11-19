@@ -2,7 +2,8 @@ language: cpp
 compiler: clang
 notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
-
+env:
+  - PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/glfw3/lib/pkgconfig
 os:
   - linux
   - osx
