@@ -15,8 +15,9 @@ set(SOURCE_FILES
     introstate.cpp
 )
 
-FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/Shader/*.*")
-ADD_DEFINITIONS(-DACGL_ERROR_LEVEL_EC3)
+FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
+
+
 ###############################################################################
 #
 # all we need for ACGL:
