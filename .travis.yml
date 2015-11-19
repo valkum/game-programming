@@ -4,9 +4,9 @@ compiler: clang
 notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
 
- os: 
- 	- osx
- 	- linux
+os: 
+  - osx
+  - linux
 
 before_install:
   - echo $LANG
