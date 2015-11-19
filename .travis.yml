@@ -10,7 +10,7 @@ addons:
   apt:
     packages:
       - cmake
-      - glfw3
+      - libglfw3
       - llvm-3.4
 before_install:
   - echo $LANG

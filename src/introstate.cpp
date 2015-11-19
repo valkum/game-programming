@@ -142,6 +142,9 @@ void IntroState::Init() {
 }	
 void IntroState::Draw(CGame* game, float* delta) {
 	//std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
+    // clear the framebuffer:
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     gOrientation1.y = 3.14159f/10.0f * (*delta);
     // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
