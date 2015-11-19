@@ -141,31 +141,31 @@ void IntroState::Init() {
 
 }	
 void IntroState::Draw(CGame* game, float* delta) {
-	std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
+	//std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
 
-	// gOrientation1.y = 3.14159f/10.0f * (*delta);
-	// // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	// glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-	// // Camera matrix
-	// glm::mat4 ViewMatrix       = glm::lookAt(
-	// 							glm::vec3(0,0,7), // Camera is at (4,3,-3), in World Space
-	// 							glm::vec3(0,0,0), // and looks at the origin
-	// 							glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-	// 					   );
-	
-	// // Build the model matrix
-	// glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-	// glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-	// glm::mat4 ScalingMatrix = scale(mat4(), vec3(2.0f, 2.0f, 2.0f));
-	// glm::mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScalingMatrix;
+    gOrientation1.y = 3.14159f/10.0f * (*delta);
+    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+    glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+    // Camera matrix
+    glm::mat4 ViewMatrix       = glm::lookAt(
+    							glm::vec3(0,0,7), // Camera is at (4,3,-3), in World Space
+    							glm::vec3(0,0,0), // and looks at the origin
+    							glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+    					   );
 
-	// glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+    // Build the model matrix
+    glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+    glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+    glm::mat4 ScalingMatrix = scale(mat4(), vec3(2.0f, 2.0f, 2.0f));
+    glm::mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScalingMatrix;
+
+    glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
 
-	// normalsAsColorShader->setUniform( "V", ViewMatrix );
- //    normalsAsColorShader->setUniform( "M", ModelMatrix );
- //    normalsAsColorShader->setUniform( "MVP", MVP );
- //    openGLCriticalError();
+    normalsAsColorShader->setUniform( "V", ViewMatrix );
+    normalsAsColorShader->setUniform( "M", ModelMatrix );
+    normalsAsColorShader->setUniform( "MVP", MVP );
+    openGLCriticalError();
 
 
 	glEnableVertexAttribArray(0);

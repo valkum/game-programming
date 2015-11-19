@@ -3,7 +3,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
 set(C_FLAGS_COMMON "-Wall -Werror -pedantic")
-set(CMAKE_CXX_FLAGS "--std=c++14 ${C_FLAGS_COMMON}")
+set(CMAKE_CXX_FLAGS "--std=c++11 ${C_FLAGS_COMMON}")
 
 set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
 set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
