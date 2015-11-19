@@ -12,6 +12,7 @@ addons:
       - cmake
       - xorg-dev
       - libgl1-mesa-dev
+      - pkg-config
 cache:
   directories:
   - $HOME/glfw3
