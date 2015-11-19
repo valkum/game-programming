@@ -10,11 +10,13 @@ addons:
   apt:
     packages:
       - cmake
-      - libglfw3
+      - xorg-dev
+      - libgl1-mesa-dev
       - llvm-3.4
 before_install:
   - echo $LANG
   - echo $LC_ALL
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install llvm35 glfw3 && brew link --force llvm35; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then git clone https://github.com/glfw/glfw.git; cd glfw; cmake . & make & make install; fi
 
 script: ./build.sh
