@@ -1,6 +1,4 @@
 language: cpp
-before_install:
-  - sudo apt-get install glfw3 cmake 
 compiler: clang
 notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
@@ -12,7 +10,7 @@ os:
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update && sudo apt-get install -y llvm-3.4 llvm-3.4-dev; glfw3; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install llvm35 glfw3 && brew link --force llvm35; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then apt-get update && sudo apt-get install -y cmake llvm-3.4 llvm-3.4-dev; glfw; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install llvm35 glfw3 cmake && brew link --force llvm35; fi
 
 script: ./build.sh
