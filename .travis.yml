@@ -1,6 +1,6 @@
 language: cpp
 before_install:
-	- sudo apt-get install glfw3 cmake 
+  - sudo apt-get install glfw3 cmake 
 compiler: clang
 notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
