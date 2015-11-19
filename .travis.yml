@@ -3,7 +3,7 @@ compiler: clang
 notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
 
-os: 
+os:
   - osx
   - linux
 addons:
@@ -12,10 +12,16 @@ addons:
       - cmake
       - xorg-dev
       - libgl1-mesa-dev
+cache:
+  directories:
+  - $HOME/glfw3
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install llvm35 glfw3 && brew link --force llvm35; fi
-  - if [ $TRAVIS_OS_NAME == linux ]; then git clone https://github.com/glfw/glfw.git; cd glfw; git checkout 3.2.1; cmake .; make & make install; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install  glfw3 ; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then bash travis_get_glfw3.sh; fi
+
+before_script:
+  - ls -R $HOME/glfw3
 
 script: ./build.sh
