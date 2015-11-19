@@ -1,4 +1,5 @@
 #version 320 
+
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexColor;
 // Output data ; will be interpolated for each fragment.

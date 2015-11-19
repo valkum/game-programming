@@ -1,17 +1,29 @@
-#include "gamestate.h"
 #include "introstate.h"
+#include <ACGL/OpenGL/Creator/ShaderProgramCreator.hh>
+#include <ACGL/OpenGL/Objects.hh>
+#include <ACGL/Base/Settings.hh>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
-#include <ACGL/OpenGL/Objects.hh>
+
 #include <iostream>
 #include <vector>
 
 using namespace glm;
+using namespace std;
+using namespace ACGL::OpenGL;
+using namespace ACGL::Base;
+using namespace ACGL::Utils;
 
 IntroState IntroState::m_IntroState;
 SharedShaderProgram normalsAsColorShader;
+GLuint vertexBuffer;
+GLuint colorBuffer;
+GLuint programID;
+GLuint MatrixID;
+GLuint ViewMatrixID;
+GLuint ModelMatrixID;
 vec3 gPosition1(0.0f, 0.0f, 0.0f);
 vec3 gOrientation1;
 
@@ -97,44 +109,73 @@ static const GLfloat g_color_buffer_data[] = {
 
 void IntroState::Init() {
 
+	GLuint VertexArrayID;
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
+
 	std::cout<<"Loading Shaders"<<std::endl;
 	// define where shaders and textures can be found:
-    Settings::the()->setResourcePath("../");
-    Settings::the()->setShaderPath("assets/shader/");
+    Settings::the()->setResourcePath("assets/");
+    Settings::the()->setShaderPath("shaders/");
 	
+	cout<<Settings::the()->getFullShaderPath()<<endl;
 	normalsAsColorShader = ShaderProgramCreator("cube").create();
-    normalsAsColorShader->use();
+  	normalsAsColorShader->use();
 
 	std::cout<<"Shaders Loaded"<<std::endl;
 
 
 
-	MatrixID = glGetUniformLocation(programID, "MVP");
-	ViewMatrixID = glGetUniformLocation(programID, "V");
-	ModelMatrixID = glGetUniformLocation(programID, "M");
+	// MatrixID = glGetUniformLocation(programID, "MVP");
+	// ViewMatrixID = glGetUniformLocation(programID, "V");
+	// ModelMatrixID = glGetUniformLocation(programID, "M");
+	
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
 
 }	
 void IntroState::Draw(CGame* game, float* delta) {
 	std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
 
-	gOrientation1.y = 3.14159f/10.0f * (*delta);
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-	// Camera matrix
-	glm::mat4 ViewMatrix       = glm::lookAt(
-								glm::vec3(0,0,7), // Camera is at (4,3,-3), in World Space
-								glm::vec3(0,0,0), // and looks at the origin
-								glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-						   );
+	// gOrientation1.y = 3.14159f/10.0f * (*delta);
+	// // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	// glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+	// // Camera matrix
+	// glm::mat4 ViewMatrix       = glm::lookAt(
+	// 							glm::vec3(0,0,7), // Camera is at (4,3,-3), in World Space
+	// 							glm::vec3(0,0,0), // and looks at the origin
+	// 							glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+	// 					   );
 	
-	// Build the model matrix
-	glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-	glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-	glm::mat4 ScalingMatrix = scale(mat4(), vec3(2.0f, 2.0f, 2.0f));
-	glm::mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScalingMatrix;
+	// // Build the model matrix
+	// glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+	// glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+	// glm::mat4 ScalingMatrix = scale(mat4(), vec3(2.0f, 2.0f, 2.0f));
+	// glm::mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScalingMatrix;
 
-	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+	// glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-	normalsAsColorShader->setUniform( "uViewMatrix", viewMatrix );
+
+	// normalsAsColorShader->setUniform( "V", ViewMatrix );
+ //    normalsAsColorShader->setUniform( "M", ModelMatrix );
+ //    normalsAsColorShader->setUniform( "MVP", MVP );
+ //    openGLCriticalError();
+
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+	glDrawArrays(GL_TRIANGLES, 0, 12*3);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 }
