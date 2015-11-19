@@ -1,11 +1,10 @@
-#define GLFW_INCLUDE_GLCOREARB
-#include <GLFW/glfw3.h>
 #include "gamestate.h"
 #include "introstate.h"
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <ACGL/OpenGL/Objects.hh>
 #include <iostream>
 #include <vector>
 

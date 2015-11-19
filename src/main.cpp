@@ -1,5 +1,4 @@
-#define GLFW_INCLUDE_GLCOREARB
-#include <GLFW/glfw3.h>
+#include "main.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,7 +7,11 @@
 #include <iomanip>
 #include <sstream>
 #include <vector>
-#include "main.h"
+
+
+#include <ACGL/OpenGL/Objects.hh>
+#include <ACGL/OpenGL/glloaders/extensions.hh>
+
 #include "introstate.h"
 #include "game.h"
 
@@ -23,16 +26,43 @@ int main(int argc, char *argv[])
     
 
 }
+
+void setGLFWHintsForOpenGLVersion( unsigned int _version )
+{
+#ifdef __APPLE__
+#if (ACGL_OPENGL_VERSION >= 30)
+    // request OpenGL 3.2, will return a 4.1 context on Mavericks
+    glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
+    glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 2 );
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+#else
+// non-apple
+    glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, _version / 10 );
+    glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, _version % 10 );
+    #ifdef ACGL_OPENGL_PROFILE_CORE
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    #endif
+#endif
+}
+
 int createWindow() {
 /* Initialize the library */
     if (!glfwInit())
         return false;
 
-    glfwDefaultWindowHints();
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    /////////////////////////////////////////////////////////////////////////////////////
+    // Configure OpenGL context
+    //
+    setGLFWHintsForOpenGLVersion( ACGL_OPENGL_VERSION );
+
+    // activate multisampling (second parameter is the number of samples):
+    //glfwWindowHint( GLFW_SAMPLES, 8 );
+
+    // request an OpenGL debug context:
+    glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, true );
 
     /* Create a windowed mode window and its OpenGL context */
 
@@ -45,6 +75,7 @@ int createWindow() {
 
     /* Make the window's context current */
     glfwMakeContextCurrent(g_window);
+    ACGL::init();
     return true;
 }
 
