@@ -9,11 +9,42 @@ set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
 set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
 # Hier wird definiert, welche Quellcodedateien zur Programmdatei dazugehören.
 # Bei großen Projekten ist eine logische Unterteilung sinnvoll.
-set(SRCS
+set(SOURCE_FILES
     main.cpp
     game.cpp
     introstate.cpp
 )
+
+FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/Shader/*.*")
+ADD_DEFINITIONS(-DACGL_ERROR_LEVEL_EC3)
+###############################################################################
+#
+# all we need for ACGL:
+#
+ADD_DEFINITIONS(-DACGL_ERROR_LEVEL_EC3)
+INCLUDE(${CMAKE_SOURCE_DIR}/lib/acgl/CMakeListsStaticInclude.txt)
+#
+#
+###############################################################################
+
+
+#
+# MacOS X:
+#
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  SET(LIBRARIES ${LIBRARIES} -Wl,-framework,Cocoa -Wl,-framework,OpenGL,-framework,IOKit)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
+#
+# Linux:
+#
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    SET(LIBRARIES ${LIBRARIES} -lXrandr -lGL -lXi  -pthread -lm -lX11 -lXxf86vm)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+#
+#
+#
+###############################################################################
 
 
 # Die ausführbare Datei wird gegen diese Bibliotheken gelinkt.
@@ -28,13 +59,13 @@ if(UNIX)
 	pkg_search_module(GLFW REQUIRED glfw3)
 	include_directories(${GLFW_INCLUDE_DIRS})
 
-	find_package(GLM REQUIRED)
-	include_directories(${GLM_INCLUDE_DIR})
+	#find_package(GLM REQUIRED)
+	#include_directories(${GLM_INCLUDE_DIR})
 
 	set(REQUIRED_LIBS ${GLFW_LIBRARIES} ${OPENGL_LIBRARY})
 endif()
 
-add_executable(Game ${SRCS})
+#add_executable(Game ${SRCS})
 
 
 # if(APPLE)
@@ -49,5 +80,6 @@ add_executable(Game ${SRCS})
 # endif()
 
 
-
-target_link_libraries(Game ${REQUIRED_LIBS})
+#ADD_EXECUTABLE(${CMAKE_PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ADD_EXECUTABLE(${CMAKE_PROJECT_NAME} ${SOURCE_FILES} ${SHADER_FILES})
+TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${REQUIRED_LIBS})
