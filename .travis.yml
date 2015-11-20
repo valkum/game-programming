@@ -31,3 +31,6 @@ before_script:
   - ls -R $HOME/glfw3
 
 script: ./build.sh
+
+after_script:
+  - cat ./build/CMakeCache.txt
