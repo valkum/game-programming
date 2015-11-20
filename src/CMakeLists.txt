@@ -79,7 +79,6 @@ endif()
 # 		${SRCS}
 # 		${MACOSX_RESOURCE_FILES})
 # endif()
-message(STATUS "Include Dirs: ${REQUIRED_LIBS}")
 
 
 #ADD_EXECUTABLE(${CMAKE_PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
