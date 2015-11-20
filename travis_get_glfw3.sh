@@ -9,7 +9,7 @@ if [ ! -d "$HOME/glfw3/lib" ]; then
   cp $HOME/glfw3/lib/ /usr/local/lib
 else
   echo "Using cached directory."
-  cp $HOME/glfw3/include/ /usr/local/include
-  cp $HOME/glfw3/lib/ /usr/local/lib
+  cp -r $HOME/glfw3/include/* /usr/include/
+  cp -r $HOME/glfw3/lib/* /usr/lib/
 fi
 
