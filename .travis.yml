@@ -20,11 +20,7 @@ cache:
   directories:
   - $HOME/glfw3
 before_install:
-  - ls -R $HOME
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install  glfw3 ; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then bash travis_get_glfw3.sh; fi
-
-before_script:
-  - ls -R $HOME/glfw3
 
 script: ./build.sh
