@@ -59,6 +59,7 @@ if(UNIX)
 	find_package(PkgConfig REQUIRED)
 	pkg_search_module(GLFW REQUIRED glfw3)
 	include_directories(${GLFW_INCLUDE_DIRS})
+  link_directories(${GLFW_LIBRARY_DIRS})
 
 	#find_package(GLM REQUIRED)
 	#include_directories(${GLM_INCLUDE_DIR})
