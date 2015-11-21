@@ -6,7 +6,7 @@
 class IntroState : public CGameState 
 {
 public:
-	void Init();
+	void Init(CGame* game);
 	void Draw(CGame* game, float* delta);
 
 	static IntroState* Instance() {

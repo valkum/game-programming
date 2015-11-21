@@ -20,6 +20,8 @@ set(EXECUTABLE_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
 
 # CMake soll auch in diesen Verzeichnissen weitersuchen
 #add_subdirectory(lib)
+INCLUDE_DIRECTORIES(lib/nanovg/src)
+add_subdirectory(lib/nanovg)
 add_subdirectory(src)
 
 # install(FILES assets DESTINATION assets)

@@ -2,13 +2,13 @@
 #include <ACGL/OpenGL/Creator/ShaderProgramCreator.hh>
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Base/Settings.hh>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/euler_angles.hpp>
 
+#include "playstate.h"
 #include <iostream>
-#include <vector>
+
+#include <nanovg.h>
+#define NANOVG_GL3_IMPLEMENTATION
+#include <nanovg_gl.h>
 
 using namespace glm;
 using namespace std;
@@ -17,168 +17,113 @@ using namespace ACGL::Base;
 using namespace ACGL::Utils;
 
 IntroState IntroState::m_IntroState;
-SharedShaderProgram normalsAsColorShader;
-GLuint vertexBuffer;
-GLuint colorBuffer;
-GLuint programID;
-GLuint MatrixID;
-GLuint ViewMatrixID;
-GLuint ModelMatrixID;
-vec3 gPosition1(0.0f, 0.0f, 0.0f);
-vec3 gOrientation1;
+struct NVGcontext* vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 
-
-
-static const GLfloat g_vertex_buffer_data[] = {
-    -1.0f,-1.0f,-1.0f, // triangle 1 : begin
-    -1.0f,-1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f, // triangle 1 : end
-    1.0f, 1.0f,-1.0f, // triangle 2 : begin
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f,-1.0f, // triangle 2 : end
-    1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f,-1.0f,
-    1.0f,-1.0f,-1.0f,
-    1.0f, 1.0f,-1.0f,
-    1.0f,-1.0f,-1.0f,
-    -1.0f,-1.0f,-1.0f,
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f,-1.0f,
-    1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    -1.0f,-1.0f, 1.0f,
-    1.0f,-1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    1.0f,-1.0f,-1.0f,
-    1.0f, 1.0f,-1.0f,
-    1.0f,-1.0f,-1.0f,
-    1.0f, 1.0f, 1.0f,
-    1.0f,-1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f,-1.0f,
-    -1.0f, 1.0f,-1.0f,
-    1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f,
-    1.0f,-1.0f, 1.0f
-};
-
-static const GLfloat g_color_buffer_data[] = {
-    0.583f,  0.771f,  0.014f,
-    0.609f,  0.115f,  0.436f,
-    0.327f,  0.483f,  0.844f,
-    0.822f,  0.569f,  0.201f,
-    0.435f,  0.602f,  0.223f,
-    0.310f,  0.747f,  0.185f,
-    0.597f,  0.770f,  0.761f,
-    0.559f,  0.436f,  0.730f,
-    0.359f,  0.583f,  0.152f,
-    0.483f,  0.596f,  0.789f,
-    0.559f,  0.861f,  0.639f,
-    0.195f,  0.548f,  0.859f,
-    0.014f,  0.184f,  0.576f,
-    0.771f,  0.328f,  0.970f,
-    0.406f,  0.615f,  0.116f,
-    0.676f,  0.977f,  0.133f,
-    0.971f,  0.572f,  0.833f,
-    0.140f,  0.616f,  0.489f,
-    0.997f,  0.513f,  0.064f,
-    0.945f,  0.719f,  0.592f,
-    0.543f,  0.021f,  0.978f,
-    0.279f,  0.317f,  0.505f,
-    0.167f,  0.620f,  0.077f,
-    0.347f,  0.857f,  0.137f,
-    0.055f,  0.953f,  0.042f,
-    0.714f,  0.505f,  0.345f,
-    0.783f,  0.290f,  0.734f,
-    0.722f,  0.645f,  0.174f,
-    0.302f,  0.455f,  0.848f,
-    0.225f,  0.587f,  0.040f,
-    0.517f,  0.713f,  0.338f,
-    0.053f,  0.959f,  0.120f,
-    0.393f,  0.621f,  0.362f,
-    0.673f,  0.211f,  0.457f,
-    0.820f,  0.883f,  0.371f,
-    0.982f,  0.099f,  0.879f
-};
-
-void IntroState::Init() {
-
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
-
-	std::cout<<"Loading Shaders"<<std::endl;
-	// define where shaders and textures can be found:
-    Settings::the()->setResourcePath("assets/");
-    Settings::the()->setShaderPath("shaders/");
-	
-	cout<<Settings::the()->getFullShaderPath()<<endl;
-	normalsAsColorShader = ShaderProgramCreator("cube").create();
-  	normalsAsColorShader->use();
-
-	std::cout<<"Shaders Loaded"<<std::endl;
-
-
-
-	// MatrixID = glGetUniformLocation(programID, "MVP");
-	// ViewMatrixID = glGetUniformLocation(programID, "V");
-	// ModelMatrixID = glGetUniformLocation(programID, "M");
-	
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &colorBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
-
-
-}	
-void IntroState::Draw(CGame* game, float* delta) {
-	//std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
-    // clear the framebuffer:
-    glEnable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    gOrientation1.y = 3.14159f/10.0f * (*delta);
-    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-    glm::mat4 ProjectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-    // Camera matrix
-    glm::mat4 ViewMatrix       = glm::lookAt(
-    							glm::vec3(0,0,7), // Camera is at (4,3,-3), in World Space
-    							glm::vec3(0,0,0), // and looks at the origin
-    							glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-    					   );
-
-    // Build the model matrix
-    glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-    glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-    glm::mat4 ScalingMatrix = scale(mat4(), vec3(2.0f, 2.0f, 2.0f));
-    glm::mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScalingMatrix;
-
-    glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-
-
-    normalsAsColorShader->setUniform( "V", ViewMatrix );
-    normalsAsColorShader->setUniform( "M", ModelMatrix );
-    normalsAsColorShader->setUniform( "MVP", MVP );
-    openGLCriticalError();
-
-
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glDrawArrays(GL_TRIANGLES, 0, 12*3);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+// Returns 1 if col.rgba is 0.0f,0.0f,0.0f,0.0f, 0 otherwise
+int isBlack(NVGcolor col)
+{
+    if( col.r == 0.0f && col.g == 0.0f && col.b == 0.0f && col.a == 0.0f )
+    {
+        return 1;
+    }
+    return 0;
 }
+
+static char* cpToUTF8(int cp, char* str)
+{
+    int n = 0;
+    if (cp < 0x80) n = 1;
+    else if (cp < 0x800) n = 2;
+    else if (cp < 0x10000) n = 3;
+    else if (cp < 0x200000) n = 4;
+    else if (cp < 0x4000000) n = 5;
+    else if (cp <= 0x7fffffff) n = 6;
+    str[n] = '\0';
+    switch (n) {
+    case 6: str[5] = 0x80 | (cp & 0x3f); cp = cp >> 6; cp |= 0x4000000;
+    case 5: str[4] = 0x80 | (cp & 0x3f); cp = cp >> 6; cp |= 0x200000;
+    case 4: str[3] = 0x80 | (cp & 0x3f); cp = cp >> 6; cp |= 0x10000;
+    case 3: str[2] = 0x80 | (cp & 0x3f); cp = cp >> 6; cp |= 0x800;
+    case 2: str[1] = 0x80 | (cp & 0x3f); cp = cp >> 6; cp |= 0xc0;
+    case 1: str[0] = cp;
+    }
+    return str;
+}
+
+void drawButton(NVGcontext* vg, int preicon, const char* text, float x, float y, float w, float h, NVGcolor col)
+{
+    NVGpaint bg;
+    char icon[8];
+    float cornerRadius = 4.0f;
+    float tw = 0, iw = 0;
+
+    bg = nvgLinearGradient(vg, x,y,x,y+h, nvgRGBA(255,255,255,isBlack(col)?16:32), nvgRGBA(0,0,0,isBlack(col)?16:32));
+    nvgBeginPath(vg);
+    nvgRoundedRect(vg, x+1,y+1, w-2,h-2, cornerRadius-1);
+    if (!isBlack(col)) {
+        nvgFillColor(vg, col);
+        nvgFill(vg);
+    }
+    nvgFillPaint(vg, bg);
+    nvgFill(vg);
+
+    nvgBeginPath(vg);
+    nvgRoundedRect(vg, x+0.5f,y+0.5f, w-1,h-1, cornerRadius-0.5f);
+    nvgStrokeColor(vg, nvgRGBA(0,0,0,48));
+    nvgStroke(vg);
+
+    nvgFontSize(vg, 20.0f);
+    nvgFontFace(vg, "sans-bold");
+    tw = nvgTextBounds(vg, 0,0, text, NULL, NULL);
+    if (preicon != 0) {
+        nvgFontSize(vg, h*1.3f);
+        nvgFontFace(vg, "icons");
+        iw = nvgTextBounds(vg, 0,0, cpToUTF8(preicon,icon), NULL, NULL);
+        iw += h*0.15f;
+    }
+
+    if (preicon != 0) {
+        nvgFontSize(vg, h*1.3f);
+        nvgFontFace(vg, "icons");
+        nvgFillColor(vg, nvgRGBA(255,255,255,96));
+        nvgTextAlign(vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
+        nvgText(vg, x+w*0.5f-tw*0.5f-iw*0.75f, y+h*0.5f, cpToUTF8(preicon,icon), NULL);
+    }
+
+    nvgFontSize(vg, 20.0f);
+    nvgFontFace(vg, "sans-bold");
+    nvgTextAlign(vg,NVG_ALIGN_LEFT|NVG_ALIGN_MIDDLE);
+    nvgFillColor(vg, nvgRGBA(0,0,0,160));
+    nvgText(vg, x+w*0.5f-tw*0.5f+iw*0.25f,y+h*0.5f-1,text, NULL);
+    nvgFillColor(vg, nvgRGBA(255,255,255,160));
+    nvgText(vg, x+w*0.5f-tw*0.5f+iw*0.25f,y+h*0.5f,text, NULL);
+}
+
+void IntroState::Init(CGame* game) {
+
+
+
+}
+
+void IntroState::Draw(CGame* game, float* delta) {
+    double mx, my;
+    int winWidth, winHeight;
+    int fbWidth, fbHeight;
+    float pxRatio;
+    glfwGetCursorPos(game->g_window, &mx, &my);
+    glfwGetWindowSize(game->g_window, &winWidth, &winHeight);
+    glfwGetFramebufferSize(game->g_window, &fbWidth, &fbHeight);
+    // Calculate pixel ration for hi-dpi devices.
+    pxRatio = (float)fbWidth / (float)winWidth;
+
+
+    nvgBeginFrame(vg, winWidth, winHeight, pxRatio);
+    drawButton(vg, 0, "Play", 170, 0, 110, 28, nvgRGBA(0,0,0,0));
+    nvgEndFrame(vg);
+
+}
+
+// void HandleKeyEvents(CGame* game, GLFWwindow* window, int key, int scancode, int action, int mods) {
+//     CGameState::HandleKeyEvents(game, window, key, scancode, action, mods);
+//     ...
+// }
