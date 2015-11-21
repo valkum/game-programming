@@ -8,3 +8,4 @@ if [ ! -d "$HOME/glfw3/lib" ]; then
 else
   echo "Using cached directory."
 fi
+

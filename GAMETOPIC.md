@@ -16,3 +16,11 @@ Tentacles
 Ghosts
 Ski
 HDD
+
+
+Things:
+cloth simulation with cape (soft body)
+fluid simulation for clouds with !euler
+Nice to Have:
+Godrays
+particle effects on highspeed
