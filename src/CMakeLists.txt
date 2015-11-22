@@ -16,6 +16,7 @@ set(SOURCE_FILES
     introstate.cpp
     playstate.cpp
     helper.cpp
+    TextureLoadStore.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
@@ -91,12 +92,12 @@ endif()
 ADD_EXECUTABLE(${CMAKE_PROJECT_NAME} ${SOURCE_FILES} ${SHADER_FILES})
 TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${REQUIRED_LIBS})
 
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
-	PRE_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove_directory "${dir}/assets"
-)
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "${dir}/assets"
-)
+# add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
+# 	PRE_BUILD
+# 	COMMAND ${CMAKE_COMMAND} -E remove_directory "${dir}/assets"
+# )
+# add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
+# 		PRE_BUILD
+# 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "${dir}/assets"
+# )
 

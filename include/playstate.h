@@ -9,6 +9,8 @@ public:
     void Init(CGame* game);
     void Draw(CGame* game, float* delta);
 
+    void HandleKeyEvents(GLFWwindow* window, int key, int scancode, int action, int mods);
+    void HandleResizeEvents(GLFWwindow * window, glm::uvec2 windowSize);
     void HandleMouseMoveEvents(GLFWwindow* window, glm::vec2 mousePos);
     void HandleMouseButtonEvents(GLFWwindow* window, glm::vec2 mousePos, int button, int action, int mods);
 

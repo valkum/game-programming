@@ -133,7 +133,7 @@ void IntroState::Draw(CGame* game, float* delta) {
     glfwGetFramebufferSize(game->g_window, &fbWidth, &fbHeight);
     // Calculate pixel ration for hi-dpi devices.
     pxRatio = (float)fbWidth / (float)winWidth;
-    glViewport(0,0, fbWidth, fbHeight);
+    //glViewport(0,0, fbWidth, fbHeight);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -145,10 +145,14 @@ void IntroState::Draw(CGame* game, float* delta) {
 
 }
 
-// void HandleKeyEvents(CGame* game, GLFWwindow* window, int key, int scancode, int action, int mods) {
-//     CGameState::HandleKeyEvents(game, window, key, scancode, action, mods);
-//     ...
-// }
+void IntroState::HandleKeyEvents( GLFWwindow* window, int key, int scancode, int action, int mods) {
+    CGameState::HandleKeyEvents(window, key, scancode, action, mods);
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+        CGame* g = CGame::Instance();
+        g->ChangeState(PlayState::Instance());
+    }
+}
 void IntroState::HandleMouseButtonEvents(GLFWwindow* window, vec2 mousePos, int button, int action, int mods) {
     if(action == GLFW_PRESS) {
         m_MouseState |= 1 << button;

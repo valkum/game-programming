@@ -9,12 +9,15 @@
 #include <vector>
 
 #include <ACGL/OpenGL/Objects.hh>
+#include <ACGL/Utils/Log.hh>
 #include <ACGL/OpenGL/glloaders/extensions.hh>
 
 
 
 using namespace std;
 using namespace glm;
+using namespace ACGL;
+using namespace ACGL::Utils;
 
 int main(int argc, char *argv[])
 {
@@ -68,6 +71,7 @@ int createWindow() {
     if (!g_window)
     {
         glfwTerminate();
+        error()<<"Error creating window!"<<endl;
         return false;
     }
 
@@ -80,11 +84,10 @@ int createWindow() {
 int run(char *argv[]) {
     if ( !createWindow() ) {
         glfwTerminate();
-        std::cout<<"Error creating Window"<<std::endl;
         exit( -1 );
     }
 
-    std::vector<std::string> tmp;
+    vector<std::string> tmp;
     tmp.push_back(std::string(argv[0]));
     glfwSetWindowTitle( g_window, tmp[tmp.size()-1].c_str() );
     CGame* game = CGame::Instance();
@@ -107,6 +110,17 @@ int run(char *argv[]) {
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(g_window))
     {
+#ifdef DEBUGGING
+        //
+        // shader file reloading once a second:
+        //
+        static double nextReloadTime = 1.0;
+        if (glfwGetTime() > nextReloadTime) {
+            ACGL::OpenGL::ShaderProgramFileManager::the()->updateAll();
+            nextReloadTime = glfwGetTime() + 1.0; // check again in one second
+        }
+#endif
+
         loops = 0;
         double now = glfwGetTime();
         while( glfwGetTime() > newTime && loops < MAX_FRAMESKIP) {
