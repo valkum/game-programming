@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <vector>
+#include "helper.h"
 
 using namespace glm;
 using namespace std;
@@ -115,7 +116,7 @@ void PlayState::Init(CGame* game) {
 
 	std::cout<<"Loading Shaders"<<std::endl;
 	// define where shaders and textures can be found:
-    Settings::the()->setResourcePath("assets/");
+    Settings::the()->setResourcePath(helper::getExePath() + "/assets/");
     Settings::the()->setShaderPath("shaders/");
 	
 	cout<<Settings::the()->getFullShaderPath()<<endl;
@@ -181,4 +182,11 @@ void PlayState::Draw(CGame* game, float* delta) {
 	glDrawArrays(GL_TRIANGLES, 0, 12*3);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+}
+
+void PlayState::HandleMouseMoveEvents(GLFWwindow* window, glm::vec2 mousePos){
+
+}
+void PlayState::HandleMouseButtonEvents(GLFWwindow* window, glm::vec2 mousePos, int button, int action, int mods){
+
 }

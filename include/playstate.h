@@ -6,15 +6,19 @@
 class PlayState : public CGameState 
 {
 public:
-  void Init(CGame* game);
-  void Draw(CGame* game, float* delta);
+    void Init(CGame* game);
+    void Draw(CGame* game, float* delta);
 
-  static PlayState* Instance() {
-    return &m_PlayState;
-  }
+    void HandleMouseMoveEvents(GLFWwindow* window, glm::vec2 mousePos);
+    void HandleMouseButtonEvents(GLFWwindow* window, glm::vec2 mousePos, int button, int action, int mods);
+
+
+    static PlayState* Instance() {
+        return &m_PlayState;
+    }
 protected:
-  PlayState() {}
+    PlayState() {}
 private:
-  static PlayState m_PlayState;
+    static PlayState m_PlayState;
 };
 #endif

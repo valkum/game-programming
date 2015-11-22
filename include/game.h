@@ -11,14 +11,15 @@ class CGameState;
 class CGame
 {
 public:
-	void Init(GLFWwindow* g_window, glm::vec2 _g_window_size);
+	void Init(GLFWwindow* g_window);
 	void Cleanup();
 
 	void ChangeState(CGameState* state);
 
 	void HandleKeyEvents(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void HandleResizeEvents(GLFWwindow * window, int newWidth, int newHeight );
-	void HandleMouseEvents(GLFWwindow* window, double xpos, double ypos);
+	void HandleResizeEvents(GLFWwindow * window, int width, int height);
+	void HandleMouseButtonEvents(GLFWwindow* window, int button, int action, int mods);
+	void HandleMouseMoveEvents(GLFWwindow* window, double x, double y);
 	void Update();
 	void Draw(float* delta);
 
@@ -26,12 +27,20 @@ public:
 	void Quit() {m_running = false; }
 	GLFWwindow* g_window;
 	glm::uvec2 g_windowSize;
-private:
-	std::stack<CGameState*> states;
 
+	static CGame* Instance() {
+		return &m_CGame;
+	}
+
+protected:
+	CGame() {}
+private:
 	bool m_running;
 	bool m_fullscreen;
+	glm::vec2 m_mousePos;
+	std::stack<CGameState*> states;
 
+	static CGame m_CGame;
 };
 
 #endif

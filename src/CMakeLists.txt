@@ -3,8 +3,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
 set(C_FLAGS_COMMON "-Wall -Werror")
-set(CMAKE_CXX_FLAGS "--std=c++11 ${C_FLAGS_COMMON}")
-set(CMAKE_C_FLAGS "--std=c11 ${C_FLAGS_COMMON}")
+set(CMAKE_CXX_FLAGS "-std=c++11 -g ${C_FLAGS_COMMON}")
+set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
 
 set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
 set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
@@ -15,6 +15,7 @@ set(SOURCE_FILES
     game.cpp
     introstate.cpp
     playstate.cpp
+    helper.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
@@ -67,7 +68,7 @@ if(UNIX)
 	#find_package(GLM REQUIRED)
 	#include_directories(${GLM_INCLUDE_DIR})
 
-	set(REQUIRED_LIBS ${GLFW_LIBRARIES} ${OPENGL_LIBRARY})
+	set(REQUIRED_LIBS ${GLFW_LIBRARIES} ${OPENGL_LIBRARY} nanovg)
 endif()
 
 
@@ -89,7 +90,6 @@ endif()
 #ADD_EXECUTABLE(${CMAKE_PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 ADD_EXECUTABLE(${CMAKE_PROJECT_NAME} ${SOURCE_FILES} ${SHADER_FILES})
 TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${REQUIRED_LIBS})
-TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} nanogv)
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
 	PRE_BUILD

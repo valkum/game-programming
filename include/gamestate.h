@@ -13,17 +13,17 @@ public:
 	//void Pause();
 	//void Resume();
 
-	void HandleKeyEvents(CGame* game, GLFWwindow* window, int key, int scancode, int action, int mods) {
+	void HandleKeyEvents(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         	glfwSetWindowShouldClose( window, GL_TRUE );
     	}
-	}
-	void HandleResizeEvents(CGame* game, GLFWwindow * window, int newWidth, int newHeight ) {
+	};
+	void HandleResizeEvents(GLFWwindow * window, glm::uvec2 windowSize) {
 		// store the new window size and adjust the viewport:
-	    game->g_windowSize = glm::uvec2( newWidth, newHeight);
-	    glViewport( 0, 0, game->g_windowSize.x, game->g_windowSize.y );
-	}
-	void HandleMouseEvents(CGame* game, GLFWwindow* window, double xpos, double ypos);
+        glViewport( 0, 0, windowSize.x, windowSize.y );
+	};
+	virtual void HandleMouseMoveEvents(GLFWwindow* window, glm::vec2 mousePos) =0;
+	virtual void HandleMouseButtonEvents(GLFWwindow* window, glm::vec2 mousePos, int button, int action, int mods)=0;
 	//void Update(CGame* game, float delta);
 	virtual void Draw(CGame* game, float* delta) =0;
 

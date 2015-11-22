@@ -15,7 +15,6 @@
 
 using namespace std;
 using namespace glm;
-uvec2 g_windowSize( 640, 480 );
 
 int main(int argc, char *argv[])
 {
@@ -65,7 +64,7 @@ int createWindow() {
 
     /* Create a windowed mode window and its OpenGL context */
 
-    g_window = glfwCreateWindow(g_windowSize.x, g_windowSize.y, "Hello World", NULL, NULL);
+    g_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!g_window)
     {
         glfwTerminate();
@@ -85,19 +84,17 @@ int run(char *argv[]) {
         exit( -1 );
     }
 
-
-
     std::vector<std::string> tmp;
     tmp.push_back(std::string(argv[0]));
     glfwSetWindowTitle( g_window, tmp[tmp.size()-1].c_str() );
-
-    game.Init(g_window, g_windowSize);
-    game.ChangeState(IntroState::Instance());
+    CGame* game = CGame::Instance();
+    game->Init(g_window);
+    game->ChangeState(IntroState::Instance());
 
      // Ensure we can capture the escape key being pressed below
-    glfwSetInputMode( g_window, GLFW_STICKY_KEYS, 1 );
-    glfwSetWindowSizeCallback(  g_window, resizeCallback );
-    glfwSetKeyCallback( g_window, keyCallback );
+    // glfwSetInputMode( g_window, GLFW_STICKY_KEYS, 1 );
+    // glfwSetWindowSizeCallback(  g_window, resizeCallback );
+    // glfwSetKeyCallback( g_window, keyCallback );
 
     const int TICKS_PER_SECOND = 64;
     const float frameTime = 1 / TICKS_PER_SECOND;
@@ -123,7 +120,7 @@ int run(char *argv[]) {
 
         extrapolation = glfwGetTime() - (newTime - frameTime);
         //glfwGetFramebufferSize(g_window, &width, &height);
-        game.Draw( &extrapolation );
+        game->Draw( &extrapolation );
 
         // @todo betterFPS meter? maybe draw in context?
         std::stringstream sstream (std::stringstream::in | std::stringstream::out);
@@ -139,12 +136,12 @@ int run(char *argv[]) {
     glfwTerminate();
     return true;
 }
-static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    game.HandleKeyEvents(window, key, scancode, action, mods);
-};
-static void resizeCallback(GLFWwindow * window, int newWidth, int newHeight ) {
-    game.HandleResizeEvents(window, newWidth, newHeight);
-};
+// static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+//     game.HandleKeyEvents(window, key, scancode, action, mods);
+// };
+// static void resizeCallback(GLFWwindow * window, int newWidth, int newHeight ) {
+//     game.HandleResizeEvents(window, newWidth, newHeight);
+// };
 
 /**
 function loopyLoopExtra() {
