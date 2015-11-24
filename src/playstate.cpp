@@ -200,34 +200,39 @@ void PlayState::Init(CGame* game) {
 	cout<<Settings::the()->getFullShaderPath()<<endl;
 	boxShader = ShaderProgramCreator("cube").attributeLocations(
         vao->getAttributeLocations()).create();
+
     skyBoxShader = ShaderProgramCreator("skybox").attributeLocations(
         vao->getAttributeLocations()).create();
 
 	debug()<<"Shaders loaded"<<endl;
 
-    skyCube = VertexArrayObjectCreator("cube.obj").create();
-    skyCube->setAttributeLocations( skyBoxShader->getAttributeLocations() );
-    openGLCriticalError();
-    //Texture
-    std::vector<std::string> paths = {
-        Settings::the()->getFullTexturePath() + "nuke_rt.png",
-        Settings::the()->getFullTexturePath() + "nuke_lf.png",
-        Settings::the()->getFullTexturePath() + "nuke_up.png",
-        Settings::the()->getFullTexturePath() + "nuke_dn.png",
-        Settings::the()->getFullTexturePath() + "nuke_bk.png",
-        Settings::the()->getFullTexturePath() + "nuke_ft.png",
-    };
-    openGLCriticalError();
-    cubemapTexture = loadTextureCubeMap(paths);
-    skyBoxShader->use();
-    skyBoxShader->setTexture("uTexture", cubemapTexture, 0);
-    openGLCriticalError();
-    debug()<<"Set Texture for skyBoxShader"<<endl;
+    // skyCube = VertexArrayObjectCreator("cube.obj").create();
+    // skyCube->setAttributeLocations( skyBoxShader->getAttributeLocations() );
+    // openGLCriticalError();
+    // //Texture
+    // std::vector<std::string> paths = {
+    //     Settings::the()->getFullTexturePath() + "nuke_rt.png",
+    //     Settings::the()->getFullTexturePath() + "nuke_lf.png",
+    //     Settings::the()->getFullTexturePath() + "nuke_up.png",
+    //     Settings::the()->getFullTexturePath() + "nuke_dn.png",
+    //     Settings::the()->getFullTexturePath() + "nuke_bk.png",
+    //     Settings::the()->getFullTexturePath() + "nuke_ft.png",
+    // };
+    // openGLCriticalError();
+    // cubemapTexture = loadTextureCubeMap(paths);
+    // skyBoxShader->use();
+    // skyBoxShader->setTexture("uTexture", cubemapTexture, 0);
+    // openGLCriticalError();
+    // debug()<<"Set Texture for skyBoxShader"<<endl;
 
     openGLCriticalError();
+    vaoCube->setAttributeLocations(boxShader->getAttributeLocations());
     vaoCube->bind();
 
     camera.setVerticalFieldOfView(90.0);
+    camera.setPosition(vec3(0.0f, 0.0f, 1.0f));
+    debug()<<"Camera Position: \n"<<to_string(camera.getPosition())<<endl;
+    debug()<<"Camera View: \n"<<to_string(camera.getViewMatrix())<<endl; 
 
     glEnable(GL_DEPTH_TEST);
 
@@ -244,11 +249,11 @@ void PlayState::Draw(CGame* g, float* delta) {
     
     boxShader->use();
     //glm::mat4 viewMatrix = glm::translate(glm::vec3(0.0f, -1.0f, -2.0f)) * glm::rotate<float>(1.0472f * (*delta), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale<float>(glm::vec3(0.25f));
-    mat4 rotateMatrix = rotate(0.0f, vec3(1,0,0))* rotate(0.0f, vec3(0,1,0))*rotate(0.0f, vec3(0,0,1));
-    modelMatrix = translate(vec3(0.0f,0.0f,0.0f)) * rotateMatrix * scale<float>(glm::vec3(1.0f));
-    boxShader->setUniform( "uModelMatrix", modelMatrix);
-    boxShader->setUniform( "uViewMatrix",  camera.getViewMatrix());
-    boxShader->setUniform( "uProjectionMatrix", camera.getProjectionMatrix());
+    //modelMatrix = mat4(1.0f);
+    modelMatrix = translate(vec3(0.0f, 0.0f, -1.0f)) * scale<float>(vec3(0.2f));
+    mat4 mvp = camera.getProjectionMatrix() * camera.getViewMatrix() * modelMatrix;
+
+    boxShader->setUniform( "uMVP", mvp);
     boxShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
     openGLCriticalError();
 

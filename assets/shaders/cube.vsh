@@ -2,8 +2,7 @@
 
 // Values that stay constant for the whole mesh.
 // uniform mat4 MVP;
-uniform mat4 uViewMatrix;
-uniform mat4 uProjectionMatrix;
+uniform mat4 uMVP;
 uniform mat3 uNormalMatrix;
 
 in vec3 aPosition;
@@ -28,6 +27,6 @@ void main () {
   // gl_Position = uProjectionMatrix * uViewMatrix * vec4(aPosition, 1.0);
 
   vNormal     = uNormalMatrix * aNormal;
-  gl_Position = uProjectionMatrix * uViewMatrix * vec4(aPosition, 1.0f);
+  gl_Position = uMVP * vec4(aPosition, 1.0f);
 	// fragmentColor = vertexColor;
 }
