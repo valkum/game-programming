@@ -17,6 +17,10 @@ set(SOURCE_FILES
     playstate.cpp
     helper.cpp
     TextureLoadStore.cpp
+    model.cpp
+    world/entity.cpp
+    world/testobject.cpp
+    world/skybox.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")

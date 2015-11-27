@@ -28,6 +28,7 @@ SharedTextureCubeMap loadTextureCubeMap(const std::vector<std::string>& _filenam
                 case 5: target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z; break;
             }
             texture->setImageData(data, target, 0);
+            texture->setWrap(GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE,GL_CLAMP_TO_EDGE);
             // glTexImage2D(target, 0, GL_RGB, data->getWidth(), data->getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         }
         else
@@ -36,6 +37,8 @@ SharedTextureCubeMap loadTextureCubeMap(const std::vector<std::string>& _filenam
             std::cout<<"could not open " << _filename[i] << std::endl;
         }
     }
+    texture->generateMipmaps(); // calculates all remaining mipmap levels
+    texture->setObjectLabel( _filename[0] );
     return texture;
 }
 

@@ -24,7 +24,7 @@ public:
 	};
 	virtual void HandleMouseMoveEvents(GLFWwindow* window, glm::vec2 mousePos) =0;
 	virtual void HandleMouseButtonEvents(GLFWwindow* window, glm::vec2 mousePos, int button, int action, int mods)=0;
-	//void Update(CGame* game, float delta);
+	virtual void Update(CGame* game, float delta) =0;
 	virtual void Draw(CGame* game, float* delta) =0;
 
 	void ChangeState(CGame* game, CGameState* state) {

@@ -8,5 +8,9 @@ uniform samplerCube uTexture;
 
 void main()
 {   
-    oColor = texture(uTexture, vTexCoord);
+    //float val = sin(vTexCoord.x);
+
+    oColor = texture(uTexture, -vTexCoord);
+    //oColor = vec4(vTexCoord.x, vTexCoord.y, vTexCoord.z, 1.0);
+
 }

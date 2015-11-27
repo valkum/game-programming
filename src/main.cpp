@@ -110,23 +110,12 @@ int run(char *argv[]) {
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(g_window))
     {
-#ifdef DEBUGGING
-        //
-        // shader file reloading once a second:
-        //
-        static double nextReloadTime = 1.0;
-        if (glfwGetTime() > nextReloadTime) {
-            ACGL::OpenGL::ShaderProgramFileManager::the()->updateAll();
-            nextReloadTime = glfwGetTime() + 1.0; // check again in one second
-        }
-#endif
-
         loops = 0;
         double now = glfwGetTime();
         while( glfwGetTime() > newTime && loops < MAX_FRAMESKIP) {
             /* Poll for and process events */
             glfwPollEvents();
-            //game.Update(frameTime);
+            game->Update(frameTime);
 
             newTime += frameTime;
             loops++;

@@ -20,7 +20,7 @@ public:
 	void HandleResizeEvents(GLFWwindow * window, int width, int height);
 	void HandleMouseButtonEvents(GLFWwindow* window, int button, int action, int mods);
 	void HandleMouseMoveEvents(GLFWwindow* window, double x, double y);
-	void Update();
+	void Update(float delta);
 	void Draw(float* delta);
 
 	bool Running() { return m_running; }
@@ -36,7 +36,7 @@ protected:
 	CGame() {}
 private:
 	bool m_running;
-	bool m_fullscreen;
+	//bool m_fullscreen;
 	glm::vec2 m_mousePos;
 	std::stack<CGameState*> states;
 

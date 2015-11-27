@@ -58,6 +58,10 @@ void CGame::ChangeState(CGameState* _game){
 void CGame::Draw(float* delta){
 	states.top()->Draw(this, delta);
 }
+
+void CGame::Update(float delta) {
+    states.top()->Update(this, delta);
+}
 void CGame::HandleMouseButtonEvents(GLFWwindow* window, int button, int action, int mods ) {
     states.top()->HandleMouseButtonEvents(window, m_mousePos, button, action, mods);
 }
