@@ -28,7 +28,7 @@ TestObject::TestObject() {}
 
 TestObject::~TestObject() {}
 
-void TestObject::Render(ACGL::OpenGL::SharedShaderProgram shader,
+void TestObject::render(ACGL::OpenGL::SharedShaderProgram shader,
                         mat4                             *viewProjectioMatrix) {
   mat4 modelMatrix = translate(getPosition()) * getRotation() *
                      scale<float>(vec3(model.getScale()));
@@ -37,5 +37,5 @@ void TestObject::Render(ACGL::OpenGL::SharedShaderProgram shader,
 
   mat4 mvp = (*viewProjectioMatrix) * modelMatrix;
   shader->setUniform("uMVP",         mvp);
-  model.Render();
+  model.render();
 }

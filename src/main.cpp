@@ -88,9 +88,9 @@ int run(char *argv[]) {
   vector<std::string> tmp;
   tmp.push_back(std::string(argv[0]));
   glfwSetWindowTitle(g_window, tmp[tmp.size() - 1].c_str());
-  CGame *game = CGame::Instance();
-  game->Init(g_window);
-  game->ChangeState(IntroState::Instance());
+  CGame *game = CGame::instance();
+  game->init(g_window);
+  game->changeState(IntroState::instance());
 
   // Ensure we can capture the escape key being pressed below
   // glfwSetInputMode( g_window, GLFW_STICKY_KEYS, 1 );
@@ -114,7 +114,7 @@ int run(char *argv[]) {
     while (glfwGetTime() > newTime && loops < MAX_FRAMESKIP) {
       /* Poll for and process events */
       glfwPollEvents();
-      game->Update(frameTime);
+      game->update(frameTime);
 
       newTime += frameTime;
       loops++;
@@ -123,7 +123,7 @@ int run(char *argv[]) {
     extrapolation = glfwGetTime() - (newTime - frameTime);
 
     // glfwGetFramebufferSize(g_window, &width, &height);
-    game->Draw(&extrapolation);
+    game->draw(&extrapolation);
 
     // @todo betterFPS meter? maybe draw in context?
     std::stringstream sstream(std::stringstream::in | std::stringstream::out);

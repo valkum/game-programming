@@ -16,7 +16,7 @@ public:
              vec3  rotation);
   TestObject();
   ~TestObject();
-  void                                 Render(
+  void                                 render(
     ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectioMatrix);
   inline ACGL::OpenGL::SharedTexture2D getTexture() {

@@ -123,7 +123,7 @@ void drawButton(NVGcontext *vg,
 }
 
 class IntroState;
-void IntroState::Init(CGame *game) {
+void IntroState::init(CGame *game) {
   vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
 
   // @todo auslagern in gui classe.
@@ -155,7 +155,7 @@ void IntroState::Init(CGame *game) {
   }
 }
 
-void IntroState::Draw(CGame *game, float *delta) {
+void IntroState::draw(CGame *game, float *delta) {
   double mx, my;
   int    winWidth, winHeight;
   int    fbWidth, fbHeight;
@@ -179,20 +179,20 @@ void IntroState::Draw(CGame *game, float *delta) {
   nvgEndFrame(vg);
 }
 
-void IntroState::HandleKeyEvents(GLFWwindow *window,
+void IntroState::handleKeyEvents(GLFWwindow *window,
                                  int         key,
                                  int         scancode,
                                  int         action,
                                  int         mods) {
-  CGameState::HandleKeyEvents(window, key, scancode, action, mods);
+  CGameState::handleKeyEvents(window, key, scancode, action, mods);
 
   if ((key == GLFW_KEY_SPACE) && (action == GLFW_PRESS)) {
-    CGame *g = CGame::Instance();
-    g->ChangeState(PlayState::Instance());
+    CGame *g = CGame::instance();
+    g->changeState(PlayState::instance());
   }
 }
 
-void IntroState::HandleMouseButtonEvents(GLFWwindow *window,
+void IntroState::handleMouseButtonEvents(GLFWwindow *window,
                                          vec2        mousePos,
                                          int         button,
                                          int         action,
@@ -207,8 +207,8 @@ void IntroState::HandleMouseButtonEvents(GLFWwindow *window,
 
   if (all(greaterThanEqual(d, vec2(0))) && all(lessThan(d, size))) {
     cout << "Button Play Clicked" << endl;
-    CGame *g = CGame::Instance();
-    g->ChangeState(PlayState::Instance());
+    CGame *g = CGame::instance();
+    g->changeState(PlayState::instance());
   }
   d = (mousePos - vec2(200, 210));
 
@@ -218,4 +218,4 @@ void IntroState::HandleMouseButtonEvents(GLFWwindow *window,
   }
 }
 
-void IntroState::HandleMouseMoveEvents(GLFWwindow *window, vec2 mousePos) {}
+void IntroState::handleMouseMoveEvents(GLFWwindow *window, vec2 mousePos) {}

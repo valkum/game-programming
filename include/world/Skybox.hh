@@ -15,7 +15,7 @@ public:
          vector<string>fileNames);
   Skybox();
   ~Skybox();
-  void                               Render(
+  void                               render(
     ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectioMatrix);
   ACGL::OpenGL::SharedTextureCubeMap getTexture();

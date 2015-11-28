@@ -12,29 +12,29 @@ using namespace ACGL::OpenGL;
 class PlayState : public CGameState {
 public:
 
-  void Init(CGame *game);
-  void Draw(CGame *game,
+  void init(CGame *game);
+  void draw(CGame *game,
             float *delta);
-  void Update(CGame *game,
+  void update(CGame *game,
               float  delta);
 
-  void HandleKeyEvents(GLFWwindow *window,
+  void handleKeyEvents(GLFWwindow *window,
                        int         key,
                        int         scancode,
                        int         action,
                        int         mods);
-  void HandleResizeEvents(GLFWwindow *window,
+  void handleResizeEvents(GLFWwindow *window,
                           glm::uvec2  windowSize);
-  void HandleMouseMoveEvents(GLFWwindow *window,
+  void handleMouseMoveEvents(GLFWwindow *window,
                              glm::vec2   mousePos);
-  void HandleMouseButtonEvents(GLFWwindow *window,
+  void handleMouseButtonEvents(GLFWwindow *window,
                                glm::vec2   mousePos,
                                int         button,
                                int         action,
                                int         mods);
 
 
-  static PlayState* Instance() {
+  static PlayState* instance() {
     return &m_PlayState;
   }
 

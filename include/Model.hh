@@ -15,7 +15,7 @@ public:
   }
 
   void setScale(float scale);
-  void Render();
+  void render();
 
 private:
 

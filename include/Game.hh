@@ -11,41 +11,41 @@ class CGameState;
 class CGame {
 public:
 
-  void Init(GLFWwindow *g_window);
-  void Cleanup();
+  void init(GLFWwindow *g_window);
+  void cleanup();
 
-  void ChangeState(CGameState *state);
+  void changeState(CGameState *state);
 
-  void HandleKeyEvents(GLFWwindow *window,
+  void handleKeyEvents(GLFWwindow *window,
                        int         key,
                        int         scancode,
                        int         action,
                        int         mods);
-  void HandleResizeEvents(GLFWwindow *window,
+  void handleResizeEvents(GLFWwindow *window,
                           int         width,
                           int         height);
-  void HandleMouseButtonEvents(GLFWwindow *window,
+  void handleMouseButtonEvents(GLFWwindow *window,
                                int         button,
                                int         action,
                                int         mods);
-  void HandleMouseMoveEvents(GLFWwindow *window,
+  void handleMouseMoveEvents(GLFWwindow *window,
                              double      x,
                              double      y);
-  void Update(float delta);
-  void Draw(float *delta);
+  void update(float delta);
+  void draw(float *delta);
 
-  bool Running() {
+  bool running() {
     return m_running;
   }
 
-  void Quit() {
+  void quit() {
     m_running = false;
   }
 
   GLFWwindow *g_window;
   glm::uvec2  g_windowSize;
 
-  static CGame* Instance() {
+  static CGame* instance() {
     return &m_CGame;
   }
 

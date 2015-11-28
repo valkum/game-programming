@@ -18,6 +18,6 @@ void Model::setScale(float scale) {
   this->scale = scale;
 }
 
-void Model::Render() {
+void Model::render() {
   object->render();
 }

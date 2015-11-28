@@ -27,7 +27,7 @@ Skybox::Skybox() {}
 
 Skybox::~Skybox() {}
 
-void Skybox::Render(ACGL::OpenGL::SharedShaderProgram shader,
+void Skybox::render(ACGL::OpenGL::SharedShaderProgram shader,
                     mat4                             *viewProjectioMatrix) {
   mat4 modelMatrix = translate(getPosition()) * getRotation() *
                      scale<float>(vec3(model.getScale()));
@@ -37,7 +37,7 @@ void Skybox::Render(ACGL::OpenGL::SharedShaderProgram shader,
 
   mat4 mvp = (*viewProjectioMatrix) * modelMatrix;
   shader->setUniform("uMVP",                  mvp);
-  model.Render();
+  model.render();
 }
 
 SharedTextureCubeMap Skybox::getTexture() {

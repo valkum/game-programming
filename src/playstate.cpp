@@ -31,7 +31,7 @@ GenericCamera camera;
 Skybox *skybox;
 TestObject *cube;
 
-void PlayState::Init(CGame *game) {
+void PlayState::init(CGame *game) {
   renderDebug = false;
 
   glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -119,7 +119,7 @@ void PlayState::Init(CGame *game) {
   openGLCriticalError();
 }
 
-void PlayState::Draw(CGame *g, float *delta) {
+void PlayState::draw(CGame *g, float *delta) {
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -131,11 +131,11 @@ void PlayState::Draw(CGame *g, float *delta) {
 
   // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
   cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  cube->Render(cubeShader, &viewProjectioMatrix);
+  cube->render(cubeShader, &viewProjectioMatrix);
 
   glDepthFunc(GL_LEQUAL);
   skyboxShader->use();
-  skybox->Render(skyboxShader, &viewProjectioMatrix);
+  skybox->render(skyboxShader, &viewProjectioMatrix);
   glDepthFunc(GL_LESS);
 
 
@@ -147,24 +147,24 @@ void PlayState::Draw(CGame *g, float *delta) {
   openGLCriticalError();
 }
 
-void PlayState::Update(CGame *g, float delta) {
+void PlayState::update(CGame *g, float delta) {
   skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
 }
 
-void PlayState::HandleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
+void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
 
-void PlayState::HandleMouseButtonEvents(GLFWwindow *window,
+void PlayState::handleMouseButtonEvents(GLFWwindow *window,
                                         glm::vec2   mousePos,
                                         int         button,
                                         int         action,
                                         int         mods) {}
 
-void PlayState::HandleKeyEvents(GLFWwindow *window,
+void PlayState::handleKeyEvents(GLFWwindow *window,
                                 int         key,
                                 int         scancode,
                                 int         action,
                                 int         mods) {
-  CGameState::HandleKeyEvents(window, key, scancode, action, mods);
+  CGameState::handleKeyEvents(window, key, scancode, action, mods);
 
   // make camera movements based on the elapsed time and not based on frames
   // rendered!
@@ -219,6 +219,6 @@ void PlayState::HandleKeyEvents(GLFWwindow *window,
   }
 }
 
-void PlayState::HandleResizeEvents(GLFWwindow *window, glm::uvec2 windowSize) {
+void PlayState::handleResizeEvents(GLFWwindow *window, glm::uvec2 windowSize) {
   camera.resize(windowSize.x, windowSize.y);
 }

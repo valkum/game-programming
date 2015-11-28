@@ -6,7 +6,7 @@
 class CGameState {
 public:
 
-  virtual void Init(CGame *game) = 0;
+  virtual void init(CGame *game) = 0;
 
   // void Cleanup();
 
@@ -14,7 +14,7 @@ public:
   // void Pause();
   // void Resume();
 
-  virtual void HandleKeyEvents(GLFWwindow *window,
+  virtual void handleKeyEvents(GLFWwindow *window,
                                int         key,
                                int         scancode,
                                int         action,
@@ -24,25 +24,25 @@ public:
     }
   }
 
-  void HandleResizeEvents(GLFWwindow *window, glm::uvec2 windowSize) {
+  void handleResizeEvents(GLFWwindow *window, glm::uvec2 windowSize) {
     // store the new window size and adjust the viewport:
     glViewport(0, 0, windowSize.x, windowSize.y);
   }
 
-  virtual void HandleMouseMoveEvents(GLFWwindow *window,
+  virtual void handleMouseMoveEvents(GLFWwindow *window,
                                      glm::vec2   mousePos) = 0;
-  virtual void HandleMouseButtonEvents(GLFWwindow *window,
-                                       glm::vec2   mousePos,
+  virtual void handleMouseButtonEvents(GLFWwindow *window,
+                                      glm::vec2   mousePos,
                                        int         button,
                                        int         action,
                                        int         mods)   = 0;
-  virtual void Update(CGame *game,
+  virtual void update(CGame *game,
                       float  delta)                        = 0;
-  virtual void Draw(CGame *game,
+  virtual void draw(CGame *game,
                     float *delta)                          = 0;
 
-  void         ChangeState(CGame *game, CGameState *state) {
-    game->ChangeState(state);
+  void         changeState(CGame *game, CGameState *state) {
+    game->changeState(state);
   }
 
 protected:

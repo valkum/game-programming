@@ -7,7 +7,7 @@ using namespace glm;
 CGame CGame::m_CGame;
 class CGame;
 
-void CGame::Init(GLFWwindow *_g_window) {
+void CGame::init(GLFWwindow *_g_window) {
   g_window     = _g_window;
   g_windowSize = glm::uvec2(640, 480);
 
@@ -21,15 +21,15 @@ void CGame::Init(GLFWwindow *_g_window) {
 
   glfwSetMouseButtonCallback(g_window,
                              [](GLFWwindow *w, int button, int action, int mods) {
-    CGame *g = CGame::Instance();
-    g->HandleMouseButtonEvents(w, button, action, mods);
+    CGame *g = CGame::instance();
+    g->handleMouseButtonEvents(w, button, action, mods);
   }
                              );
 
   glfwSetCursorPosCallback(g_window,
                            [](GLFWwindow *w, double x, double y) {
-    CGame *g = CGame::Instance();
-    g->HandleMouseMoveEvents(w, x, y);
+    CGame *g = CGame::instance();
+    g->handleMouseMoveEvents(w, x, y);
   }
                            );
 
@@ -39,56 +39,56 @@ void CGame::Init(GLFWwindow *_g_window) {
                         int scancode,
                         int action,
                         int mods) {
-    CGame *g = CGame::Instance();
-    g->HandleKeyEvents(w, key, scancode, action, mods);
+    CGame *g = CGame::instance();
+    g->handleKeyEvents(w, key, scancode, action, mods);
   }
                      );
   glfwSetFramebufferSizeCallback(g_window,
                                  [](GLFWwindow *w, int width, int height) {
-    CGame *g = CGame::Instance();
-    g->HandleResizeEvents(w, width, height);
+    CGame *g = CGame::instance();
+    g->handleResizeEvents(w, width, height);
   }
                                  );
 }
 
-void CGame::Cleanup() {
+void CGame::cleanup() {
   // @todo add cleanup to all states.
 }
 
-void CGame::ChangeState(CGameState *_game) {
+void CGame::changeState(CGameState *_game) {
   states.push(_game);
-  _game->Init(this);
+  _game->init(this);
 }
 
-void CGame::Draw(float *delta) {
-  states.top()->Draw(this, delta);
+void CGame::draw(float *delta) {
+  states.top()->draw(this, delta);
 }
 
-void CGame::Update(float delta) {
-  states.top()->Update(this, delta);
+void CGame::update(float delta) {
+  states.top()->update(this, delta);
 }
 
-void CGame::HandleMouseButtonEvents(GLFWwindow *window,
+void CGame::handleMouseButtonEvents(GLFWwindow *window,
                                     int         button,
                                     int         action,
                                     int         mods) {
-  states.top()->HandleMouseButtonEvents(window, m_mousePos, button, action, mods);
+  states.top()->handleMouseButtonEvents(window, m_mousePos, button, action, mods);
 }
 
-void CGame::HandleKeyEvents(GLFWwindow *window,
+void CGame::handleKeyEvents(GLFWwindow *window,
                             int         key,
                             int         scancode,
                             int         action,
                             int         mods) {
-  states.top()->HandleKeyEvents(window, key, scancode, action, mods);
+  states.top()->handleKeyEvents(window, key, scancode, action, mods);
 }
 
-void CGame::HandleMouseMoveEvents(GLFWwindow *window, double xpos, double ypos) {
+void CGame::handleMouseMoveEvents(GLFWwindow *window, double xpos, double ypos) {
   m_mousePos = glm::vec2(xpos, ypos);
-  states.top()->HandleMouseMoveEvents(window, m_mousePos);
+  states.top()->handleMouseMoveEvents(window, m_mousePos);
 }
 
-void CGame::HandleResizeEvents(GLFWwindow *window, int width, int height) {
+void CGame::handleResizeEvents(GLFWwindow *window, int width, int height) {
   g_windowSize = glm::uvec2(width, height);
-  states.top()->HandleResizeEvents(window, g_windowSize);
+  states.top()->handleResizeEvents(window, g_windowSize);
 }
