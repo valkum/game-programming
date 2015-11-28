@@ -14,7 +14,6 @@ uniform mat4 uModelMatrix;
 
 void main()
 {
-    
     vec4 pos = uMVP * vec4(aPosition, 1.0);
     gl_Position = pos.xyww; 
     vTexCoord = aPosition;

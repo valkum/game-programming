@@ -12,15 +12,15 @@ set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
 # Bei großen Projekten ist eine logische Unterteilung sinnvoll.
 set(SOURCE_FILES
     main.cpp
-    game.cpp
-    introstate.cpp
-    playstate.cpp
-    helper.cpp
+    Game.cpp
+    IntroState.cpp
+    PlayState.cpp
+    Helper.cpp
     TextureLoadStore.cpp
-    model.cpp
-    world/entity.cpp
-    world/testobject.cpp
-    world/skybox.cpp
+    Model.cpp
+    world/Entity.cpp
+    world/TestObject.cpp
+    world/Skybox.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
