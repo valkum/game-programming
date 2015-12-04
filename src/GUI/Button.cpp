@@ -6,7 +6,7 @@
 Button::Button(GUIObject *parent, const std::string &caption, int icon)
     : GUIObject(parent), mCaption(caption), mIcon(icon),
       mIconPosition(IconPosition::LeftCentered), mPushed(false),
-      mBackgroundColor(Color(0,0,0,0)), mTextColor(Color(0,0,0,0)) { }
+      mBackgroundColor(Color(0,0)), mTextColor(Color(0,0)) { }
 
 bool Button::mouseButtonEvent(const ivec2 &p, int button, bool down, int modifiers) {
     GUIObject::mouseButtonEvent(p, button, down, modifiers);
@@ -44,14 +44,13 @@ void Button::draw(NVGcontext *ctx) {
         gradTop = Theme.mButtonGradientTopFocused;
         gradBot = Theme.mButtonGradientBotFocused;
     }
-
     nvgBeginPath(ctx);
 
-    nvgRoundedRect(ctx, mPosition.x + 1, mPosition.y + 1.0f, mSize.x - 2,
+    nvgRoundedRect(ctx, mPosition.x + 1, mPosition.y + 1, mSize.x - 2,
                    mSize.y - 2, Theme.mButtonCornerRadius - 1);
 
     if (mBackgroundColor.a != 0) {
-        nvgFillColor(ctx, nvgRGBA(mBackgroundColor.r, mBackgroundColor.g, mBackgroundColor.b, 1.f));
+        nvgFillColor(ctx, Color(mBackgroundColor.r, mBackgroundColor.g, mBackgroundColor.b, 1.f));
         nvgFill(ctx);
         if (mPushed) {
             gradTop.a = gradBot.a = 0.8f;

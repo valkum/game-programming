@@ -31,16 +31,19 @@ void IntroState::init(CGame *game) {
     CGame *g = CGame::instance();
     g->changeState(PlayState::instance());
   });
-  playButton->setBackgroundColor(Color(0, 96, 128, 255));
+  playButton->setBackgroundColor(Color(100, 255, 100, 128));
   playButton->setPosition(ivec2(200, 170));
   playButton->setSize(ivec2(170, 28));
 
-  // Button *closeButton = new Button(gui, "Play");
-  // closeButton->setCallback([&] {
-  //   cout << "Button Exit Clicked" << endl;
-  //   CGame *g = CGame::instance();
-  //   glfwSetWindowShouldClose(g->g_window, GL_TRUE);
-  // });
+  Button *closeButton = new Button(gui, "Exit!");
+  closeButton->setCallback([&] {
+    cout << "Button Exit Clicked" << endl;
+    CGame *g = CGame::instance();
+    glfwSetWindowShouldClose(g->g_window, GL_TRUE);
+  });
+  closeButton->setBackgroundColor(Color(255, 0, 0, 128));
+  closeButton->setPosition(ivec2(200, 200));
+  closeButton->setSize(ivec2(170, 28));
 
   
 }
