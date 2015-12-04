@@ -172,7 +172,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   double speed = 5.0;        // magic value to scale the camera speed
 
-  if (action == GLFW_PRESS | action == GLFW_REPEAT) {
+  if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
     if (key == GLFW_KEY_W) { // upper case!
       camera.moveForward(timeElapsed * speed);
     }
