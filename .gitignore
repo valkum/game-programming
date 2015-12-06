@@ -13,3 +13,7 @@ bin/*
 # ctags
 .tags
 tags
+
+
+*.sublime-workspace
+*.sublime-project

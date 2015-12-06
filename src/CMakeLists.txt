@@ -108,8 +108,8 @@ TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${REQUIRED_LIBS})
 # 		PRE_BUILD
 # 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "${dir}/assets"
 # )
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
         POST_BUILD
         COMMAND ln -s ${CMAKE_SOURCE_DIR}/assets ${dir}/assets)
 
