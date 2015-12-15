@@ -98,7 +98,7 @@ int run(char *argv[]) {
   // glfwSetKeyCallback( g_window, keyCallback );
 
   const int   TICKS_PER_SECOND = 64;
-  const float frameTime        = 1 / TICKS_PER_SECOND;
+  const float frameTime        = 1.0 / TICKS_PER_SECOND;
   const int   MAX_FRAMESKIP    = 5;
 
   double newTime = glfwGetTime();

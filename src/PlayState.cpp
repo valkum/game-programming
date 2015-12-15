@@ -10,12 +10,14 @@
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
 
+
 #include <iostream>
 #include <vector>
 #include "Helper.hh"
 #include "Model.hh"
 #include "world/Skybox.hh"
 #include "world/TestObject.hh"
+#include "world/Cloud.hh"
 
 using namespace glm;
 using namespace std;
@@ -30,6 +32,7 @@ GenericCamera camera;
 
 Skybox *skybox;
 TestObject *cube;
+Cloud *cloud;
 
 void PlayState::init(CGame *game) {
   renderDebug = false;
@@ -64,6 +67,9 @@ void PlayState::init(CGame *game) {
   cube   =
     new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
                    vec3(0.0f, 0.0f, 0.0f));
+
+  cloud = new Cloud(400);
+  cloud->setPosition(vec3(0.0f, 1.0f, -1.0f));
   debug() << "Geometry loaded" << endl;
 
 
@@ -84,6 +90,8 @@ void PlayState::init(CGame *game) {
 
   skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
     vao->getAttributeLocations()).create();
+
+  cloudShader = ShaderProgramCreator("Particle").attributeLocations(cloud->getVao()->getAttributeLocations()).create();
 
   // debug_ab = SharedArrayBuffer(new ArrayBuffer());
   // debug_ab->defineAttribute("aPosition", GL_FLOAT, 3);
@@ -106,7 +114,8 @@ void PlayState::init(CGame *game) {
   cubeShader->use();
   cubeShader->setTexture("uTexture", cube->getTexture(), 2);
 
-  debug() << "Texture for cube: " << skybox->getTexture() << endl;
+  // cloudShader->use();
+  // cloudShader->setTexture("", cloud->getTexture(), 3);
   debug() << "Textures set" << endl;
 
 
@@ -123,19 +132,26 @@ void PlayState::draw(CGame *g, float *delta) {
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glm::mat4 viewProjectioMatrix = camera.getProjectionMatrix() *
+  glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
                                   camera.getViewMatrix();
 
 
-  cubeShader->use();
 
+  cloudShader->use();
+  cloud->render(cloudShader, &viewProjectionMatrix);
+
+
+  cubeShader->use();
   // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
   cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  cube->render(cubeShader, &viewProjectioMatrix);
+  cube->render(cubeShader, &viewProjectionMatrix);
+
+
+
 
   glDepthFunc(GL_LEQUAL);
   skyboxShader->use();
-  skybox->render(skyboxShader, &viewProjectioMatrix);
+  skybox->render(skyboxShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
 
@@ -147,8 +163,11 @@ void PlayState::draw(CGame *g, float *delta) {
   openGLCriticalError();
 }
 
-void PlayState::update(CGame *g, float delta) {
+void PlayState::update(CGame *g, float dt) {
+
+  // Sollte glaube ich eher nach render?
   skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
+  cloud->update(dt, 1);
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
@@ -198,18 +217,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_P) {
-      debug() << "uViewProjectionMatrix Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uViewProjectionMatrix") << endl;
-      debug() << "uViewMatrix Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uViewMatrix") << endl;
-      debug() << "uMVP Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uMVP") << endl;
-      debug() << "uProjectionMatrix Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uProjectionMatrix") << endl;
+    
     }
 
     if (key == GLFW_KEY_R) {

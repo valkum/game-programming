@@ -2,7 +2,9 @@
 #include "GameState.hh"
 #include <iostream>
 #include <glm/glm.hpp>
+#include <ACGl/Utils/log.hh>
 
+using namespace ACGL::Utils;
 using namespace glm;
 CGame CGame::m_CGame;
 class CGame;
@@ -60,12 +62,13 @@ void CGame::changeState(CGameState *_game) {
   _game->init(this);
 }
 
-void CGame::draw(float *delta) {
-  states.top()->draw(this, delta);
+void CGame::draw(float *extrapolation) {
+  states.top()->draw(this, extrapolation);
 }
 
-void CGame::update(float delta) {
-  states.top()->update(this, delta);
+void CGame::update(float dt) {
+  //debug()<<std::to_string(dt)<<std::endl;
+  states.top()->update(this, dt);
 }
 
 void CGame::handleMouseButtonEvents(GLFWwindow *window,

@@ -21,6 +21,7 @@ set(SOURCE_FILES
     world/Entity.cpp
     world/TestObject.cpp
     world/Skybox.cpp
+    world/Cloud.cpp
     GUI/common.cpp
     GUI/GUIObject.cpp
     GUI/Gui.cpp
@@ -109,8 +110,13 @@ TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${REQUIRED_LIBS})
 # 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "${dir}/assets"
 # )
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-  add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
+        PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove "${dir}/assets"
+    )
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
         POST_BUILD
-        COMMAND ln -s ${CMAKE_SOURCE_DIR}/assets ${dir}/assets)
+        COMMAND ln -s ${CMAKE_SOURCE_DIR}/assets ${dir}/assets
+    )
 
 endif()
