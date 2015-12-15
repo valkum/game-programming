@@ -15,7 +15,12 @@
 #include "Helper.hh"
 #include "Model.hh"
 #include "world/Skybox.hh"
+#include "world/Vec3.hh"
 #include "world/TestObject.hh"
+#include "world/Cloth.hh"
+
+
+#define TIME_STEPSIZE2 0.25*0.25
 
 using namespace glm;
 using namespace std;
@@ -30,6 +35,67 @@ GenericCamera camera;
 
 Skybox *skybox;
 TestObject *cube;
+Cloth *cloth;
+float ball_time = 0;
+float ball_radius = 2;
+Vec3 ball_pos(7,-5,0);
+
+
+void display(void){
+	// calculating positions
+
+	ball_time++;
+	ball_pos.f[2] = cos(ball_time/50.0)*7;
+
+	cloth->addForce(Vec3(0,-0.2,0)*TIME_STEPSIZE2); // add gravity each frame, pointing down
+	cloth->windForce(Vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
+	cloth->timeStep(); // calculate the particle positions of the next frame
+	cloth->ballCollision(ball_pos,ball_radius); // resolve collision with the ball
+
+
+
+	// drawing
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+
+	glDisable(GL_LIGHTING); // drawing some smooth shaded background - because I like it ;)
+	glBegin(GL_POLYGON);
+	glColor3f(0.8f,0.8f,1.0f);
+	glVertex3f(-200.0f,-100.0f,-100.0f);
+	glVertex3f(200.0f,-100.0f,-100.0f);
+	glColor3f(0.4f,0.4f,0.8f);	
+	glVertex3f(200.0f,100.0f,-100.0f);
+	glVertex3f(-200.0f,100.0f,-100.0f);
+	glEnd();
+	glEnable(GL_LIGHTING);
+
+	glTranslatef(-6.5,6,-9.0f); // move camera out and center on the cloth
+	glRotatef(25,0,1,0); // rotate a bit to see the cloth from the side
+	cloth->drawShaded(); // finally draw the cloth with smooth shading
+
+	glPus->Matrix(); // to draw the ball we use glutSolidSphere, and need to draw the sphere at the position of the ball
+	glTra->slatef(ball_pos.f[0],ball_pos.f[1],ball_pos.f[2]); // hence the translation of the sphere onto the ball position
+	glColor3f(0.4f,0.8f,0.5f);
+	glutSolidSphere(ball_radius-0.1,50,50); // draw the ball, but with a slightly lower radius, otherwise we could get ugly visual artifacts of cloth penetrating the ball slightly
+	glPopMatrix();
+
+	glutSwapBuffers();
+	glutPostRedisplay();
+}
+
+void reshape(int w, int h){
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION); 
+	glLoadIdentity();  
+	if (h==0)  
+		gluPerspective(80,(float)w,1.0,5000.0);
+	else
+		gluPerspective (80,( float )w /( float )h,1.0,5000.0 );
+	glMatrixMode(GL_MODELVIEW);  
+	glLoadIdentity(); 
+}
+
 
 void PlayState::init(CGame *game) {
   renderDebug = false;
@@ -66,6 +132,9 @@ void PlayState::init(CGame *game) {
                    vec3(0.0f, 0.0f, 0.0f));
   debug() << "Geometry loaded" << endl;
 
+  cloth = new Cloth(13,10,55,45);
+  Vec3 ball_pos(7,-5,0); // the center of our one ball
+  float ball_radius = 2; // the radius of our one ball
 
   debug() << "Loading shaders stage" << endl;
 
