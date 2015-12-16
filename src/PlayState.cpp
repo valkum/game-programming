@@ -57,33 +57,21 @@ void display(void){
 	// drawing
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+	//glLoadIdentity();
 
-	glDisable(GL_LIGHTING); // drawing some smooth shaded background - because I like it ;)
-	glBegin(GL_POLYGON);
-	glColor3f(0.8f,0.8f,1.0f);
-	glVertex3f(-200.0f,-100.0f,-100.0f);
-	glVertex3f(200.0f,-100.0f,-100.0f);
-	glColor3f(0.4f,0.4f,0.8f);	
-	glVertex3f(200.0f,100.0f,-100.0f);
-	glVertex3f(-200.0f,100.0f,-100.0f);
-	glEnd();
-	glEnable(GL_LIGHTING);
-
-	glTranslatef(-6.5,6,-9.0f); // move camera out and center on the cloth
-	glRotatef(25,0,1,0); // rotate a bit to see the cloth from the side
 	cloth->drawShaded(); // finally draw the cloth with smooth shading
 
-	glPus->Matrix(); // to draw the ball we use glutSolidSphere, and need to draw the sphere at the position of the ball
-	glTra->slatef(ball_pos.f[0],ball_pos.f[1],ball_pos.f[2]); // hence the translation of the sphere onto the ball position
-	glColor3f(0.4f,0.8f,0.5f);
-	glutSolidSphere(ball_radius-0.1,50,50); // draw the ball, but with a slightly lower radius, otherwise we could get ugly visual artifacts of cloth penetrating the ball slightly
-	glPopMatrix();
+	//glPus->Matrix(); // to draw the ball we use glutSolidSphere, and need to draw the sphere at the position of the ball
+	//glTra->slatef(ball_pos.f[0],ball_pos.f[1],ball_pos.f[2]); // hence the translation of the sphere onto the ball position
+	//glColor3f(0.4f,0.8f,0.5f);
+	//glutSolidSphere(ball_radius-0.1,50,50); // draw the ball, but with a slightly lower radius, otherwise we could get ugly visual artifacts of cloth penetrating the ball slightly
+	//glPopMatrix();
 
-	glutSwapBuffers();
-	glutPostRedisplay();
+	//glutSwapBuffers();
+	//glutPostRedisplay();
 }
 
+/*
 void reshape(int w, int h){
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION); 
@@ -95,6 +83,7 @@ void reshape(int w, int h){
 	glMatrixMode(GL_MODELVIEW);  
 	glLoadIdentity(); 
 }
+*/
 
 
 void PlayState::init(CGame *game) {
@@ -134,7 +123,6 @@ void PlayState::init(CGame *game) {
 
   cloth = new Cloth(13,10,55,45);
   Vec3 ball_pos(7,-5,0); // the center of our one ball
-  float ball_radius = 2; // the radius of our one ball
 
   debug() << "Loading shaders stage" << endl;
 

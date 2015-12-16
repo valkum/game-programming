@@ -1,5 +1,5 @@
-#ifndef CLOTH_H
-#define CLOTH_H
+#ifndef CONSTRAINT_H
+#define CONSTRAINT_H
 
 #include <glm/glm.hpp>
 #include "Particle.hh"

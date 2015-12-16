@@ -35,11 +35,11 @@ class Cloth{
 
 		void timeStep();
 
-		void addForce(const vec3 direction);
+		void addForce(const Vec3 direction);
 
-		void windForce(const vec3 direction);
+		void windForce(const Vec3 direction);
 
-		void ballCollision(const vec3 center,const float radius );
+		void ballCollision(const Vec3 center,const float radius );
 
 		void doFrame();
 };
