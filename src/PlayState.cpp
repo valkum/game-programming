@@ -70,7 +70,7 @@ void PlayState::init(CGame *game) {
 
   cloud = new Cloud(500);
   cloud->setPosition(vec3(0.0f, 1.0f, -1.0f));
-  
+
   debug() << "Geometry loaded" << endl;
 
 
@@ -92,7 +92,7 @@ void PlayState::init(CGame *game) {
   skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
     vao->getAttributeLocations()).create();
 
-  cloudShader = ShaderProgramCreator("Particle").attributeLocations(cloud->getVao()->getAttributeLocations()).create();
+  cloudShader = ShaderProgramCreator("particle").attributeLocations(cloud->getVao()->getAttributeLocations()).create();
 
   // debug_ab = SharedArrayBuffer(new ArrayBuffer());
   // debug_ab->defineAttribute("aPosition", GL_FLOAT, 3);
