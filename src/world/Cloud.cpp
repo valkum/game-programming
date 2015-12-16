@@ -46,9 +46,9 @@ void Cloud::init() {
 
 void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectioMatrix) {
   // Use additive blending to give it a 'glow' effect
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   shader->use();
-  mat4 mvp = (*viewProjectioMatrix) * glm::scale(vec3(1));
+  mat4 mvp = (*viewProjectioMatrix) * glm::scale(vec3(.2f));
   shader->setUniform("uMVP", mvp);
 
   for (Particle particle : particles)
@@ -62,7 +62,7 @@ void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProj
       }
   }
   // Don't forget to reset to default blending mode
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Cloud::update(float dt, uint_t newParticles) {
@@ -76,10 +76,10 @@ void Cloud::update(float dt, uint_t newParticles) {
   for (uint_t i = 0; i < this->amount; ++i)
   {
       Particle &p = this->particles[i];
-      p.Life -= dt/10; // reduce life
+      p.Life -= dt; // reduce life
       if (p.Life > 0.0f)
       { // particle is alive, thus update
-          p.Position -= p.Velocity * dt; 
+          p.Position += p.Velocity * dt; 
           p.Color.a -= dt * 1.5;
       }
   }
@@ -101,17 +101,16 @@ uint_t Cloud::firstUnusedParticle() {
         }
     }
     // All particles are taken, override the first one (note that if it repeatedly hits this case, more particles should be reserved)
-    debug()<<"All used"<<std::endl;
+    //debug()<<"All used"<<std::endl;
     lastUsedParticle = 0;
     return 0;
 }
 
 void Cloud::respawnParticle(Particle &particle, glm::vec3 offset) {
     glm::vec3 random = sphericalRand(1.0f);
-
-    float rColor = 0.5 + ((rand() % 100) / 100.0f);
+    float rColor = 0.4 + ((rand() % 100) / 100.0f);
     particle.Position = position + random + offset;
     particle.Color = glm::vec4(rColor, rColor, rColor, 1.0f);
-    particle.Life = 10.0f;
+    particle.Life = 1.0f;
     particle.Velocity = vec3(0,1,0) * 10.0f;
 }

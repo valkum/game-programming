@@ -68,8 +68,9 @@ void PlayState::init(CGame *game) {
     new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
                    vec3(0.0f, 0.0f, 0.0f));
 
-  cloud = new Cloud(400);
+  cloud = new Cloud(500);
   cloud->setPosition(vec3(0.0f, 1.0f, -1.0f));
+  
   debug() << "Geometry loaded" << endl;
 
 
@@ -135,6 +136,10 @@ void PlayState::draw(CGame *g, float *delta) {
   glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
                                   camera.getViewMatrix();
 
+  glDepthFunc(GL_LEQUAL);
+  skyboxShader->use();
+  skybox->render(skyboxShader, &viewProjectionMatrix);
+  glDepthFunc(GL_LESS);
 
 
   cloudShader->use();
@@ -149,10 +154,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
 
 
-  glDepthFunc(GL_LEQUAL);
-  skyboxShader->use();
-  skybox->render(skyboxShader, &viewProjectionMatrix);
-  glDepthFunc(GL_LESS);
+  
 
 
   // if(renderDebug) {
@@ -167,7 +169,7 @@ void PlayState::update(CGame *g, float dt) {
 
   // Sollte glaube ich eher nach render?
   skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
-  cloud->update(dt, 1);
+  cloud->update(dt, 5);
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
