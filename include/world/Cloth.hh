@@ -6,6 +6,7 @@
 #include "Constraint.hh"
 #include "Vec3.hh"
 #include <glm/glm.hpp>
+#include <GL/gl.h>
 
 using namespace glm;
 
@@ -28,6 +29,7 @@ class Cloth {
 private:
 	int num_particles_width;
 	int num_particles_height;
+    GLuint vertexbuffer;
 
 	std::vector<Particle> particles; 
 	std::vector<Constraint> constraints; 

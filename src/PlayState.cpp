@@ -41,35 +41,6 @@ float ball_radius = 2;
 Vec3 ball_pos(7,-5,0);
 
 
-void display(void){
-	// calculating positions
-
-	ball_time++;
-	ball_pos.f[2] = cos(ball_time/50.0)*7;
-
-	cloth->addForce(Vec3(0.0f,-0.2f,0.0f)*TIME_STEPSIZE2); // add gravity each frame, pointing down
-	cloth->windForce(Vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
-	cloth->timeStep(); // calculate the particle positions of the next frame
-	cloth->ballCollision(ball_pos,ball_radius); // resolve collision with the ball
-
-
-
-	// drawing
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glLoadIdentity();
-
-	cloth->drawShaded(); // finally draw the cloth with smooth shading
-
-	//glPus->Matrix(); // to draw the ball we use glutSolidSphere, and need to draw the sphere at the position of the ball
-	//glTra->slatef(ball_pos.f[0],ball_pos.f[1],ball_pos.f[2]); // hence the translation of the sphere onto the ball position
-	//glColor3f(0.4f,0.8f,0.5f);
-	//glutSolidSphere(ball_radius-0.1,50,50); // draw the ball, but with a slightly lower radius, otherwise we could get ugly visual artifacts of cloth penetrating the ball slightly
-	//glPopMatrix();
-
-	//glutSwapBuffers();
-	//glutPostRedisplay();
-}
 
 /*
 void reshape(int w, int h){
@@ -195,6 +166,21 @@ void PlayState::draw(CGame *g, float *delta) {
   skybox->render(skyboxShader, &viewProjectioMatrix);
   glDepthFunc(GL_LESS);
 
+  // calculating positions
+  ball_time++;
+  ball_pos.f[2] = cos(ball_time/50.0)*7;
+
+  cloth->addForce(Vec3(0.0f,-0.2f,0.0f)*TIME_STEPSIZE2); // add gravity each frame, pointing down
+  cloth->windForce(Vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
+  cloth->timeStep(); // calculate the particle positions of the next frame
+  cloth->ballCollision(ball_pos,ball_radius); // resolve collision with the ball
+
+  // drawing
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  //glLoadIdentity();
+
+  cloth->drawShaded(); // finally draw the cloth with smooth shading
 
   // if(renderDebug) {
   //     debugShader->use();

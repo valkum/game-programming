@@ -1,4 +1,5 @@
 #include "world/Cloth.hh"
+#include <ACGL/OpenGL/GL.hh>
 
 
 #define CONSTRAINT_ITERATIONS 15
@@ -21,6 +22,7 @@ Vec3 Cloth::calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3){
 
     Vec3 v1 = pos2-pos1;
     Vec3 v2 = pos3-pos1;
+
 
     return v1.cross(v2);
 }
@@ -69,6 +71,9 @@ void Cloth::drawTriangle(Particle *p1, Particle *p2, Particle *p3){
 Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : num_particles_width(num_particles_width), num_particles_height(num_particles_height){
     particles.resize(num_particles_width*num_particles_height); //I am essentially using this vector as an array with room for num_particles_width*num_particles_height particles
 
+	// Generate 1 buffer, put the resulting identifier in vertexbuffer
+
+	glGenBuffers(1, &vertexbuffer);
     // creating particles in a grid of particles from (0,0,0) to (width,-height,0)
     for(int x=0; x<num_particles_width; x++){
         for(int y=0; y<num_particles_height; y++){
@@ -141,14 +146,49 @@ void Cloth::drawShaded(){
             getParticle(x,y+1)->addToNormal(normal);
         }
     }
-
+    GLfloat g_vertex_buffer_data[18*num_particles_width*num_particles_height];
+    GLint i = 0;
     for(int x = 0; x<num_particles_width-1; x++){
         for(int y=0; y<num_particles_height-1; y++){
             //TODO write in OpenGL buffers
-            drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
-            drawTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1));
+            //drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
+            //drawTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1));
+            Particle* p;
+            p = getParticle(x+1,y);
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
+
+            p = getParticle(x,y);
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
+
+            p = getParticle(x,y+1);
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
+
+            p = getParticle(x+1,y+1);
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
+
+            p = getParticle(x+1,y);
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
+
+            p = getParticle(x,y+1);
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
+            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
         }
     }
+	// The following commands will talk about our 'vertexbuffer' buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	// Give our vertices to OpenGL.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 }
 
 
