@@ -5,6 +5,7 @@ include_directories(
 set(C_FLAGS_COMMON "-Wall -Werror")
 set(CMAKE_CXX_FLAGS "-std=c++11 -g ${C_FLAGS_COMMON}")
 set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
+set( CMAKE_VERBOSE_MAKEFILE 1 )
 
 set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
 set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")

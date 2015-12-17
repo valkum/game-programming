@@ -47,7 +47,7 @@ void display(void){
 	ball_time++;
 	ball_pos.f[2] = cos(ball_time/50.0)*7;
 
-	cloth->addForce(Vec3(0,-0.2,0)*TIME_STEPSIZE2); // add gravity each frame, pointing down
+	cloth->addForce(Vec3(0.0f,-0.2f,0.0f)*TIME_STEPSIZE2); // add gravity each frame, pointing down
 	cloth->windForce(Vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
 	cloth->timeStep(); // calculate the particle positions of the next frame
 	cloth->ballCollision(ball_pos,ball_radius); // resolve collision with the ball

@@ -10,8 +10,8 @@ class Constraint {
 		float rest_distance; //length between two particles in rest configuration
 
 	public:
-		Particle *p1, *p2;
-		Constraint (Particle *p1, Particle *p2): p1(p1), p2(p2){
+            Particle *p1, *p2;
+            Constraint (Particle *p1, Particle *p2): p1(p1), p2(p2){
 			Vec3 vec = p1->getPos()-p2->getPos();
 			rest_distance = vec.length();
 		}

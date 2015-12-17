@@ -1,16 +1,18 @@
 #include "world/Vec3.hh"
+#define TIME_STEPSIZE2 0.25*0.25
+#define DAMPING 0.01
 
 class Particle {
 	private:
-		bool movable;//pin parts of the cloth
-		float mass; //default mass = 1
 		Vec3 pos;
 		Vec3 old_pos;
 		Vec3 acceleration;
+		float mass; //default mass = 1
+		bool movable;//pin parts of the cloth
 		Vec3 accumulated_normal;//used for OpenGL soft shading
 
 	public:
-		Particle(Vec3 pos) : pos(pos), old_pos(pos), acceleration(Vec3(0,0,0)), mass(1), movable(true), accumulated_normal(Vec3(0,0,0)){}
+		Particle(Vec3 pos) : pos(pos), old_pos(pos), acceleration(Vec3(0,0,0)), mass(1), movable(true), accumulated_normal(Vec3(0,0,0)){};
 
 		Particle(){}
 
@@ -23,6 +25,7 @@ class Particle {
 			if (movable) {
 				Vec3 temp = pos;
 				//verlet integration
+                //TODO timestep
 				pos = pos+(pos-old_pos)*(1.0-DAMPING)+acceleration*TIME_STEPSIZE2;
 				old_pos = temp;
 				acceleration = Vec3(0,0,0);//Since the acceleration has been translated to a force, it has been reset.

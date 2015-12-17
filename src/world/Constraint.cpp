@@ -1,3 +1,4 @@
+#include "world/Particle.hh"
 class Constraint {
 	private: 
 		float rest_distance; //length between two particles in rest configuration
