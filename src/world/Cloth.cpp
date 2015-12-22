@@ -5,7 +5,9 @@
 #define CONSTRAINT_ITERATIONS 15
 
 using namespace std;
+using namespace glm;
 class Cloth;
+
 
 Particle* Cloth::getParticle(int x, int y) {return &particles[y*num_particles_width + x];}
 void Cloth::makeConstraint(Particle *p1, Particle *p2) {constraints.push_back(Constraint(p1,p2));}
@@ -15,28 +17,29 @@ void Cloth::makeConstraint(Particle *p1, Particle *p2) {constraints.push_back(Co
    normal vector of the triangle defined by the position of the particles p1, p2, and p3.
    The magnitude of the normal vector is equal to the area of the parallelogram defined by p1, p2 and p3
    */
-Vec3 Cloth::calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3){
-    Vec3 pos1 = p1->getPos();
-    Vec3 pos2 = p2->getPos();
-    Vec3 pos3 = p3->getPos();
+vec3 Cloth::calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3)
+    {
+        vec3 pos1 = p1->getPos();
+        vec3 pos2 = p2->getPos();
+        vec3 pos3 = p3->getPos();
 
-    Vec3 v1 = pos2-pos1;
-    Vec3 v2 = pos3-pos1;
+        vec3 v1 = pos2-pos1;
+        vec3 v2 = pos3-pos1;
 
-
-    return v1.cross(v2);
-}
+        return cross(v1,v2);
+    }
 
 /* A private method used by windForce() to calcualte the wind force for a single triangle 
    defined by p1,p2,p3*/
-void Cloth::addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const Vec3 direction) {
-    Vec3 normal = calcTriangleNormal(p1,p2,p3);
-    Vec3 d = normal.normalized();
-    Vec3 force = normal*(d.dot(direction));
-    p1->addForce(force);
-    p2->addForce(force);
-    p3->addForce(force);
-}
+void Cloth::addWindForcesForTriangle(Particle *p1,Particle *p2,Particle *p3, const vec3 direction)
+    {
+        vec3 normal = calcTriangleNormal(p1,p2,p3);
+        vec3 d = normalize(normal);
+        vec3 force = normal*(dot(d,direction));
+        p1->addForce(force);
+        p2->addForce(force);
+        p3->addForce(force);
+    }
 
 /* A private method used by drawShaded(), that draws a single triangle p1,p2,p3 with a color*/
 //array<GLfloat, 9> drawTriangle(Particle *p1, Particle *p2, Particle *p3){
@@ -71,13 +74,10 @@ void Cloth::drawTriangle(Particle *p1, Particle *p2, Particle *p3){
 Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : num_particles_width(num_particles_width), num_particles_height(num_particles_height){
     particles.resize(num_particles_width*num_particles_height); //I am essentially using this vector as an array with room for num_particles_width*num_particles_height particles
 
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
-
-	glGenBuffers(1, &vertexbuffer);
     // creating particles in a grid of particles from (0,0,0) to (width,-height,0)
     for(int x=0; x<num_particles_width; x++){
         for(int y=0; y<num_particles_height; y++){
-            Vec3 pos = Vec3(width * (x/(float)num_particles_width),
+            vec3 pos = vec3(width * (x/(float)num_particles_width),
                     -height * (y/(float)num_particles_height),
                     0);
             particles[y*num_particles_width+x]= Particle(pos); // insert particle in column x at y'th row
@@ -107,10 +107,10 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
 
     // making the upper left most three and right most three particles unmovable
     for(int i=0;i<3; i++){
-        getParticle(0+i ,0)->offsetPos(Vec3(0.5,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
+        getParticle(0+i ,0)->offsetPos(vec3(0.5,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
         getParticle(0+i ,0)->makeUnmovable(); 
 
-        getParticle(0+i ,0)->offsetPos(Vec3(-0.5,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
+        getParticle(0+i ,0)->offsetPos(vec3(-0.5,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
         getParticle(num_particles_width-1-i ,0)->makeUnmovable();
     }
 }
@@ -135,7 +135,7 @@ void Cloth::drawShaded(){
     //create smooth per particle normals by adding up all the (hard) triangle normals that each particle is part of
     for(int x = 0; x<num_particles_width-1; x++){
         for(int y=0; y<num_particles_height-1; y++){
-            Vec3 normal = calcTriangleNormal(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
+            vec3 normal = calcTriangleNormal(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
             getParticle(x+1,y)->addToNormal(normal);
             getParticle(x,y)->addToNormal(normal);
             getParticle(x,y+1)->addToNormal(normal);
@@ -146,51 +146,64 @@ void Cloth::drawShaded(){
             getParticle(x,y+1)->addToNormal(normal);
         }
     }
-    GLfloat g_vertex_buffer_data[18*num_particles_width*num_particles_height];
-    GLint i = 0;
+    if (vertexArrayObject == 0){
+            glGenVertexArrays(1, &vertexArrayObject);
+            glBindVertexArray(vertexArrayObject);
+
+            glGenBuffers(1, &vertexBuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+            
+            std::vector<int> indices;
+            
+
+            for (int j = 0; j < num_particles_height-1; j++) {
+                int index;
+                if (j > 0) {
+                    indices.push_back(j * num_particles_width); // make degenerate
+                }
+                for (int i = 0; i <= num_particles_width-1; i++) {
+                    index = j * num_particles_width + i;
+                    indices.push_back(index);
+                    indices.push_back(index + num_particles_width);
+                }
+                if (j + 1 < num_particles_height-1) {
+                    indices.push_back(index + num_particles_width); // make degenerate
+                }
+            }
+            elementSize = indices.size();
+
+            GLuint elementArrayBuffer;
+            glGenBuffers(1, &elementArrayBuffer);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, elementSize * sizeof(int), &(indices[0]), GL_STATIC_DRAW);
+        }
+    std::vector<Vertex> vertexData;
     for(int x = 0; x<num_particles_width-1; x++){
         for(int y=0; y<num_particles_height-1; y++){
             //TODO write in OpenGL buffers
             //drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
             //drawTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1));
-            Particle* p;
-            p = getParticle(x+1,y);
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
 
-            p = getParticle(x,y);
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
+            vec2 uv(x/(num_particles_width - 1.0f),y/(num_particles_height-1.0f));
 
-            p = getParticle(x,y+1);
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
-
-            p = getParticle(x+1,y+1);
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
-
-            p = getParticle(x+1,y);
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
-
-            p = getParticle(x,y+1);
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[0];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[1];
-            g_vertex_buffer_data[i++] = (GLfloat) p->getPos().f[2];
+            insertTriangle(getParticle(x, y), uv, vertexData);
         }
     }
 	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex), value_ptr(vertexData[0].position), GL_STREAM_DRAW);
+
+    glBindVertexArray(vertexArrayObject);
+    // Draw the triangle !
+    glDrawElements(GL_TRIANGLE_STRIP, num_particles_width*num_particles_height, GL_FLOAT, 0); // Starting from vertex 0; 3 vertices total -> 1 triangle
 }
 
+/* A private method used by drawShaded(), that draws a single triangle p1,p2,p3 with a color*/
+void Cloth::insertTriangle(Particle *p1, const vec2 uv, std::vector<Vertex> &vertexData) {
+    Vertex v1 = {p1->getPos(), uv, p1->getNormal()};
+    vertexData.push_back(v1);
+}
 
 /* this is an important methods where the time is progressed one time step for the entire cloth.
    This includes calling satisfyConstraint() for every constraint, and calling timeStep() for all particles
@@ -209,38 +222,42 @@ void Cloth::timeStep(){
     }
 }
 /* used to add gravity (or any other arbitrary vector) to all particles*/
-void Cloth::addForce(const Vec3 direction){
+void Cloth::addForce(const vec3 direction){
     std::vector<Particle>::iterator particle;
-    for(particle = particles.begin(); particle != particles.end(); particle++){
-        (*particle).addForce(direction); // add the forces to each particle
-    }
+        for(particle = particles.begin(); particle != particles.end(); particle++)
+        {
+            (*particle).addForce(direction); // add the forces to each particle
+        }
 
 }
 
 /* used to add wind forces to all particles, is added for each triangle since the final force is proportional to the triangle area as seen from the wind direction*/
-void Cloth::windForce(const Vec3 direction){
-    for(int x = 0; x<num_particles_width-1; x++){
-        for(int y=0; y<num_particles_height-1; y++){
-            addWindForcesForTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1),direction);
-            addWindForcesForTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1),direction);
+void Cloth::windForce(const vec3 direction){
+    for(int x = 0; x<num_particles_width-1; x++)
+        {
+            for(int y=0; y<num_particles_height-1; y++)
+            {
+                addWindForcesForTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1),direction);
+                addWindForcesForTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1),direction);
+            }
         }
-    }
 }
 
 /* used to detect and resolve the collision of the cloth with the ball.
    This is based on a very simples scheme where the position of each particle is simply compared to the sphere and corrected.
    This also means that the sphere can "slip through" if the ball is small enough compared to the distance in the grid bewteen particles
    */
-void Cloth::ballCollision(const Vec3 center,const float radius ){
+void Cloth::ballCollision(const vec3 center,const float radius ){
     std::vector<Particle>::iterator particle;
-    for(particle = particles.begin(); particle != particles.end(); particle++){
-        Vec3 v = (*particle).getPos()-center;
-        float l = v.length();
-        if ( v.length() < radius) // if the particle is inside the ball
+        for(particle = particles.begin(); particle != particles.end(); particle++)
         {
-            (*particle).offsetPos(v.normalized()*(radius-l)); // project the particle to the surface of the ball
+            vec3 v = (*particle).getPos()-center;
+            float l = length(v);
+            if ( length(v) < radius) // if the particle is inside the ball
+            {
+                (*particle).offsetPos(normalize(v)*(radius-l)); // project the particle to the surface of the ball
+            }
         }
-    }
 }
 
 void Cloth::doFrame(){

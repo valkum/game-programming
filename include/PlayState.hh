@@ -2,8 +2,11 @@
 #define PLAYSTATE_H
 #include "GameState.hh"
 
-#include <ACGL/OpenGL/GL.hh>
-#include <GLFW/glfw3.h>
+#ifndef GLINCLUDED
+#define GLINCLUDED
+# include <ACGL/OpenGL/GL.hh>
+# include <GLFW/glfw3.h>
+#endif
 
 #include <ACGL/OpenGL/Creator/VertexArrayObjectCreator.hh>
 

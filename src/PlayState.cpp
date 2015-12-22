@@ -20,7 +20,7 @@
 #include "world/Cloth.hh"
 
 
-#define TIME_STEPSIZE2 0.25*0.25
+#define TIME_STEPSIZE2 0.25f*0.25f
 
 using namespace glm;
 using namespace std;
@@ -38,7 +38,7 @@ TestObject *cube;
 Cloth *cloth;
 float ball_time = 0;
 float ball_radius = 2;
-Vec3 ball_pos(7,-5,0);
+vec3 ball_pos(7,-5,0);
 
 
 
@@ -93,7 +93,7 @@ void PlayState::init(CGame *game) {
   debug() << "Geometry loaded" << endl;
 
   cloth = new Cloth(13,10,55,45);
-  Vec3 ball_pos(7,-5,0); // the center of our one ball
+  vec3 ball_pos(7,-5,0); // the center of our one ball
 
   debug() << "Loading shaders stage" << endl;
 
@@ -154,31 +154,35 @@ void PlayState::draw(CGame *g, float *delta) {
   glm::mat4 viewProjectioMatrix = camera.getProjectionMatrix() *
                                   camera.getViewMatrix();
 
-
-  cubeShader->use();
-
-  // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
-  cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  cube->render(cubeShader, &viewProjectioMatrix);
-
   glDepthFunc(GL_LEQUAL);
   skyboxShader->use();
   skybox->render(skyboxShader, &viewProjectioMatrix);
   glDepthFunc(GL_LESS);
 
+
+  // cubeShader->use();
+
+  // // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
+  // cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
+  // cube->render(cubeShader, &viewProjectioMatrix);
+
+  
+
   // calculating positions
   ball_time++;
-  ball_pos.f[2] = cos(ball_time/50.0)*7;
+  ball_pos.z = cos(ball_time/50.0)*7;
 
-  cloth->addForce(Vec3(0.0f,-0.2f,0.0f)*TIME_STEPSIZE2); // add gravity each frame, pointing down
-  cloth->windForce(Vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
+  cubeShader->use();
+  cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
+  
+  cloth->addForce(vec3(0.0f,-0.2f,0.0f)*TIME_STEPSIZE2); // add gravity each frame, pointing down
+  cloth->windForce(vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
   cloth->timeStep(); // calculate the particle positions of the next frame
   cloth->ballCollision(ball_pos,ball_radius); // resolve collision with the ball
 
   // drawing
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  //glLoadIdentity();
+  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   cloth->drawShaded(); // finally draw the cloth with smooth shading
 

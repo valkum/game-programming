@@ -4,11 +4,22 @@
 #include <vector>
 #include "Particle.hh"
 #include "Constraint.hh"
-#include "Vec3.hh"
 #include <glm/glm.hpp>
-#include <GL/gl.h>
+#include <glm/gtc/type_ptr.hpp>
+
+#ifndef GLINCLUDED
+#define GLINCLUDED
+# include <ACGL/OpenGL/GL.hh>
+# include <GLFW/glfw3.h>
+#endif
 
 using namespace glm;
+
+struct Vertex {
+            vec3 position;
+            vec2 uv;
+            vec3 normal;
+        };
 
 class Cloth {
 	public:
@@ -18,18 +29,20 @@ class Cloth {
 
 	void timeStep();
 
-	void addForce(const Vec3 direction);
+	void addForce(const vec3 direction);
 
-	void windForce(const Vec3 direction);
+	void windForce(const vec3 direction);
 
-	void ballCollision(const Vec3 center,const float radius );
+	void ballCollision(const vec3 center,const float radius );
 
 	void doFrame();
 
 private:
 	int num_particles_width;
 	int num_particles_height;
-    GLuint vertexbuffer;
+    GLuint vertexBuffer;
+    GLuint vertexArrayObject;
+    int elementSize;
 
 	std::vector<Particle> particles; 
 	std::vector<Constraint> constraints; 
@@ -37,10 +50,11 @@ private:
 	Particle* getParticle(int x, int y);
 	void makeConstraint(Particle *p1, Particle *p2);
 
+	void insertTriangle(Particle *p1, const vec2 uv, std::vector<Vertex> &vertexData);
 
-	Vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
+	vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
 
-	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const Vec3 direction);
+	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 direction);
 
 	void drawTriangle(Particle *p1, Particle *p2, Particle *p3);
 };
