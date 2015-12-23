@@ -90,10 +90,8 @@ void PlayState::init(CGame *game) {
   cube   =
     new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
                    vec3(0.0f, 0.0f, 0.0f));
-  debug() << "Geometry loaded" << endl;
-
   cloth = new Cloth(13,10,55,45);
-  vec3 ball_pos(7,-5,0); // the center of our one ball
+  debug() << "Geometry loaded" << endl;
 
   debug() << "Loading shaders stage" << endl;
 
@@ -108,6 +106,8 @@ void PlayState::init(CGame *game) {
   vao->attachAllAttributes(ab);
 
   cubeShader = ShaderProgramCreator("cube").attributeLocations(
+    vao->getAttributeLocations()).create();
+  clothShader = ShaderProgramCreator("cloth").attributeLocations(
     vao->getAttributeLocations()).create();
 
   skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
@@ -163,17 +163,10 @@ void PlayState::draw(CGame *g, float *delta) {
   // cubeShader->use();
 
   // // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
-  // cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  // cube->render(cubeShader, &viewProjectioMatrix);
-
-  
-
-  // calculating positions
-  ball_time++;
-  ball_pos.z = cos(ball_time/50.0)*7;
-
-  cubeShader->use();
   cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
+  cube->render(cubeShader, &viewProjectioMatrix);
+
+
   
   cloth->addForce(vec3(0.0f,-0.2f,0.0f)*TIME_STEPSIZE2); // add gravity each frame, pointing down
   cloth->windForce(vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
@@ -183,8 +176,8 @@ void PlayState::draw(CGame *g, float *delta) {
   // drawing
 
   //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  cloth->drawShaded(); // finally draw the cloth with smooth shading
+  clothShader->use();
+  cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
 
   // if(renderDebug) {
   //     debugShader->use();

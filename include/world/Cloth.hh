@@ -4,8 +4,10 @@
 #include <vector>
 #include "Particle.hh"
 #include "Constraint.hh"
+#include "world/entity.hh"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <ACGL/OpenGL/Objects.hh>
 
 #ifndef GLINCLUDED
 #define GLINCLUDED
@@ -17,15 +19,16 @@ using namespace glm;
 
 struct Vertex {
             vec3 position;
-            vec2 uv;
+            vec3 uv;
             vec3 normal;
         };
 
-class Cloth {
+class Cloth : public Entity {
 	public:
 	Cloth(float width, float height, int num_particles_width, int num_particles_height);
 
-	void drawShaded();
+	void render(ACGL::OpenGL::SharedShaderProgram shader,
+    mat4                             *viewProjectionMatrix);
 
 	void timeStep();
 
@@ -40,9 +43,9 @@ class Cloth {
 private:
 	int num_particles_width;
 	int num_particles_height;
-    GLuint vertexBuffer;
-    GLuint vertexArrayObject;
-    int elementSize;
+  
+  ACGL::OpenGL::SharedVertexArrayObject vao;
+  ACGL::OpenGL::SharedArrayBuffer ab;
 
 	std::vector<Particle> particles; 
 	std::vector<Constraint> constraints; 
@@ -50,7 +53,7 @@ private:
 	Particle* getParticle(int x, int y);
 	void makeConstraint(Particle *p1, Particle *p2);
 
-	void insertTriangle(Particle *p1, const vec2 uv, std::vector<Vertex> &vertexData);
+	void insertTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 uv, std::vector<Vertex> &vertexData);
 
 	vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
 

@@ -1,11 +1,13 @@
 #include "world/Cloth.hh"
 #include <ACGL/OpenGL/GL.hh>
+#include <ACGL/Utils/Log.hh>
 
 
 #define CONSTRAINT_ITERATIONS 15
 
 using namespace std;
 using namespace glm;
+using namespace ACGL::OpenGL;
 class Cloth;
 
 
@@ -71,7 +73,13 @@ void Cloth::drawTriangle(Particle *p1, Particle *p2, Particle *p3){
 }
 
 /* This is a important constructor for the entire system of particles and constraints*/
-Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : num_particles_width(num_particles_width), num_particles_height(num_particles_height){
+Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : 
+    Entity(
+        vec3(0.0f,0.0f,0.0f),
+        vec3(0.0f,0.0f,0.0f)
+    ), 
+    num_particles_width(num_particles_width), 
+    num_particles_height(num_particles_height) {
     particles.resize(num_particles_width*num_particles_height); //I am essentially using this vector as an array with room for num_particles_width*num_particles_height particles
 
     // creating particles in a grid of particles from (0,0,0) to (width,-height,0)
@@ -113,6 +121,34 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
         getParticle(0+i ,0)->offsetPos(vec3(-0.5,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
         getParticle(num_particles_width-1-i ,0)->makeUnmovable();
     }
+
+    //Create ACGL::ArrayBuffer
+    std::vector<Vertex> vertexData;
+    for(int x = 0; x<num_particles_width-1; x++){
+        for(int y=0; y<num_particles_height-1; y++){
+            //TODO write in OpenGL buffers
+            //drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
+            //drawTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1));
+            vec3 uv = vec3(0);
+            if (x%2) // red and white color is interleaved according to which column number
+                    uv = vec3(0.6f,0.2f,0.2f);
+            else
+                    uv = vec3(1.0f,1.0f,1.0f);
+
+            insertTriangle(getParticle(x, y), getParticle(x+1, y), getParticle(x, y+1), uv, vertexData);
+            insertTriangle(getParticle(x+1, y), getParticle(x, y+1), getParticle(x+1, y+1), uv, vertexData);
+        }
+    }
+    ab = SharedArrayBuffer(new ArrayBuffer());
+    ab->defineAttribute("aPosition", GL_FLOAT, 3);
+    ab->defineAttribute("aColor", GL_FLOAT, 3);
+    ab->defineAttribute("aNormal", GL_FLOAT, 3);
+    ab->setDataElements(vertexData.size(), value_ptr(vertexData[0].position), GL_DYNAMIC_DRAW);
+
+    vao = SharedVertexArrayObject(new VertexArrayObject());
+    vao->attachAllAttributes(ab);
+
+
 }
 
 /* drawing the cloth as a smooth shaded (and colored according to column) OpenGL triangular mesh
@@ -125,7 +161,7 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
    (x,y+1) *--* (x+1,y+1)
 
 */
-void Cloth::drawShaded(){
+void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectionMatrix){
     // reset normals (which where written to last frame)
     std::vector<Particle>::iterator particle;
     for(particle = particles.begin(); particle != particles.end(); particle++){
@@ -146,63 +182,52 @@ void Cloth::drawShaded(){
             getParticle(x,y+1)->addToNormal(normal);
         }
     }
-    if (vertexArrayObject == 0){
-            glGenVertexArrays(1, &vertexArrayObject);
-            glBindVertexArray(vertexArrayObject);
-
-            glGenBuffers(1, &vertexBuffer);
-            glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-            
-            std::vector<int> indices;
-            
-
-            for (int j = 0; j < num_particles_height-1; j++) {
-                int index;
-                if (j > 0) {
-                    indices.push_back(j * num_particles_width); // make degenerate
-                }
-                for (int i = 0; i <= num_particles_width-1; i++) {
-                    index = j * num_particles_width + i;
-                    indices.push_back(index);
-                    indices.push_back(index + num_particles_width);
-                }
-                if (j + 1 < num_particles_height-1) {
-                    indices.push_back(index + num_particles_width); // make degenerate
-                }
-            }
-            elementSize = indices.size();
-
-            GLuint elementArrayBuffer;
-            glGenBuffers(1, &elementArrayBuffer);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, elementSize * sizeof(int), &(indices[0]), GL_STATIC_DRAW);
-        }
+    
     std::vector<Vertex> vertexData;
     for(int x = 0; x<num_particles_width-1; x++){
         for(int y=0; y<num_particles_height-1; y++){
             //TODO write in OpenGL buffers
             //drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
             //drawTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1));
+            vec3 uv = vec3(0);
+            if (x%2) // red and white color is interleaved according to which column number
+                    uv = vec3(0.6f,0.2f,0.2f);
+            else
+                    uv = vec3(1.0f,1.0f,1.0f);
 
-            vec2 uv(x/(num_particles_width - 1.0f),y/(num_particles_height-1.0f));
-
-            insertTriangle(getParticle(x, y), uv, vertexData);
+            insertTriangle(getParticle(x, y), getParticle(x+1, y), getParticle(x, y+1), uv, vertexData);
+            insertTriangle(getParticle(x+1, y), getParticle(x, y+1), getParticle(x+1, y+1), uv, vertexData);
         }
     }
-	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    ACGL::Utils::debug()<<to_string(getParticle(50, 05)->getPos())<<std::endl;
 	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex), value_ptr(vertexData[0].position), GL_STREAM_DRAW);
+openGLCriticalError();
 
-    glBindVertexArray(vertexArrayObject);
+	//glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex), value_ptr(vertexData[0].position), GL_STREAM_DRAW);
+    ab->setSubData(0, vertexData.size() * sizeof(Vertex), value_ptr(vertexData[0].position));
+
+openGLCriticalError();
+
+    mat4 modelMatrix = translate(getPosition()) * getRotation() *
+                     scale<float>(vec3(1.0f));
+    shader->setUniform("uMVP", (*viewProjectionMatrix)*modelMatrix);
+
+openGLCriticalError();
+
     // Draw the triangle !
-    glDrawElements(GL_TRIANGLE_STRIP, num_particles_width*num_particles_height, GL_FLOAT, 0); // Starting from vertex 0; 3 vertices total -> 1 triangle
+    vao->render(); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+openGLCriticalError();
 }
 
 /* A private method used by drawShaded(), that draws a single triangle p1,p2,p3 with a color*/
-void Cloth::insertTriangle(Particle *p1, const vec2 uv, std::vector<Vertex> &vertexData) {
-    Vertex v1 = {p1->getPos(), uv, p1->getNormal()};
-    vertexData.push_back(v1);
+void Cloth::insertTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 uv, std::vector<Vertex> &vertexData) {
+    Vertex v = {p1->getPos(), uv, p1->getNormal()};
+    vertexData.push_back(v);
+    v = {p2->getPos(), uv, p2->getNormal()};
+    vertexData.push_back(v);
+    v = {p3->getPos(), uv, p3->getNormal()};
+    vertexData.push_back(v);
 }
 
 /* this is an important methods where the time is progressed one time step for the entire cloth.

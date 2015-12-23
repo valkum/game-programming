@@ -51,6 +51,7 @@ private:
   bool renderDebug;
   SharedShaderProgram skyboxShader;
   SharedShaderProgram cubeShader;
+  SharedShaderProgram clothShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;
   SharedShaderProgram     debugShader;
