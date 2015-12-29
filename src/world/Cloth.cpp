@@ -226,7 +226,8 @@ openGLCriticalError();
 openGLCriticalError();
 
     mat4 modelMatrix = translate(getPosition()) * getRotation() *
-                     scale<float>(vec3(1.0f));
+                     scale<float>(vec3(0.02f));
+
     shader->setUniform("uMVP", (*viewProjectionMatrix)*modelMatrix);
 
 openGLCriticalError();
