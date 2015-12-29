@@ -20,7 +20,8 @@
 #include "world/Cloth.hh"
 
 
-#define TIME_STEPSIZE2 0.25f*0.25f
+//#define TIME_STEPSIZE2 0.25f*0.25f
+#define TIME_STEPSIZE2 0.005f
 
 using namespace glm;
 using namespace std;
@@ -169,7 +170,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
   
   cloth->addForce(vec3(0.0f,-0.2f,0.0f)*TIME_STEPSIZE2); // add gravity each frame, pointing down
-  cloth->windForce(vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
+  //cloth->windForce(vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
   cloth->timeStep(); // calculate the particle positions of the next frame
   cloth->ballCollision(ball_pos,ball_radius); // resolve collision with the ball
 

@@ -1,8 +1,11 @@
 #ifndef CONSTRAINT_H
 #define CONSTRAINT_H
 
-#include <glm/glm.hpp>
+#include <ACGL/Utils/Log.hh>
+#include <glm/ext.hpp>
 #include "world/Particle.hh"
+
+using namespace ACGL;
 using namespace glm;
 
 class Constraint {
@@ -25,8 +28,8 @@ class Constraint {
 			p1->offsetPos(correctionVectorHalf);
 			//inverse for correct way
 			p2->offsetPos(-correctionVectorHalf);
+            //ACGL::Utils::debug()<<glm::to_string(p1_to_p2)<<std::endl;
 		}
-
 };
 
 #endif

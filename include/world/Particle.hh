@@ -2,7 +2,8 @@
 #define PARTICLE_H
 
 #include <glm/glm.hpp>
-#define TIME_STEPSIZE2 0.25f*0.25f
+//#define TIME_STEPSIZE2 0.25f*0.25f
+#define TIME_STEPSIZE2 0.005f
 #define DAMPING 0.01f
 
 using namespace glm;
@@ -52,6 +53,9 @@ class Particle {
 		}
 		void addToNormal(vec3 normal){
 			accumulated_normal += normalize(normal);
+		}
+		bool getMovable(){
+			return movable;
 		}
 		vec3& getNormal(){
 			return accumulated_normal;

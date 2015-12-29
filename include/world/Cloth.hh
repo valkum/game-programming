@@ -4,7 +4,7 @@
 #include <vector>
 #include "Particle.hh"
 #include "Constraint.hh"
-#include "world/entity.hh"
+#include "world/Entity.hh"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <ACGL/OpenGL/Objects.hh>
@@ -57,7 +57,7 @@ private:
 
 	vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
 
-	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 direction);
+	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 direction, int x, int y);
 
 	void drawTriangle(Particle *p1, Particle *p2, Particle *p3);
 };
