@@ -39,6 +39,7 @@ class Cloth : public Entity {
 	void ballCollision(const vec3 center,const float radius );
 
 	void doFrame();
+  ACGL::OpenGL::SharedVertexArrayObject getVAO() { return vao; }
 
 private:
 	int num_particles_width;

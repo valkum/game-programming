@@ -110,7 +110,7 @@ void PlayState::init(CGame *game) {
   cubeShader = ShaderProgramCreator("cube").attributeLocations(
     vao->getAttributeLocations()).create();
   clothShader = ShaderProgramCreator("cloth").attributeLocations(
-    vao->getAttributeLocations()).create();
+    cloth->getVAO()->getAttributeLocations()).create();
 
   skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
     vao->getAttributeLocations()).create();
@@ -185,7 +185,7 @@ void PlayState::draw(CGame *g, float *delta) {
 }
 
 void PlayState::update(CGame *g, float dt) {
-  cloth->addForce(vec3(0.0f,0.2f,0.0f)*dt); // add gravity each frame, pointing down
+  cloth->addForce(vec3(0.0f,-0.2f,0.0f)*dt); // add gravity each frame, pointing down
   //cloth->windForce(vec3(0.5,0,0.2)*dt); // generate some wind each frame
   cloth->timeStep(dt); // calculate the particle positions of the next frame
 }
