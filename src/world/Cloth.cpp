@@ -262,7 +262,7 @@ void Cloth::insertTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 
 /* this is an important methods where the time is progressed one time step for the entire cloth.
    This includes calling satisfyConstraint() for every constraint, and calling timeStep() for all particles
    */
-void Cloth::timeStep(){
+void Cloth::timeStep(float dt){
     std::vector<Constraint>::iterator constraint;
     for(int i=0; i<CONSTRAINT_ITERATIONS; i++) // iterate over all constraints several times{
         for(constraint = constraints.begin(); constraint != constraints.end(); constraint++ )
@@ -272,7 +272,7 @@ void Cloth::timeStep(){
 
     std::vector<Particle>::iterator particle;
     for(particle = particles.begin(); particle != particles.end(); particle++){
-        (*particle).timeStep(); // calculate the position of each particle at the next time step.
+        (*particle).timeStep(dt); // calculate the position of each particle at the next time step.
     }
 }
 /* used to add gravity (or any other arbitrary vector) to all particles*/

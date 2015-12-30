@@ -27,12 +27,12 @@ class Particle {
 		}
 
 		//TODO timestep or not?
-		void timeStep(){
+		void timeStep(float dt){
 			if (movable) {
 				vec3 temp = pos;
 				//verlet integration
                 //TODO timestep
-				pos = pos+(pos-old_pos)*(1.0f-DAMPING)+acceleration*TIME_STEPSIZE2;
+				pos = pos+(pos-old_pos)*(1.0f-DAMPING)+acceleration*dt;
 				old_pos = temp;
 				acceleration = vec3(0,0,0);//Since the acceleration has been translated to a force, it has been reset.
 			} 
