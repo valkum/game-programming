@@ -92,7 +92,7 @@ void PlayState::init(CGame *game) {
   cube   =
     new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
                    vec3(0.0f, 0.0f, 0.0f));
-  cloth = new Cloth(13,10,10,10);
+  cloth = new Cloth(13,10,20,20);
   debug() << "Geometry loaded" << endl;
 
   debug() << "Loading shaders stage" << endl;
@@ -170,12 +170,6 @@ void PlayState::draw(CGame *g, float *delta) {
   cube->render(cubeShader, &viewProjectioMatrix);
 
 
-  
-  cloth->addForce(vec3(0.0f,-0.2f,0.0f)*TIME_STEPSIZE2); // add gravity each frame, pointing down
-  //cloth->windForce(vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
-  cloth->timeStep(); // calculate the particle positions of the next frame
-  cloth->ballCollision(ball_pos,ball_radius); // resolve collision with the ball
-
   // drawing
 
   //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -191,7 +185,7 @@ void PlayState::draw(CGame *g, float *delta) {
 }
 
 void PlayState::update(CGame *g, float dt) {
-  //cloth->addForce(vec3(0.0f,0.2f,0.0f)*dt); // add gravity each frame, pointing down
+  cloth->addForce(vec3(0.0f,0.2f,0.0f)*dt); // add gravity each frame, pointing down
   //cloth->windForce(vec3(0.5,0,0.2)*dt); // generate some wind each frame
   cloth->timeStep(dt); // calculate the particle positions of the next frame
 }

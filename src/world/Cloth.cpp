@@ -220,10 +220,10 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
         }
     }
     ACGL::Utils::debug()<<"Draw "<< vertexData.size()*3 << " Vertices with "<< vertexData.size() << "Triangles"<<std::endl;
-    ACGL::Utils::debug()<<"x=0:y=4 - Pos: "<<to_string(getParticle(0, 4)->getPos())<<std::endl;
-    ACGL::Utils::debug()<<"x=4:y=4 - Pos: "<<to_string(getParticle(4, 4)->getPos())<<std::endl;
-    ACGL::Utils::debug()<<"x=5:y=4 - Pos: "<<to_string(getParticle(5, 4)->getPos())<<std::endl;
-    ACGL::Utils::debug()<<"x=9:y=4 - Pos: "<<to_string(getParticle(9, 4)->getPos())<<std::endl;
+    ACGL::Utils::debug()<<"x=0:y=10 - Pos: "<<to_string(getParticle(0, 10)->getPos())<<std::endl;
+    ACGL::Utils::debug()<<"x=4:y=10 - Pos: "<<to_string(getParticle(4, 10)->getPos())<<std::endl;
+    ACGL::Utils::debug()<<"x=5:y=10 - Pos: "<<to_string(getParticle(5, 10)->getPos())<<std::endl;
+    ACGL::Utils::debug()<<"x=9:y=10 - Pos: "<<to_string(getParticle(9, 10)->getPos())<<std::endl;
 
     
 	// Give our vertices to OpenGL.

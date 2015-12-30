@@ -30,7 +30,7 @@ class Cloth : public Entity {
 	void render(ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectionMatrix);
 
-	void timeStep();
+	void timeStep(float dt);
 
 	void addForce(const vec3 direction);
 
