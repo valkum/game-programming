@@ -3,7 +3,8 @@
 
 #include <glm/glm.hpp>
 //#define TIME_STEPSIZE2 0.25f*0.25f
-#define TIME_STEPSIZE2 0.005f
+// 1/64 Tickrate
+#define TIME_STEPSIZE2 0.0156f
 #define DAMPING 0.01f
 
 using namespace glm;
@@ -26,12 +27,12 @@ class Particle {
 		}
 
 		//TODO timestep or not?
-		void timeStep(){
+		void timeStep(float dt){
 			if (movable) {
 				vec3 temp = pos;
 				//verlet integration
                 //TODO timestep
-				pos = pos+(pos-old_pos)*(1.0f-DAMPING)+acceleration*TIME_STEPSIZE2;
+				pos = pos+(pos-old_pos)*(1.0f-DAMPING)+acceleration*dt;
 				old_pos = temp;
 				acceleration = vec3(0,0,0);//Since the acceleration has been translated to a force, it has been reset.
 			} 

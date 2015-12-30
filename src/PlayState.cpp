@@ -21,7 +21,8 @@
 
 
 //#define TIME_STEPSIZE2 0.25f*0.25f
-#define TIME_STEPSIZE2 0.005f
+// 1/64 Tickrate
+#define TIME_STEPSIZE2 0.0156f
 
 using namespace glm;
 using namespace std;
@@ -91,7 +92,7 @@ void PlayState::init(CGame *game) {
   cube   =
     new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
                    vec3(0.0f, 0.0f, 0.0f));
-  cloth = new Cloth(13,10,55,45);
+  cloth = new Cloth(13,10,20,20);
   debug() << "Geometry loaded" << endl;
 
   debug() << "Loading shaders stage" << endl;
@@ -109,7 +110,7 @@ void PlayState::init(CGame *game) {
   cubeShader = ShaderProgramCreator("cube").attributeLocations(
     vao->getAttributeLocations()).create();
   clothShader = ShaderProgramCreator("cloth").attributeLocations(
-    vao->getAttributeLocations()).create();
+    cloth->getVAO()->getAttributeLocations()).create();
 
   skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
     vao->getAttributeLocations()).create();
@@ -149,6 +150,7 @@ void PlayState::init(CGame *game) {
 }
 
 void PlayState::draw(CGame *g, float *delta) {
+  skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -168,12 +170,6 @@ void PlayState::draw(CGame *g, float *delta) {
   cube->render(cubeShader, &viewProjectioMatrix);
 
 
-  
-  cloth->addForce(vec3(0.0f,-0.2f,0.0f)*TIME_STEPSIZE2); // add gravity each frame, pointing down
-  //cloth->windForce(vec3(0.5,0,0.2)*TIME_STEPSIZE2); // generate some wind each frame
-  cloth->timeStep(); // calculate the particle positions of the next frame
-  cloth->ballCollision(ball_pos,ball_radius); // resolve collision with the ball
-
   // drawing
 
   //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -188,8 +184,10 @@ void PlayState::draw(CGame *g, float *delta) {
   openGLCriticalError();
 }
 
-void PlayState::update(CGame *g, float delta) {
-  skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
+void PlayState::update(CGame *g, float dt) {
+  cloth->addForce(vec3(0.0f,-0.2f,0.0f)*dt); // add gravity each frame, pointing down
+  //cloth->windForce(vec3(0.5,0,0.2)*dt); // generate some wind each frame
+  cloth->timeStep(dt); // calculate the particle positions of the next frame
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
@@ -256,6 +254,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     if (key == GLFW_KEY_R) {
       ShaderProgramCreator("cube").update(cubeShader);
       ShaderProgramCreator("skybox").update(skyboxShader);
+      ShaderProgramCreator("cloth").update(skyboxShader);
     }
   }
 }
