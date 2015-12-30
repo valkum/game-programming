@@ -83,7 +83,7 @@ void Cloth::drawTriangle(Particle *p1, Particle *p2, Particle *p3){
 /* This is a important constructor for the entire system of particles and constraints*/
 Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : 
     Entity(
-        vec3(0.0f,0.0f,0.0f),
+        vec3(0.0f,0.0f,-10.0f),
         vec3(0.0f,0.0f,0.0f)
     ), 
     num_particles_width(num_particles_width), 
@@ -97,6 +97,7 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
                     -height * (y/(float)num_particles_height),
                     0);
             particles[y*num_particles_width+x]= Particle(pos); // insert particle in column x at y'th row
+            //@TODO wird das hier optimal gefüllt? Sollte eher x*num_height+y sein damit die bytes sequentiell und nicht mit sprüngen geschrieben werden.
         }
     }
 
@@ -202,21 +203,29 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
     
     std::vector<Vertex> vertexData;
     for(int x = 0; x<num_particles_width-1; x++){
-        for(int y=0; y<num_particles_height-1; y++){
-            //TODO write in OpenGL buffers
-            //drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
-            //drawTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1));
-            vec3 uv = vec3(0);
+        vec3 uv = vec3(0);
             if (x%2) // red and white color is interleaved according to which column number
                     uv = vec3(0.6f,0.2f,0.2f);
             else
                     uv = vec3(1.0f,1.0f,1.0f);
 
+        for(int y=0; y<num_particles_height-1; y++){
+            //TODO write in OpenGL buffers
+            //drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
+            //drawTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1));
+
             insertTriangle(getParticle(x, y), getParticle(x+1, y), getParticle(x, y+1), uv, vertexData);
             insertTriangle(getParticle(x+1, y), getParticle(x, y+1), getParticle(x+1, y+1), uv, vertexData);
+
         }
     }
-    //ACGL::Utils::debug()<<to_string(getParticle(50, 05)->getPos())<<std::endl;
+    ACGL::Utils::debug()<<"Draw "<< vertexData.size()*3 << " Vertices with "<< vertexData.size() << "Triangles"<<std::endl;
+    ACGL::Utils::debug()<<"x=0:y=4 - Pos: "<<to_string(getParticle(0, 4)->getPos())<<std::endl;
+    ACGL::Utils::debug()<<"x=4:y=4 - Pos: "<<to_string(getParticle(4, 4)->getPos())<<std::endl;
+    ACGL::Utils::debug()<<"x=5:y=4 - Pos: "<<to_string(getParticle(5, 4)->getPos())<<std::endl;
+    ACGL::Utils::debug()<<"x=9:y=4 - Pos: "<<to_string(getParticle(9, 4)->getPos())<<std::endl;
+
+    
 	// Give our vertices to OpenGL.
 openGLCriticalError();
 
@@ -226,13 +235,16 @@ openGLCriticalError();
 openGLCriticalError();
 
     mat4 modelMatrix = translate(getPosition()) * getRotation() *
-                     scale<float>(vec3(1.0f));
-    shader->setUniform("uMVP", (*viewProjectionMatrix)*modelMatrix);
+                     scale<float>(vec3(0.3f));
+    shader->setUniform("uModelMatrix", modelMatrix);
+
+    mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
+    shader->setUniform("uMVP",         mvp);
 
 openGLCriticalError();
 
     // Draw the triangle !
-    vao->render(); // Starting from vertex 0; 3 vertices total -> 1 triangle
+    vao->render(); // Starting from vertex 0; 3 vertices -> 1 triangle
 
 openGLCriticalError();
 }

@@ -3,7 +3,8 @@
 
 #include <glm/glm.hpp>
 //#define TIME_STEPSIZE2 0.25f*0.25f
-#define TIME_STEPSIZE2 0.005f
+// 1/64 Tickrate
+#define TIME_STEPSIZE2 0.0156f
 #define DAMPING 0.01f
 
 using namespace glm;
