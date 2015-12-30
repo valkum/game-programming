@@ -83,7 +83,7 @@ void Cloth::drawTriangle(Particle *p1, Particle *p2, Particle *p3){
 /* This is a important constructor for the entire system of particles and constraints*/
 Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : 
     Entity(
-        vec3(0.0f,0.0f,-10.0f),
+        vec3(0.0f,0.0f,-5.0f),
         vec3(0.0f,0.0f,0.0f)
     ), 
     num_particles_width(num_particles_width), 
@@ -204,7 +204,7 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
     std::vector<Vertex> vertexData;
     for(int x = 0; x<num_particles_width-1; x++){
         vec3 uv = vec3(0);
-            if (x%2) // red and white color is interleaved according to which column number
+            if ((x/2)%2) // red and white color is interleaved according to which column number
                     uv = vec3(0.6f,0.2f,0.2f);
             else
                     uv = vec3(1.0f,1.0f,1.0f);
@@ -219,11 +219,11 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
 
         }
     }
-    ACGL::Utils::debug()<<"Draw "<< vertexData.size()*3 << " Vertices with "<< vertexData.size() << "Triangles"<<std::endl;
-    ACGL::Utils::debug()<<"x=0:y=10 - Pos: "<<to_string(getParticle(0, 10)->getPos())<<std::endl;
-    ACGL::Utils::debug()<<"x=4:y=10 - Pos: "<<to_string(getParticle(4, 10)->getPos())<<std::endl;
-    ACGL::Utils::debug()<<"x=5:y=10 - Pos: "<<to_string(getParticle(5, 10)->getPos())<<std::endl;
-    ACGL::Utils::debug()<<"x=9:y=10 - Pos: "<<to_string(getParticle(9, 10)->getPos())<<std::endl;
+    // ACGL::Utils::debug()<<"Draw "<< vertexData.size()*3 << " Vertices with "<< vertexData.size() << "Triangles"<<std::endl;
+    // ACGL::Utils::debug()<<"x=0:y=10 - Pos: "<<to_string(getParticle(0, 10)->getPos())<<std::endl;
+    // ACGL::Utils::debug()<<"x=4:y=10 - Pos: "<<to_string(getParticle(4, 10)->getPos())<<std::endl;
+    // ACGL::Utils::debug()<<"x=5:y=10 - Pos: "<<to_string(getParticle(5, 10)->getPos())<<std::endl;
+    // ACGL::Utils::debug()<<"x=9:y=10 - Pos: "<<to_string(getParticle(9, 10)->getPos())<<std::endl;
 
     
 	// Give our vertices to OpenGL.
@@ -235,7 +235,7 @@ openGLCriticalError();
 openGLCriticalError();
 
     mat4 modelMatrix = translate(getPosition()) * getRotation() *
-                     scale<float>(vec3(0.3f));
+                     scale<float>(vec3(0.4f));
     shader->setUniform("uModelMatrix", modelMatrix);
 
     mat4 mvp = (*viewProjectionMatrix) * modelMatrix;

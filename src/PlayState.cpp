@@ -92,7 +92,7 @@ void PlayState::init(CGame *game) {
   cube   =
     new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
                    vec3(0.0f, 0.0f, 0.0f));
-  cloth = new Cloth(13,10,20,20);
+  cloth = new Cloth(13,10,50,50);
   debug() << "Geometry loaded" << endl;
 
   debug() << "Loading shaders stage" << endl;
@@ -186,7 +186,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
 void PlayState::update(CGame *g, float dt) {
   cloth->addForce(vec3(0.0f,-0.2f,0.0f)*dt); // add gravity each frame, pointing down
-  //cloth->windForce(vec3(0.5,0,0.2)*dt); // generate some wind each frame
+  cloth->windForce(vec3(0.5f,-0.2f,0.5f)*dt); // generate some wind each frame
   cloth->timeStep(dt); // calculate the particle positions of the next frame
 }
 
