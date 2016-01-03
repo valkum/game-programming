@@ -287,14 +287,14 @@ void Cloth::addForce(const vec3 direction){
 
 /* used to add wind forces to all particles, is added for each triangle since the final force is proportional to the triangle area as seen from the wind direction*/
 void Cloth::windForce(const vec3 direction){
-    for(int x = 0; x<num_particles_width-1; x++)
-        {
-            for(int y=0; y<num_particles_height-1; y++)
-            {
-                addWindForcesForTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1),direction, x, y);
-                addWindForcesForTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1),direction, x, y);
-            }
-        }
+	for(int x = 0; x<num_particles_width-1; x++)
+	{
+		for(int y=0; y<num_particles_height-1; y++)
+		{
+			addWindForcesForTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1),direction, x, y);
+			addWindForcesForTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1),direction, x, y);
+		}
+	}
 }
 
 /* used to detect and resolve the collision of the cloth with the ball.
