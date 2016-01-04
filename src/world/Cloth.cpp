@@ -41,44 +41,11 @@ void Cloth::addWindForcesForTriangle(Particle *p1,Particle *p2,Particle *p3, con
         vec3 d = normalize(normal);
         vec3 force = normal*(dot(d,direction));
         
-        if (force.x >= 5 || force.y >= 5 || force.z >= 5) {
-            ACGL::Utils::debug()<<"faulty wind at "<<x<<", "<<y<<"\t"<<to_string(force)<<std::endl;   
-            ACGL::Utils::debug()<<"normal: \t"<<to_string(normal)<<std::endl;   
-        }
-
         p1->addForce(force);
         p2->addForce(force);
         p3->addForce(force);
     }
 
-/* A private method used by drawShaded(), that draws a single triangle p1,p2,p3 with a color*/
-//array<GLfloat, 9> drawTriangle(Particle *p1, Particle *p2, Particle *p3){
-void Cloth::drawTriangle(Particle *p1, Particle *p2, Particle *p3){
-    //GLfloat res[9];
-
-    //res[0] = (GLfloat *) &(p1->getPos().f[0]);
-    //res[1] = (GLfloat *) &(p1->getPos().f[1]);
-    //res[2] = (GLfloat *) &(p1->getPos().f[2]);
-    //res[3] = (GLfloat *) &(p2->getPos().f[0]);
-    //res[4] = (GLfloat *) &(p2->getPos().f[1]);
-    //res[5] = (GLfloat *) &(p2->getPos().f[2]);
-    //res[6] = (GLfloat *) &(p3->getPos().f[0]);
-    //res[7] = (GLfloat *) &(p3->getPos().f[1]);
-    //res[8] = (GLfloat *) &(p3->getPos().f[2]);
-    //Vec3 norm1 = p1->getNormal().normalized();
-    //Vec3 norm2 = p2->getNormal().normalized();
-    //Vec3 norm3 = p3->getNormal().normalized();
-
-    //glNormal3fv((GLfloat *) &norm1);
-    //glVertex3fv((GLfloat *) &(p1->getPos() ));
-
-
-    //glNormal3fv((GLfloat *) &norm2);
-    //glVertex3fv((GLfloat *) &(p2->getPos() ));
-
-    //glNormal3fv((GLfloat *) &norm3);
-    //glVertex3fv((GLfloat *) &(p3->getPos() ));
-}
 
 /* This is a important constructor for the entire system of particles and constraints*/
 Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : 
@@ -211,20 +178,11 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
 
         for(int y=0; y<num_particles_height-1; y++){
             //TODO write in OpenGL buffers
-            //drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
-            //drawTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1));
-
             insertTriangle(getParticle(x, y), getParticle(x+1, y), getParticle(x, y+1), uv, vertexData);
             insertTriangle(getParticle(x+1, y), getParticle(x, y+1), getParticle(x+1, y+1), uv, vertexData);
 
         }
     }
-    // ACGL::Utils::debug()<<"Draw "<< vertexData.size()*3 << " Vertices with "<< vertexData.size() << "Triangles"<<std::endl;
-    // ACGL::Utils::debug()<<"x=0:y=10 - Pos: "<<to_string(getParticle(0, 10)->getPos())<<std::endl;
-    // ACGL::Utils::debug()<<"x=4:y=10 - Pos: "<<to_string(getParticle(4, 10)->getPos())<<std::endl;
-    // ACGL::Utils::debug()<<"x=5:y=10 - Pos: "<<to_string(getParticle(5, 10)->getPos())<<std::endl;
-    // ACGL::Utils::debug()<<"x=9:y=10 - Pos: "<<to_string(getParticle(9, 10)->getPos())<<std::endl;
-
     
 	// Give our vertices to OpenGL.
 openGLCriticalError();
@@ -312,7 +270,4 @@ void Cloth::ballCollision(const vec3 center,const float radius ){
                 (*particle).offsetPos(normalize(v)*(radius-l)); // project the particle to the surface of the ball
             }
         }
-}
-
-void Cloth::doFrame(){
 }

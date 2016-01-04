@@ -16,7 +16,6 @@ class Constraint {
 		Particle *p1, *p2;
 		Constraint (Particle *p1, Particle *p2): p1(p1), p2(p2){
 			vec3 vec = p1->getPos()-p2->getPos();
-			//rest_distance = vec.length();
 			rest_distance = length(vec);
 		}
 		void statisfyConstraint(){

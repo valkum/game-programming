@@ -92,6 +92,7 @@ void PlayState::init(CGame *game) {
   cube   =
     new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
                    vec3(0.0f, 0.0f, 0.0f));
+  cube   = new TestObject(Model("fat_woman.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   cloth = new Cloth(13,10,50,50);
   debug() << "Geometry loaded" << endl;
 
