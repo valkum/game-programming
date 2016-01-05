@@ -3,7 +3,7 @@
 #include <ACGL/Utils/Log.hh>
 
 
-#define CONSTRAINT_ITERATIONS 15
+#define CONSTRAINT_ITERATIONS 5
 
 using namespace std;
 using namespace glm;
