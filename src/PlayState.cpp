@@ -9,6 +9,7 @@
 #include <ACGL/Base/Settings.hh>
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
 
 #include <iostream>
 #include <vector>
@@ -93,7 +94,7 @@ void PlayState::init(CGame *game) {
     new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
                    vec3(0.0f, 0.0f, 0.0f));
   cube   = new TestObject(Model("fat_woman.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
-  cloth = new Cloth(13,10,50,50);
+  cloth = new Cloth(10,20,24,24);
   debug() << "Geometry loaded" << endl;
 
   debug() << "Loading shaders stage" << endl;
@@ -186,8 +187,9 @@ void PlayState::draw(CGame *g, float *delta) {
 }
 
 void PlayState::update(CGame *g, float dt) {
-  cloth->addForce(vec3(0.0f,-0.2f,0.0f)*dt); // add gravity each frame, pointing down
-  cloth->windForce(vec3(0.5f,-0.2f,0.5f)*dt); // generate some wind each frame
+  cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
+  glm::vec3 random = sphericalRand(0.5f);
+  cloth->windForce((vec3(0.3f,0.3f,0.03f)+random)*dt); // generate some wind each frame
   cloth->timeStep(dt); // calculate the particle positions of the next frame
 }
 
@@ -256,6 +258,9 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       ShaderProgramCreator("cube").update(cubeShader);
       ShaderProgramCreator("skybox").update(skyboxShader);
       ShaderProgramCreator("cloth").update(skyboxShader);
+    }
+    if (key == GLFW_KEY_SPACE) {
+      cloth->windForce((vec3(1.0f,-0.2f,0.3f)));
     }
   }
 }

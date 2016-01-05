@@ -58,7 +58,7 @@ private:
 
 	vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
 
-	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 direction, int x, int y);
+	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 direction);
 
 	void drawTriangle(Particle *p1, Particle *p2, Particle *p3);
 };

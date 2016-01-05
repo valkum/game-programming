@@ -35,7 +35,7 @@ vec3 Cloth::calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3)
 
 /* A private method used by windForce() to calcualte the wind force for a single triangle 
    defined by p1,p2,p3*/
-void Cloth::addWindForcesForTriangle(Particle *p1,Particle *p2,Particle *p3, const vec3 direction, int x, int y)
+void Cloth::addWindForcesForTriangle(Particle *p1,Particle *p2,Particle *p3, const vec3 direction)
     {
         vec3 normal = calcTriangleNormal(p1,p2,p3);
         vec3 d = normalize(normal);
@@ -185,12 +185,12 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
     }
     
 	// Give our vertices to OpenGL.
-openGLCriticalError();
+
 
 	//glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex), value_ptr(vertexData[0].position), GL_STREAM_DRAW);
     ab->setSubData(0, vertexData.size() * sizeof(Vertex), value_ptr(vertexData[0].position));
 
-openGLCriticalError();
+
 
     mat4 modelMatrix = translate(getPosition()) * getRotation() *
                      scale<float>(vec3(0.4f));
@@ -199,12 +199,12 @@ openGLCriticalError();
     mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
     shader->setUniform("uMVP",         mvp);
 
-openGLCriticalError();
+
 
     // Draw the triangle !
     vao->render(); // Starting from vertex 0; 3 vertices -> 1 triangle
 
-openGLCriticalError();
+
 }
 
 /* A private method used by drawShaded(), that draws a single triangle p1,p2,p3 with a color*/
@@ -249,8 +249,8 @@ void Cloth::windForce(const vec3 direction){
 	{
 		for(int y=0; y<num_particles_height-1; y++)
 		{
-			addWindForcesForTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1),direction, x, y);
-			addWindForcesForTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1),direction, x, y);
+			addWindForcesForTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1),direction);
+			addWindForcesForTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1),direction);
 		}
 	}
 }

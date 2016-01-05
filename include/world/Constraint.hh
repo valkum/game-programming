@@ -3,6 +3,7 @@
 
 #include <ACGL/Utils/Log.hh>
 #include <glm/ext.hpp>
+#include <glm/gtx/fast_square_root.hpp>
 #include "world/Particle.hh"
 
 using namespace ACGL;
@@ -22,8 +23,10 @@ class Constraint {
 			// vector from p1 to p2
 			vec3 p1_to_p2 = p2->getPos()-p1->getPos(); 
 			// current distance between p1 and p2
-			float current_distance = length(p1_to_p2);
+			float current_distance = fastLength(p1_to_p2);
 			// The offset vector that could moves p1 into a distance of rest_distance to p2
+
+			// @TODO maybe better calculation? Division is costly
 			vec3 correctionVector = p1_to_p2*(1 - rest_distance/current_distance); 
 			// Lets make it half that length, so that we can move BOTH p1 and p2.
 			vec3 correctionVectorHalf = correctionVector*0.5f; 
