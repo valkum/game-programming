@@ -3,4 +3,4 @@
 mkdir -p build/Debug;
 cd build/Debug;
 cmake ../../ -DCMAKE_BUILD_TYPE=Debug;
-make;
+make -j 4;

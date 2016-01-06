@@ -2,7 +2,7 @@
 #include "GameState.hh"
 #include <iostream>
 #include <glm/glm.hpp>
-#include <ACGl/Utils/log.hh>
+#include <ACGL/Utils/Log.hh>
 
 using namespace ACGL::Utils;
 using namespace glm;
