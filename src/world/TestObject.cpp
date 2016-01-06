@@ -16,7 +16,7 @@ TestObject::TestObject(Model model, vec3 position, vec3 rotation) : Entity(
   // ACGL::OpenGL::loadTexture2D(ACGL::Base::Settings::the()->getFullTexturePath()
   // + "box.png");
   texture = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator(
-                                                             "box.png"));
+                                                             "aphroditegirl_0.dds"));
 
   // texture->generateMipmaps();
   // texture->setMinFilter(GL_NEAREST_MIPMAP_LINEAR);

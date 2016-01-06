@@ -90,10 +90,10 @@ void PlayState::init(CGame *game) {
     Settings::the()->getFullTexturePath() + "nuke_ft.png",
   };
   skybox = new Skybox(Model("cube.obj", 50.0f), paths);
-  cube   =
-    new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
-                   vec3(0.0f, 0.0f, 0.0f));
-  cube   = new TestObject(Model("fat_woman.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
+  // cube   =
+  //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
+  //                  vec3(0.0f, 0.0f, 0.0f));
+  cube   = new TestObject(Model("aphroditegirl.obj", 100.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   cloth = new Cloth(10,20,24,24);
   debug() << "Geometry loaded" << endl;
 
