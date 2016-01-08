@@ -8,5 +8,5 @@ uniform samplerCube uTexture;
 
 void main()
 {   
-    oColor = texture(uTexture, -vTexCoord);
+    oColor = texture(uTexture, vec3(vTexCoord.x, -vTexCoord.y, vTexCoord.z));
 }

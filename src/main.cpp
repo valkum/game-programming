@@ -136,8 +136,6 @@ int run(bool debug) {
   while (!glfwWindowShouldClose(g_window))
   {
     loops = 0;
-    double now = glfwGetTime();
-
     while (glfwGetTime() > newTime && loops < MAX_FRAMESKIP) {
       /* Poll for and process events */
       glfwPollEvents();
@@ -151,14 +149,7 @@ int run(bool debug) {
 
     // glfwGetFramebufferSize(g_window, &width, &height);
     game->draw(&extrapolation);
-
-    // @todo betterFPS meter? maybe draw in context?
-    std::stringstream sstream(std::stringstream::in | std::stringstream::out);
-    sstream << std::setprecision(1) << std::fixed
-            << " - FPS: " << 1 / (glfwGetTime() - now) <<
-    " " << 1000 * (glfwGetTime() - now) / 1 << " msec";
-    glfwSetWindowTitle(g_window, sstream.str().c_str());
-
+    
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glfwSwapBuffers(g_window);
   }

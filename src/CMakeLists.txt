@@ -23,6 +23,11 @@ set(SOURCE_FILES
     world/TestObject.cpp
     world/Skybox.cpp
     world/Cloth.cpp
+    GUI/common.cpp
+    GUI/GUIObject.cpp
+    GUI/Gui.cpp
+    GUI/Button.cpp
+    GUI/PerfGraph.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
@@ -106,9 +111,10 @@ TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${REQUIRED_LIBS})
 # 		PRE_BUILD
 # 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "${dir}/assets"
 # )
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  message(STATUS "Linking Assets: ${dir}/assets -> ${CMAKE_SOURCE_DIR}/assets")
+  add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
         POST_BUILD
-        COMMAND ln -s ${CMAKE_SOURCE_DIR}/assets ${dir}/assets)
+        COMMAND rm ${dir}/assets && ln -s ../assets ${dir}/assets)
 
 endif()
