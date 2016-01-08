@@ -25,6 +25,7 @@ set(SOURCE_FILES
     GUI/GUIObject.cpp
     GUI/Gui.cpp
     GUI/Button.cpp
+    GUI/PerfGraph.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")

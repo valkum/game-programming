@@ -1,6 +1,7 @@
 #include "GUI/GUIObject.hh"
 
 #include "GUI/nanovg.hh"
+#include <algorithm>
 
 using namespace glm;
 

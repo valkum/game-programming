@@ -8,6 +8,7 @@
 #include "Helper.hh"
 #include "GUI/Gui.hh"
 #include "GUI/Button.hh"
+#include "GUI/PerfGraph.hh"
 
 using namespace glm;
 using namespace std;
@@ -24,6 +25,11 @@ void IntroState::init(CGame *game) {
 
 
   gui = new Gui(vg, game->g_window);
+
+  PerfGraph *graph = new PerfGraph(gui, 0, "FPS meter");
+  graph->setBackgroundColor(Color(0,0,0,128));
+  graph->setPosition(ivec2(400,400));
+  graph->setSize(ivec2(200,60));
 
   Button *playButton = new Button(gui, "Play");
   playButton->setCallback([&] {
@@ -44,8 +50,6 @@ void IntroState::init(CGame *game) {
   closeButton->setBackgroundColor(Color(255, 0, 0, 128));
   closeButton->setPosition(ivec2(200, 200));
   closeButton->setSize(ivec2(170, 28));
-
-  
 }
 
 void IntroState::draw(CGame *game, float *delta) {

@@ -16,6 +16,9 @@
 #include "Model.hh"
 #include "world/Skybox.hh"
 #include "world/TestObject.hh"
+#include "GUI/Gui.hh"
+#include "GUI/PerfGraph.hh"
+
 
 using namespace glm;
 using namespace std;
@@ -27,6 +30,8 @@ using namespace ACGL::Scene;
 PlayState PlayState::m_PlayState;
 GenericCamera camera;
 
+//Gui* gui;
+//NVGcontext* vg = nullptr;
 
 Skybox *skybox;
 TestObject *cube;
@@ -40,6 +45,13 @@ void PlayState::init(CGame *game) {
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+  gui = new Gui(vg, game->g_window);
+
+  PerfGraph *graph = new PerfGraph(gui, 0, "FPS meter");
+  graph->setBackgroundColor(Color(0,0,0,128));
+  graph->setPosition(ivec2(400,400));
+  graph->setSize(ivec2(200,60));
 
 
   // define where shaders and textures can be found:
@@ -122,6 +134,10 @@ void PlayState::init(CGame *game) {
 void PlayState::draw(CGame *g, float *delta) {
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  gui->drawAll();
+
+
 
   glm::mat4 viewProjectioMatrix = camera.getProjectionMatrix() *
                                   camera.getViewMatrix();

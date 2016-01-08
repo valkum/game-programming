@@ -43,7 +43,6 @@ protected:
   PlayState() {}
 
 private:
-
   static PlayState m_PlayState;
   bool renderDebug;
   SharedShaderProgram skyboxShader;
