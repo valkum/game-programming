@@ -49,6 +49,9 @@ class PerfGraph: public GUIObject {
         const Color &backgroundColor() const { return mBackgroundColor; }
         void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
 
+        const Color &foreroundColor() const { return mForegroundColor; }
+        void setForeroundColor(const Color &backgroundColor) { mForegroundColor = backgroundColor; }
+
         const Color &textColor() const { return mTextColor; }
         void setTextColor(const Color &textColor) { mTextColor = textColor; }
 

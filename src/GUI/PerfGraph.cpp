@@ -54,7 +54,7 @@ int PerfGraph::stopGPUTimer(GPUtimer* timer, float* times, int maxTimes)
 
 
 PerfGraph::PerfGraph(GUIObject *parent, int style, std::string name)
-    : GUIObject(parent), mStyle(style), mCaption(name), mBackgroundColor(Color(0,0)), mForegroundColor(Color(100,125)), mTextColor(Color(0,0)){
+    : GUIObject(parent), mStyle(style), mCaption(name), mBackgroundColor(Color(0,0)), mForegroundColor(Color(100, 0, 0,180)), mTextColor(Color(0,0)){
 	    prevt = glfwGetTime();
 	    for (int i = 0; i < GRAPH_HISTORY_COUNT; ++i)
 	    {
