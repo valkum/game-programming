@@ -60,10 +60,8 @@ void PlayState::init(CGame *game) {
     Settings::the()->getFullTexturePath() + "nuke_bk.png",
     Settings::the()->getFullTexturePath() + "nuke_ft.png",
   };
-  skybox = new Skybox(Model("cube.obj", 50.0f), paths);
-  cube   =
-    new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
-                   vec3(0.0f, 0.0f, 0.0f));
+  // skybox = new Skybox(Model("cube.obj", 50.0f), paths);
+  cube = new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   debug() << "Geometry loaded" << endl;
 
 
@@ -79,11 +77,12 @@ void PlayState::init(CGame *game) {
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
+  // skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
+  // vao->getAttributeLocations()).create();
+
   cubeShader = ShaderProgramCreator("cube").attributeLocations(
     vao->getAttributeLocations()).create();
 
-  skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
-    vao->getAttributeLocations()).create();
 
   // debug_ab = SharedArrayBuffer(new ArrayBuffer());
   // debug_ab->defineAttribute("aPosition", GL_FLOAT, 3);
@@ -100,13 +99,13 @@ void PlayState::init(CGame *game) {
 
 
   debug() << "Set Textures Stage" << endl;
-  skyboxShader->use();
-  skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
+  // skyboxShader->use();
+  // skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
 
   cubeShader->use();
   cubeShader->setTexture("uTexture", cube->getTexture(), 2);
 
-  debug() << "Texture for cube: " << skybox->getTexture() << endl;
+  // debug() << "Texture for skybox: " << skybox->getTexture() << endl;
   debug() << "Textures set" << endl;
 
 
@@ -121,34 +120,44 @@ void PlayState::init(CGame *game) {
 
 void PlayState::draw(CGame *g, float *delta) {
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | 
+GL_STENCIL_BUFFER_BIT);
 
-  glm::mat4 viewProjectioMatrix = camera.getProjectionMatrix() *
+  glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
                                   camera.getViewMatrix();
 
-
-  cubeShader->use();
-
-  // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
-  cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  cube->render(cubeShader, &viewProjectioMatrix);
-
   glDepthFunc(GL_LEQUAL);
-  skyboxShader->use();
-  skybox->render(skyboxShader, &viewProjectioMatrix);
+  // skyboxShader->use();
+  // skybox->render(skyboxShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
+openGLCriticalError();
+
+
+openGLCriticalError();
+
+  cubeShader->use();
+  // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
+  cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
+  cube->render(cubeShader, &viewProjectionMatrix);
 
   // if(renderDebug) {
   //     debugShader->use();
   //     debugShader->setUniform("uViewProjectionMatrix", viewProjectioMatrix);
   //     debug_vao->render();
   // }
+
+  //glFlush();
+  // bring backbuffer to foreground
+  // SDL_GL_SwapBuffers();
+  //SwapBuffers(g_HDC);
+
   openGLCriticalError();
 }
 
 void PlayState::update(CGame *g, float delta) {
-  skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
+//  skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
+  camera.FPSstyleLookAround(0.001f, 0.0f);
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
