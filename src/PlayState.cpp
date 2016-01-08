@@ -16,8 +16,6 @@
 #include "Model.hh"
 #include "world/Skybox.hh"
 #include "world/TestObject.hh"
-#include "GUI/Gui.hh"
-#include "GUI/PerfGraph.hh"
 
 
 using namespace glm;
@@ -30,11 +28,9 @@ using namespace ACGL::Scene;
 PlayState PlayState::m_PlayState;
 GenericCamera camera;
 
-//Gui* gui;
-//NVGcontext* vg = nullptr;
-
 Skybox *skybox;
 TestObject *cube;
+PerfGraph *graph;
 
 void PlayState::init(CGame *game) {
   renderDebug = false;
@@ -48,10 +44,9 @@ void PlayState::init(CGame *game) {
 
   gui = new Gui(vg, game->g_window);
 
-  PerfGraph *graph = new PerfGraph(gui, 0, "FPS meter");
-  graph->setBackgroundColor(Color(0,0,0,128));
+  graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
   graph->setPosition(ivec2(400,400));
-  graph->setSize(ivec2(200,60));
+  graph->setSize(ivec2(200,35));
 
 
   // define where shaders and textures can be found:
@@ -135,8 +130,6 @@ void PlayState::draw(CGame *g, float *delta) {
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  gui->drawAll();
-
 
 
   glm::mat4 viewProjectioMatrix = camera.getProjectionMatrix() *
@@ -161,6 +154,8 @@ void PlayState::draw(CGame *g, float *delta) {
   //     debug_vao->render();
   // }
   openGLCriticalError();
+
+  gui->drawAll();
 }
 
 void PlayState::update(CGame *g, float delta) {
@@ -214,18 +209,12 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_P) {
-      debug() << "uViewProjectionMatrix Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uViewProjectionMatrix") << endl;
-      debug() << "uViewMatrix Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uViewMatrix") << endl;
-      debug() << "uMVP Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uMVP") << endl;
-      debug() << "uProjectionMatrix Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uProjectionMatrix") << endl;
+      for (int i = 0; i < 10; ++i)
+      {
+      debug() << graph->values[i] << endl;
+      }
+      
+     
     }
 
     if (key == GLFW_KEY_R) {

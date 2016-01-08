@@ -17,8 +17,6 @@ using namespace ACGL::Base;
 using namespace ACGL::Utils;
 
 IntroState  IntroState::m_IntroState;
-Gui* gui;
-NVGcontext* vg = nullptr;
 
 class IntroState;
 void IntroState::init(CGame *game) {
@@ -26,10 +24,10 @@ void IntroState::init(CGame *game) {
 
   gui = new Gui(vg, game->g_window);
 
-  PerfGraph *graph = new PerfGraph(gui, 0, "FPS meter");
+  PerfGraph *graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
   graph->setBackgroundColor(Color(0,0,0,128));
   graph->setPosition(ivec2(400,400));
-  graph->setSize(ivec2(200,60));
+  graph->setSize(ivec2(200,35));
 
   Button *playButton = new Button(gui, "Play");
   playButton->setCallback([&] {

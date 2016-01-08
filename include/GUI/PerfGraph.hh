@@ -3,13 +3,19 @@
 
 #include "GUI/GUIObject.hh"
 
-#include "nanovg.h"
+#include "GUI/nanovg.hh"
 #include <functional>
 #include <string>
 
 
 #define GRAPH_HISTORY_COUNT 100
 #define GPU_QUERY_COUNT 5
+enum GraphRenderStyle {
+            GRAPH_RENDER_FPS,
+            GRAPH_RENDER_MS,
+            GRAPH_RENDER_PERCENT,
+        };
+
 
 class PerfGraph: public GUIObject {
     public:
@@ -17,11 +23,7 @@ class PerfGraph: public GUIObject {
 
         //~PerfGraph();
 
-        enum GraphrenderStyle {
-            GRAPH_RENDER_FPS,
-            GRAPH_RENDER_MS,
-            GRAPH_RENDER_PERCENT,
-        };
+        
 
         void updateGraph(float frameTime);
         //void draw(NVGcontext* vg, float x, float y);
@@ -66,19 +68,18 @@ class PerfGraph: public GUIObject {
 
         virtual bool mouseButtonEvent(const ivec2 &p, int button, bool down, int modifiers);
         virtual void draw(NVGcontext *ctx);
-
+        float values[GRAPH_HISTORY_COUNT];
     private:
         int mStyle;
-        std::string mName;
-        float values[GRAPH_HISTORY_COUNT];
+        
         int head;
-        double dt, t, prevt;
+        float prevt;
         //GPUtimer *gputimer;
     protected:
         std::string mCaption;
         int mIcon;
         bool mPushed, mEnabled = true;
-        Color mBackgroundColor;
+        Color mBackgroundColor, mForegroundColor;
         Color mTextColor;
         std::function<void()> mCallback;
         std::function<void(bool)> mChangeCallback;

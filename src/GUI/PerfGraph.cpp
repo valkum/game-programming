@@ -54,8 +54,12 @@ int PerfGraph::stopGPUTimer(GPUtimer* timer, float* times, int maxTimes)
 
 
 PerfGraph::PerfGraph(GUIObject *parent, int style, std::string name)
-    : GUIObject(parent), mStyle(style), mName(name), mBackgroundColor(Color(0,0)), mTextColor(Color(0,0)){
-    prevt = glfwGetTime();
+    : GUIObject(parent), mStyle(style), mCaption(name), mBackgroundColor(Color(0,0)), mForegroundColor(Color(100,125)), mTextColor(Color(0,0)){
+	    prevt = glfwGetTime();
+	    for (int i = 0; i < GRAPH_HISTORY_COUNT; ++i)
+	    {
+	    	values[i] = 0.0f;
+	    }
     }
 	//memset(fps, 0, sizeof(PerfGraph));
     //initGPUTimer(gputimer);
@@ -88,28 +92,26 @@ float PerfGraph::getGraphAverage()
 void PerfGraph::draw(NVGcontext* vg)
 {
 	int i;
-	float avg, w, h;
+	float avg;
 	char str[64];
 
 	avg = getGraphAverage();
 
-	w = 200;
-	h = 35;
 
 	nvgBeginPath(vg);
-	nvgRect(vg, mPosition.x, mPosition.y, w,h);
-	nvgFillColor(vg, nvgRGBA(0,0,0,128));
+	nvgRect(vg, mPosition.x, mPosition.y, mSize.x, mSize.y);
+	nvgFillColor(vg, mBackgroundColor);
 	nvgFill(vg);
 
 	nvgBeginPath(vg);
-	nvgMoveTo(vg, mPosition.x, mPosition.y+h);
+	nvgMoveTo(vg, mPosition.x, mPosition.y+mSize.y);
 	if (mStyle == GRAPH_RENDER_FPS) {
 		for (i = 0; i < GRAPH_HISTORY_COUNT; i++) {
 			float v = 1.0f / (0.00001f + values[(head+i) % GRAPH_HISTORY_COUNT]);
 			float vx, vy;
 			if (v > 80.0f) v = 80.0f;
-			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * w;
-			vy = mPosition.y + h - ((v / 80.0f) * h);
+			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * mSize.x;
+			vy = mPosition.y +mSize.y - ((v / 80.0f) * mSize.y);
 			nvgLineTo(vg, vx, vy);
 		}
 	} else if (mStyle == GRAPH_RENDER_PERCENT) {
@@ -117,8 +119,8 @@ void PerfGraph::draw(NVGcontext* vg)
 			float v = values[(head+i) % GRAPH_HISTORY_COUNT] * 1.0f;
 			float vx, vy;
 			if (v > 100.0f) v = 100.0f;
-			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * w;
-			vy = mPosition.y + h - ((v / 100.0f) * h);
+			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * mSize.x;
+			vy = mPosition.y +mSize.y - ((v / 100.0f) * mSize.y);
 			nvgLineTo(vg, vx, vy);
 		}
 	} else {
@@ -126,54 +128,55 @@ void PerfGraph::draw(NVGcontext* vg)
 			float v = values[(head+i) % GRAPH_HISTORY_COUNT] * 1000.0f;
 			float vx, vy;
 			if (v > 20.0f) v = 20.0f;
-			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * w;
-			vy = mPosition.y + h - ((v / 20.0f) * h);
+			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * mSize.x;
+			vy = mPosition.y +mSize.y - ((v / 20.0f) * mSize.y);
 			nvgLineTo(vg, vx, vy);
 		}
 	}
-	nvgLineTo(vg, mPosition.x+w, mPosition.y+h);
-	nvgFillColor(vg, nvgRGBA(255,192,0,128));
+	nvgLineTo(vg, mPosition.x+mSize.x, mPosition.y+mSize.y);
+	nvgFillColor(vg, mForegroundColor);
 	nvgFill(vg);
 
 	nvgFontFace(vg, "sans");
 
-	if (mName[0] != '\0') {
+	
 		nvgFontSize(vg, 14.0f);
 		nvgTextAlign(vg, NVG_ALIGN_LEFT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,192));
-		nvgText(vg, mPosition.x+3,mPosition.y+1, mName.c_str(), NULL);
-	}
+		nvgText(vg, mPosition.x+3,mPosition.y+1, mCaption.c_str(), NULL);
+
 
 	if (mStyle == GRAPH_RENDER_FPS) {
 		nvgFontSize(vg, 18.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,255));
 		sprintf(str, "%.2f FPS", 1.0f / avg);
-		nvgText(vg, mPosition.x+w-3,mPosition.y+1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, NULL);
 
 		nvgFontSize(vg, 15.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_BOTTOM);
 		nvgFillColor(vg, nvgRGBA(240,240,240,160));
 		sprintf(str, "%.2f ms", avg * 1000.0f);
-		nvgText(vg, mPosition.x+w-3,mPosition.y+h-1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+mSize.y-1, str, NULL);
 	}
 	else if (mStyle == GRAPH_RENDER_PERCENT) {
 		nvgFontSize(vg, 18.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,255));
 		sprintf(str, "%.1f %%", avg * 1.0f);
-		nvgText(vg, mPosition.x+w-3,mPosition.y+1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, NULL);
 	} else {
 		nvgFontSize(vg, 18.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,255));
 		sprintf(str, "%.2f ms", avg * 1000.0f);
-		nvgText(vg, mPosition.x+w-3,mPosition.y+1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, NULL);
 	}
-    t = glfwGetTime();
-    dt = t- prevt;
-    prevt = t;
-    updateGraph(dt);
+
+  double t = glfwGetTime();
+  float dt = t - prevt;
+  prevt = t;
+  updateGraph(dt);
 }
 
 
