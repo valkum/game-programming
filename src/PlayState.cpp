@@ -10,12 +10,15 @@
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
 
+#include <GL/glu.h>
+
 #include <iostream>
 #include <vector>
 #include "Helper.hh"
 #include "Model.hh"
 #include "world/Skybox.hh"
 #include "world/TestObject.hh"
+#include "world/Terrain.hh"
 
 using namespace glm;
 using namespace std;
@@ -30,6 +33,7 @@ GenericCamera camera;
 
 Skybox *skybox;
 TestObject *cube;
+Terrain *terrain;
 
 void PlayState::init(CGame *game) {
   renderDebug = false;
@@ -62,6 +66,8 @@ void PlayState::init(CGame *game) {
   };
   // skybox = new Skybox(Model("cube.obj", 50.0f), paths);
   cube = new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
+  terrain = new Terrain();
+  terrain->init();
   debug() << "Geometry loaded" << endl;
 
 
@@ -83,6 +89,7 @@ void PlayState::init(CGame *game) {
   cubeShader = ShaderProgramCreator("cube").attributeLocations(
     vao->getAttributeLocations()).create();
 
+  terrainShader = ShaderProgramCreator("terrain").attributeLocations(vao->getAttributeLocations()).create();
 
   // debug_ab = SharedArrayBuffer(new ArrayBuffer());
   // debug_ab->defineAttribute("aPosition", GL_FLOAT, 3);
@@ -104,6 +111,9 @@ void PlayState::init(CGame *game) {
 
   cubeShader->use();
   cubeShader->setTexture("uTexture", cube->getTexture(), 2);
+
+  terrainShader->use();
+  terrainShader->setTexture("uTexture", cube->getTexture(), 2);
 
   // debug() << "Texture for skybox: " << skybox->getTexture() << endl;
   debug() << "Textures set" << endl;
@@ -133,6 +143,8 @@ GL_STENCIL_BUFFER_BIT);
 
 openGLCriticalError();
 
+  terrainShader->use();
+  terrain->render(terrainShader, &viewProjectionMatrix);
 
 openGLCriticalError();
 

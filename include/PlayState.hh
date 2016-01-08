@@ -47,6 +47,7 @@ private:
   static PlayState m_PlayState;
   bool renderDebug;
   SharedShaderProgram skyboxShader;
+  SharedShaderProgram terrainShader;
   SharedShaderProgram cubeShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;

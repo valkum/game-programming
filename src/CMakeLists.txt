@@ -21,6 +21,7 @@ set(SOURCE_FILES
     world/Entity.cpp
     world/TestObject.cpp
     world/Skybox.cpp
+    world/Terrain.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
