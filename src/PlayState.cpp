@@ -237,28 +237,44 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
   double speed = 5.0;        // magic value to scale the camera speed
 
   if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
+    if (key == GLFW_KEY_Q) { // upper case!
+      camera.FPSstyleLookAround(-timeElapsed * speed, 0); // turn left
+    }
+
     if (key == GLFW_KEY_W) { // upper case!
       camera.moveForward(timeElapsed * speed);
     }
 
-    if (key == GLFW_KEY_Q) { // upper case!
-      camera.FPSstyleLookAround(-timeElapsed * speed, 0);
-    }
-
-    if (key == GLFW_KEY_S) { // upper case!
-      camera.moveBack(timeElapsed * speed);
-    }
-
     if (key == GLFW_KEY_E) { // upper case!
-      camera.FPSstyleLookAround(timeElapsed * speed, 0);
+      camera.FPSstyleLookAround(timeElapsed * speed, 0); // turn right
+    }
+
+    if (key == GLFW_KEY_I) { // upper case!
+      camera.FPSstyleLookAround(0, -timeElapsed * speed); // turn upwards
     }
 
     if (key == GLFW_KEY_A) { // upper case!
       camera.moveLeft(timeElapsed * speed);
     }
 
+    if (key == GLFW_KEY_S) { // upper case!
+      camera.moveBack(timeElapsed * speed);
+    }
+
     if (key == GLFW_KEY_D) { // upper case!
       camera.moveRight(timeElapsed * speed);
+    }
+
+    if (key == GLFW_KEY_J) { // upper case!
+      camera.FPSstyleLookAround(-timeElapsed * speed, 0); // turn left
+    }
+
+    if (key == GLFW_KEY_K) { // upper case!
+      camera.FPSstyleLookAround(0, timeElapsed * speed); // turn downwards
+    }
+
+    if (key == GLFW_KEY_L) { // upper case!
+      camera.FPSstyleLookAround(timeElapsed * speed, 0); // turn right
     }
 
     if (key == GLFW_KEY_P) {
