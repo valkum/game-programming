@@ -29,8 +29,8 @@ PlayState PlayState::m_PlayState;
 GenericCamera camera;
 
 
-Skybox *skybox;
-TestObject *cube;
+// Skybox *skybox;
+// TestObject *cube;
 Terrain *terrain;
 
 void PlayState::init(CGame *game) {
@@ -63,7 +63,7 @@ void PlayState::init(CGame *game) {
     Settings::the()->getFullTexturePath() + "nuke_ft.png",
   };
   // skybox = new Skybox(Model("cube.obj", 50.0f), paths);
-  cube = new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
+  // cube = new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   terrain = new Terrain();
 
   debug() << "Geometry loaded" << endl;
@@ -133,6 +133,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
   glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
                                   camera.getViewMatrix();
+  //skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
 
   //glDepthFunc(GL_LEQUAL);
   // skyboxShader->use();
@@ -167,7 +168,6 @@ openGLCriticalError();
 }
 
 void PlayState::update(CGame *g, float delta) {
-//  skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
   camera.FPSstyleLookAround(0.001f, 0.0f);
 }
 
