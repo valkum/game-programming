@@ -1,12 +1,13 @@
 #version 330 
 
 in vec3 aPosition;
+in vec3 aTexCoord;
 in vec3 aNormal;
-in vec2 aTexCoord;
+
 
 // Output data ; will be interpolated for each fragment.
 //out vec3 vNormal;
-out vec2 vTexCoord;
+out vec3 vTexCoord;
 
 uniform mat4 uMVP;
 uniform mat4 uViewMatrix;

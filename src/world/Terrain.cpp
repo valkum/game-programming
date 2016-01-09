@@ -1,11 +1,21 @@
 #include "world/Terrain.hh"
+
+#include <ACGL/Utils/Log.hh>
 //#include <GL/gl.h>
 //#include <GL/glu.h>
 //#include <GL/glut.h>
 
+using namespace glm;
 using namespace ACGL::OpenGL;
+using namespace ACGL::Utils;
 
 class Terrain;
+
+struct Vertex {
+            glm::tvec3<float> position;
+            glm::tvec3<float> uv;
+            glm::tvec3<float> normal;
+        };
 
 /* calc height from greyscale bmp pixel per vertex
 Uint32 get_pixel(SDL_Surface *surface, int x, int y)
@@ -47,9 +57,8 @@ if ((TextureImage[0] = SDL_LoadBMP("terrain.bmp"))) {
 }
 */
 
-const int mapSize = 8;
 
-const int height[mapSize][mapSize] ={
+const int height[8][8] ={
   { 0, 0, 0, 0, 0, 0, 0, 0 },
   { 1, 1, 1, 1, 1, 1, 1, 1 },
   { 1, 3, 2, 3, 3, 4, 2, 1 },
@@ -60,43 +69,52 @@ const int height[mapSize][mapSize] ={
   { 1, 2, 1, 1, 1, 1, 1, 1 } };
 
 
-
-void Terrain::init() {
-  SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
-  vao = SharedVertexArrayObject(new VertexArrayObject());
+/**
+ * Use random method for heightfield.
+ */
+Terrain::Terrain() {
   
-  ab->defineAttribute("aPosition", GL_FLOAT, 3);
-  ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
-  ab->defineAttribute("aNormals", GL_FLOAT, 3);
-  
-  vao->setMode(GL_TRIANGLE_FAN);
-  int floatsPerVertex = 8;
-  int numVertices = mapSize*mapSize;
-  float* abData = new float[numVertices*floatsPerVertex];
-  int dataCount = 0;
-  for (int x = 0; x < mapSize; x++) { 
-    for (int z = 0; z < mapSize; z++) {
-      abData[dataCount++] = (float)x;
-      abData[dataCount++] = (float)height[x][z];
-      abData[dataCount++] = (float)z;
-
-      abData[dataCount++] = (float)x;
-      abData[dataCount++] = (float)z;
-
-      abData[dataCount++] = (float)0.0;
-      abData[dataCount++] = (float)1.0;
-      abData[dataCount++] = (float)0.0;
+  //vao->setMode(GL_TRIANGLE_STRIP);
+  // int floatsPerVertex = 8;
+  std::vector<Vertex> vertexData;
+  for (int x = 0; x < 7; x++) { 
+    for (int z = 0; z < 7; z++) {
+      //first triangle of quad
+      Vertex v = {glm::vec3(x, height[x][z], z), glm::vec3(x/8, z/8, 0), glm::vec3(0.0f, 1.0f, 0.0f)};
+      vertexData.push_back(v);
+      v = {glm::vec3(x+1, height[x+1][z], z), glm::vec3(x+1/8, z/8, 0), glm::vec3(0.0f, 1.0f, 0.0f)};
+      vertexData.push_back(v);
+      v = {glm::vec3(x, height[x][z+1], z+1), glm::vec3(x/8, z+1/8, 0), glm::vec3(0.0f, 1.0f, 0.0f)};
+      vertexData.push_back(v);
+      //second triangle of quad
+      v = {glm::vec3(x+1, height[x+1][z], z), glm::vec3(x+1/8, z/8, 0), glm::vec3(0.0f, 1.0f, 0.0f)};
+      vertexData.push_back(v);
+      v = {glm::vec3(x, height[x][z+1], z+1), glm::vec3(x/8, z+1/8, 0), glm::vec3(0.0f, 1.0f, 0.0f)};
+      vertexData.push_back(v);
+      v = {glm::vec3(x+1, height[x+1][z+1], z+1), glm::vec3(x+1/8, z+1/8, 0), glm::vec3(0.0f, 1.0f, 0.0f)};
+      vertexData.push_back(v);
     }
   }
-  ab->setDataElements(numVertices, abData);
-  delete[] abData;
+  debug() << vertexData.size() << std::endl;
+  SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
+  ab->defineAttribute("aPosition", GL_FLOAT, 3);
+  ab->defineAttribute("aTexCoord", GL_FLOAT, 3);
+  ab->defineAttribute("aNormals", GL_FLOAT, 3);
+  ab->setDataElements(vertexData.size(), glm::value_ptr(vertexData[0].position), GL_DYNAMIC_DRAW);
 
+  vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
-  
+
 }
 
-void Terrain::render(ACGL::OpenGL::SharedShaderProgram shader, 
-glm::mat4 *viewProjectionMatrix) {
-  shader->use();
+/**
+ * Update ArrayBuffer. This way we only render terrain in a defined radius.
+ *
+ */
+void Terrain::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
+  glm::mat4 modelMatrix = glm::translate(glm::vec3(0.0f,0.0f,0.0f)) * glm::scale<float>(glm::vec3(10.0f));
+  glm::mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
+  shader->setUniform("uMVP",         mvp);
+
   vao->render();
 }

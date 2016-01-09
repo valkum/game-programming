@@ -10,8 +10,6 @@
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
 
-#include <GL/glu.h>
-
 #include <iostream>
 #include <vector>
 #include "Helper.hh"
@@ -67,7 +65,7 @@ void PlayState::init(CGame *game) {
   // skybox = new Skybox(Model("cube.obj", 50.0f), paths);
   cube = new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   terrain = new Terrain();
-  terrain->init();
+
   debug() << "Geometry loaded" << endl;
 
 
@@ -86,10 +84,11 @@ void PlayState::init(CGame *game) {
   // skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
   // vao->getAttributeLocations()).create();
 
-  cubeShader = ShaderProgramCreator("cube").attributeLocations(
-    vao->getAttributeLocations()).create();
+  //cubeShader = ShaderProgramCreator("cube").attributeLocations(
+  //  vao->getAttributeLocations()).create();
 
-  terrainShader = ShaderProgramCreator("terrain").attributeLocations(vao->getAttributeLocations()).create();
+  terrainShader = ShaderProgramCreator("terrain").attributeLocations(
+    terrain->getVAO()->getAttributeLocations()).create();
 
   // debug_ab = SharedArrayBuffer(new ArrayBuffer());
   // debug_ab->defineAttribute("aPosition", GL_FLOAT, 3);
@@ -109,11 +108,11 @@ void PlayState::init(CGame *game) {
   // skyboxShader->use();
   // skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
 
-  cubeShader->use();
-  cubeShader->setTexture("uTexture", cube->getTexture(), 2);
+  //cubeShader->use();
+  //cubeShader->setTexture("uTexture", cube->getTexture(), 2);
 
-  terrainShader->use();
-  terrainShader->setTexture("uTexture", cube->getTexture(), 2);
+  //terrainShader->use();
+  //terrainShader->setTexture("uTexture", cube->getTexture(), 2);
 
   // debug() << "Texture for skybox: " << skybox->getTexture() << endl;
   debug() << "Textures set" << endl;
@@ -130,13 +129,12 @@ void PlayState::init(CGame *game) {
 
 void PlayState::draw(CGame *g, float *delta) {
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | 
-GL_STENCIL_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
                                   camera.getViewMatrix();
 
-  glDepthFunc(GL_LEQUAL);
+  //glDepthFunc(GL_LEQUAL);
   // skyboxShader->use();
   // skybox->render(skyboxShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
@@ -144,14 +142,15 @@ GL_STENCIL_BUFFER_BIT);
 openGLCriticalError();
 
   terrainShader->use();
+  terrainShader->setUniform("uViewMatrix", camera.getViewMatrix());
   terrain->render(terrainShader, &viewProjectionMatrix);
 
 openGLCriticalError();
 
-  cubeShader->use();
+  //cubeShader->use();
   // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
-  cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  cube->render(cubeShader, &viewProjectionMatrix);
+  //cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
+  //cube->render(cubeShader, &viewProjectionMatrix);
 
   // if(renderDebug) {
   //     debugShader->use();
@@ -235,7 +234,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
     if (key == GLFW_KEY_R) {
       ShaderProgramCreator("cube").update(cubeShader);
-      ShaderProgramCreator("skybox").update(skyboxShader);
+      ShaderProgramCreator("terrain").update(terrainShader);
     }
   }
 }
