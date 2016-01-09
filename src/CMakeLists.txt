@@ -5,6 +5,7 @@ include_directories(
 set(C_FLAGS_COMMON "-Wall -Werror")
 set(CMAKE_CXX_FLAGS "-std=c++11 -g ${C_FLAGS_COMMON}")
 set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
+set( CMAKE_VERBOSE_MAKEFILE 1 )
 
 set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
 set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
@@ -22,10 +23,12 @@ set(SOURCE_FILES
     world/TestObject.cpp
     world/Skybox.cpp
     world/Cloud.cpp
+    world/Cloth.cpp
     GUI/common.cpp
     GUI/GUIObject.cpp
     GUI/Gui.cpp
     GUI/Button.cpp
+    GUI/PerfGraph.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
@@ -110,13 +113,15 @@ TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${REQUIRED_LIBS})
 # 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "${dir}/assets"
 # )
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
-        PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove "${dir}/assets"
-    )
-    add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
+  message(STATUS "Linking Assets: ${dir}/assets -> ${CMAKE_SOURCE_DIR}/assets")
+  add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
         POST_BUILD
-        COMMAND ln -s ${CMAKE_SOURCE_DIR}/assets ${dir}/assets
-    )
+		IF(EXISTS "${dir}/assets" AND IS_DIRECTORY "${dir}/assets")
+			COMMAND rm -r ${dir}/assets && ln -s ../assets ${dir}/assets
+		ELSEIF(EXISTS "${dir}/assets")
+			COMMAND rm ${dir}/assets && ln -s ../assets ${dir}/assets
+		ELSE()
+			COMMAND echo "u dun goofed"
+		ENDIF())
 
 endif()

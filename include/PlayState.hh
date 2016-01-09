@@ -2,8 +2,11 @@
 #define PLAYSTATE_H
 #include "GameState.hh"
 
-#include <ACGL/OpenGL/GL.hh>
-#include <GLFW/glfw3.h>
+#ifndef GLINCLUDED
+#define GLINCLUDED
+# include <ACGL/OpenGL/GL.hh>
+# include <GLFW/glfw3.h>
+#endif
 
 #include <ACGL/OpenGL/Creator/VertexArrayObjectCreator.hh>
 
@@ -43,12 +46,12 @@ protected:
   PlayState() {}
 
 private:
-
   static PlayState m_PlayState;
   bool renderDebug;
   SharedShaderProgram skyboxShader;
   SharedShaderProgram cubeShader;
   SharedShaderProgram cloudShader;
+  SharedShaderProgram clothShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;
   SharedShaderProgram     debugShader;

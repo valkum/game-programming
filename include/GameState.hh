@@ -2,6 +2,8 @@
 #define GAMESTATE_H
 
 #include "Game.hh"
+#include "GUI/Gui.hh"
+#include "GUI/elements.hh"
 
 class CGameState {
 public:
@@ -48,6 +50,9 @@ public:
 protected:
 
   CGameState() {}
+
+  Gui* gui;
+  NVGcontext* vg = nullptr;
 };
 
 #endif // ifndef GAMESTATE_H

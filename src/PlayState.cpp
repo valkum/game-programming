@@ -9,6 +9,7 @@
 #include <ACGL/Base/Settings.hh>
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
 
 
 #include <iostream>
@@ -16,8 +17,15 @@
 #include "Helper.hh"
 #include "Model.hh"
 #include "world/Skybox.hh"
+#include "world/Vec3.hh"
 #include "world/TestObject.hh"
 #include "world/Cloud.hh"
+#include "world/Cloth.hh"
+
+
+//#define TIME_STEPSIZE2 0.25f*0.25f
+// 1/64 Tickrate
+#define TIME_STEPSIZE2 0.0156f
 
 using namespace glm;
 using namespace std;
@@ -29,10 +37,31 @@ using namespace ACGL::Scene;
 PlayState PlayState::m_PlayState;
 GenericCamera camera;
 
-
 Skybox *skybox;
 TestObject *cube;
 Cloud *cloud;
+Cloth *cloth;
+float ball_time = 0;
+float ball_radius = 2;
+vec3 ball_pos(7,-5,0);
+
+
+
+/*
+void reshape(int w, int h){
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION); 
+	glLoadIdentity();  
+	if (h==0)  
+		gluPerspective(80,(float)w,1.0,5000.0);
+	else
+		gluPerspective (80,( float )w /( float )h,1.0,5000.0 );
+	glMatrixMode(GL_MODELVIEW);  
+	glLoadIdentity(); 
+}
+*/
+
+PerfGraph *graph;
 
 void PlayState::init(CGame *game) {
   renderDebug = false;
@@ -43,6 +72,12 @@ void PlayState::init(CGame *game) {
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+  gui = new Gui(vg, game->g_window);
+
+  graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
+  graph->setPosition(ivec2(400,400));
+  graph->setSize(ivec2(200,35));
 
 
   // define where shaders and textures can be found:
@@ -64,15 +99,17 @@ void PlayState::init(CGame *game) {
     Settings::the()->getFullTexturePath() + "nuke_ft.png",
   };
   skybox = new Skybox(Model("cube.obj", 50.0f), paths);
-  cube   =
-    new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
-                   vec3(0.0f, 0.0f, 0.0f));
 
   cloud = new Cloud(500);
   cloud->setPosition(vec3(0.0f, 1.0f, -1.0f));
 
-  debug() << "Geometry loaded" << endl;
+  // cube   =
+  //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
+  //                  vec3(0.0f, 0.0f, 0.0f));
+  cube   = new TestObject(Model("aphroditegirl.obj", 100.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
+  cloth = new Cloth(10,20,24,24);
 
+  debug() << "Geometry loaded" << endl;
 
   debug() << "Loading shaders stage" << endl;
 
@@ -88,6 +125,8 @@ void PlayState::init(CGame *game) {
 
   cubeShader = ShaderProgramCreator("cube").attributeLocations(
     vao->getAttributeLocations()).create();
+  clothShader = ShaderProgramCreator("cloth").attributeLocations(
+    cloth->getVAO()->getAttributeLocations()).create();
 
   skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
     vao->getAttributeLocations()).create();
@@ -130,11 +169,11 @@ void PlayState::init(CGame *game) {
 }
 
 void PlayState::draw(CGame *g, float *delta) {
+  skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
-                                  camera.getViewMatrix();
+  glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() * camera.getViewMatrix();
 
   glDepthFunc(GL_LEQUAL);
   skyboxShader->use();
@@ -145,17 +184,16 @@ void PlayState::draw(CGame *g, float *delta) {
   cloudShader->use();
   cloud->render(cloudShader, &viewProjectionMatrix);
 
-
-  cubeShader->use();
+  // cubeShader->use();
   // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
   cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
   cube->render(cubeShader, &viewProjectionMatrix);
 
+  // drawing
 
-
-
-  
-
+  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  clothShader->use();
+  cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
 
   // if(renderDebug) {
   //     debugShader->use();
@@ -163,13 +201,18 @@ void PlayState::draw(CGame *g, float *delta) {
   //     debug_vao->render();
   // }
   openGLCriticalError();
+
+  gui->drawAll();
 }
 
 void PlayState::update(CGame *g, float dt) {
 
-  // Sollte glaube ich eher nach render?
-  skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
   cloud->update(dt, 5);
+
+  cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
+  glm::vec3 random = sphericalRand(0.5f);
+  cloth->windForce((vec3(0.3f,0.3f,0.03f)+random)*dt); // generate some wind each frame
+  cloth->timeStep(dt); // calculate the particle positions of the next frame
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
@@ -193,7 +236,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   double speed = 5.0;        // magic value to scale the camera speed
 
-  if (action == GLFW_PRESS | action == GLFW_REPEAT) {
+  if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
     if (key == GLFW_KEY_W) { // upper case!
       camera.moveForward(timeElapsed * speed);
     }
@@ -219,12 +262,19 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_P) {
-    
+      for (int i = 0; i < 10; ++i)
+      {
+      debug() << graph->values[i] << endl;
+      }
     }
 
     if (key == GLFW_KEY_R) {
       ShaderProgramCreator("cube").update(cubeShader);
       ShaderProgramCreator("skybox").update(skyboxShader);
+      ShaderProgramCreator("cloth").update(skyboxShader);
+    }
+    if (key == GLFW_KEY_SPACE) {
+      cloth->windForce((vec3(1.0f,-0.2f,0.3f)));
     }
   }
 }

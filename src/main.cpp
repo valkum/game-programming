@@ -18,10 +18,35 @@ using namespace glm;
 using namespace ACGL;
 using namespace ACGL::Utils;
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
   // @todo: add loadLevel and version maybe
-  run(argv);
+
+  //int opt;
+  bool debug = false;
+  bool printVersion = false;
+
+  // Shut GetOpt error messages down (return '?'): 
+  //opterr = 0;
+
+  // Retrieve the options:
+  //while ( (opt = getopt(argc, argv, "dv")) != -1 ) {  // for each option...
+  //    switch ( opt ) {
+  //        case 'd':
+  //                debug = true;
+  //            break;
+  //        case 'v':
+  //                printVersion = true;
+  //            break;
+  //        case '?':  // unknown option...
+  //                cerr << "Unknown option: '" << char(optopt) << "'!" << endl;
+  //            break;
+  //    }
+  //}
+  if(!printVersion)
+    run(debug);
+  else
+    printf("Version: none");
 }
 
 void setGLFWHintsForOpenGLVersion(unsigned int _version)
@@ -79,18 +104,20 @@ int createWindow() {
   return true;
 }
 
-int run(char *argv[]) {
+int run(bool debug) {
   if (!createWindow()) {
     glfwTerminate();
     exit(-1);
   }
 
   vector<std::string> tmp;
-  tmp.push_back(std::string(argv[0]));
-  glfwSetWindowTitle(g_window, tmp[tmp.size() - 1].c_str());
+  //glfwSetWindowTitle(g_window, "Window");
   CGame *game = CGame::instance();
   game->init(g_window);
-  game->changeState(IntroState::instance());
+  if(debug)
+    game->changeState(PlayState::instance());
+  else  
+    game->changeState(IntroState::instance());
 
   // Ensure we can capture the escape key being pressed below
   // glfwSetInputMode( g_window, GLFW_STICKY_KEYS, 1 );
@@ -98,7 +125,7 @@ int run(char *argv[]) {
   // glfwSetKeyCallback( g_window, keyCallback );
 
   const int   TICKS_PER_SECOND = 64;
-  const float frameTime        = 1.0 / TICKS_PER_SECOND;
+  const float frameTime        = 1.0f / TICKS_PER_SECOND;
   const int   MAX_FRAMESKIP    = 5;
 
   double newTime = glfwGetTime();
@@ -109,8 +136,6 @@ int run(char *argv[]) {
   while (!glfwWindowShouldClose(g_window))
   {
     loops = 0;
-    double now = glfwGetTime();
-
     while (glfwGetTime() > newTime && loops < MAX_FRAMESKIP) {
       /* Poll for and process events */
       glfwPollEvents();
@@ -124,14 +149,7 @@ int run(char *argv[]) {
 
     // glfwGetFramebufferSize(g_window, &width, &height);
     game->draw(&extrapolation);
-
-    // @todo betterFPS meter? maybe draw in context?
-    std::stringstream sstream(std::stringstream::in | std::stringstream::out);
-    sstream << std::setprecision(1) << std::fixed
-            << tmp[tmp.size() - 1] << " - FPS: " << 1 / (glfwGetTime() - now) <<
-    " " << 1000 * (glfwGetTime() - now) / 1 << " msec";
-    glfwSetWindowTitle(g_window, sstream.str().c_str());
-
+    
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glfwSwapBuffers(g_window);
   }
