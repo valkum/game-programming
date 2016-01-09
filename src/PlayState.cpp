@@ -38,7 +38,7 @@ PlayState PlayState::m_PlayState;
 GenericCamera camera;
 
 Skybox *skybox;
-TestObject *cube;
+//TestObject *cube;
 Cloud *cloud;
 Cloth *cloth;
 float ball_time = 0;
@@ -106,7 +106,7 @@ void PlayState::init(CGame *game) {
   // cube   =
   //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
   //                  vec3(0.0f, 0.0f, 0.0f));
-  cube   = new TestObject(Model("aphroditegirl.obj", 100.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
+  // cube   = new TestObject(Model("aphroditegirl.obj", 100.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   cloth = new Cloth(10,20,24,24);
 
   debug() << "Geometry loaded" << endl;
@@ -123,8 +123,8 @@ void PlayState::init(CGame *game) {
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  cubeShader = ShaderProgramCreator("cube").attributeLocations(
-    vao->getAttributeLocations()).create();
+  // cubeShader = ShaderProgramCreator("cube").attributeLocations(
+    // vao->getAttributeLocations()).create();
   clothShader = ShaderProgramCreator("cloth").attributeLocations(
     cloth->getVAO()->getAttributeLocations()).create();
 
@@ -151,8 +151,8 @@ void PlayState::init(CGame *game) {
   skyboxShader->use();
   skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
 
-  cubeShader->use();
-  cubeShader->setTexture("uTexture", cube->getTexture(), 2);
+  // cubeShader->use();
+  // cubeShader->setTexture("uTexture", cube->getTexture(), 2);
 
   // cloudShader->use();
   // cloudShader->setTexture("", cloud->getTexture(), 3);
@@ -186,8 +186,8 @@ void PlayState::draw(CGame *g, float *delta) {
 
   // cubeShader->use();
   // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
-  cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  cube->render(cubeShader, &viewProjectionMatrix);
+  // cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
+  // cube->render(cubeShader, &viewProjectionMatrix);
 
   // drawing
 
