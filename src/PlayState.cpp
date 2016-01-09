@@ -193,11 +193,11 @@ void PlayState::draw(CGame *g, float *delta) {
 
   //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   clothShader->use();
-  cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
+  cloth->render(clothShader, &viewProjectionMatrix); // finally draw the cloth with smooth shading
 
   // if(renderDebug) {
   //     debugShader->use();
-  //     debugShader->setUniform("uViewProjectionMatrix", viewProjectioMatrix);
+  //     debugShader->setUniform("uViewProjectionMatrix", viewProjectionMatrix);
   //     debug_vao->render();
   // }
   openGLCriticalError();

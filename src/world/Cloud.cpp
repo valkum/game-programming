@@ -11,7 +11,7 @@ using namespace ACGL::OpenGL;
 using namespace ACGL::Utils;
 using namespace std;
 
-  // Particle: aPosition and aColor in one vector.
+  // CloudParticle: aPosition and aColor in one vector.
 static GLfloat particle_quad[6*5] = {
       -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
       0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
@@ -40,7 +40,7 @@ void Cloud::init() {
 
 
   for (uint_t i = 0; i < nr_particles; ++i) {
-    particles.push_back(Particle());
+    particles.push_back(CloudParticle());
   }
 }
 
@@ -51,7 +51,7 @@ void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProj
   mat4 mvp = (*viewProjectioMatrix) * glm::scale(vec3(.2f));
   shader->setUniform("uMVP", mvp);
 
-  for (Particle particle : particles)
+  for (CloudParticle particle : particles)
   {
       if (particle.Life > 0.0f)
       {
@@ -75,7 +75,7 @@ void Cloud::update(float dt, uint_t newParticles) {
   // Update all particles
   for (uint_t i = 0; i < this->amount; ++i)
   {
-      Particle &p = this->particles[i];
+      CloudParticle &p = this->particles[i];
       p.Life -= dt; // reduce life
       if (p.Life > 0.0f)
       { // particle is alive, thus update
@@ -106,7 +106,7 @@ uint_t Cloud::firstUnusedParticle() {
     return 0;
 }
 
-void Cloud::respawnParticle(Particle &particle, glm::vec3 offset) {
+void Cloud::respawnParticle(CloudParticle &particle, glm::vec3 offset) {
     glm::vec3 random = sphericalRand(1.0f);
     float rColor = 0.4 + ((rand() % 100) / 100.0f);
     particle.Position = position + random + offset;
