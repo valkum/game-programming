@@ -168,7 +168,6 @@ openGLCriticalError();
 }
 
 void PlayState::update(CGame *g, float delta) {
-  camera.FPSstyleLookAround(0.001f, 0.0f);
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
