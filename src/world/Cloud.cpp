@@ -24,8 +24,7 @@ static GLfloat particle_quad[6*5] = {
 
 
 Cloud::Cloud(uint_t amount) : Entity(vec3(0.f, 0.f, -1.f), vec3(0.f)), amount(amount) {
-  texture = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator(
-                                                             "box.png"));
+  texture = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("box.png"));
   init();
 }
 

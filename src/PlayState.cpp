@@ -131,7 +131,7 @@ void PlayState::init(CGame *game) {
   skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
     vao->getAttributeLocations()).create();
 
-  cloudShader = ShaderProgramCreator("particle").attributeLocations(cloud->getVao()->getAttributeLocations()).create();
+  cloudShader = ShaderProgramCreator("cloudParticle").attributeLocations(cloud->getVao()->getAttributeLocations()).create();
 
   // debug_ab = SharedArrayBuffer(new ArrayBuffer());
   // debug_ab->defineAttribute("aPosition", GL_FLOAT, 3);
