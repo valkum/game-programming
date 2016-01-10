@@ -169,8 +169,7 @@ void PlayState::init(CGame *game) {
 }
 
 void PlayState::draw(CGame *g, float *delta) {
-  skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
-  // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
+  skybox->setPosition(vec3(camera.getPosition().x, camera.getPosition().y, camera.getPosition().z));
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() * camera.getViewMatrix();
