@@ -49,7 +49,8 @@ private:
   static PlayState m_PlayState;
   bool renderDebug;
   SharedShaderProgram skyboxShader;
-  SharedShaderProgram cubeShader;
+  //SharedShaderProgram cubeShader;
+  SharedShaderProgram lowPolyManShader;
   SharedShaderProgram clothShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;

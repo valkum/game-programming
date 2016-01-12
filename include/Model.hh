@@ -17,6 +17,8 @@ public:
   void setScale(float scale);
   void render();
 
+  ACGL::OpenGL::SharedVertexArrayObject getVAO(){ return object; }
+
 private:
 
   ACGL::OpenGL::SharedVertexArrayObject object;

@@ -37,7 +37,8 @@ PlayState PlayState::m_PlayState;
 GenericCamera camera;
 
 Skybox *skybox;
-TestObject *cube;
+//TestObject *cube;
+TestObject *lowPolyMan;
 Cloth *cloth;
 float ball_time = 0;
 float ball_radius = 2;
@@ -100,7 +101,7 @@ void PlayState::init(CGame *game) {
   // cube   =
   //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
   //                  vec3(0.0f, 0.0f, 0.0f));
-  cube   = new TestObject(Model("aphroditegirl.obj", 100.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
+  lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   cloth = new Cloth(10,20,24,24);
   debug() << "Geometry loaded" << endl;
 
@@ -116,8 +117,12 @@ void PlayState::init(CGame *game) {
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  cubeShader = ShaderProgramCreator("cube").attributeLocations(
-    vao->getAttributeLocations()).create();
+  lowPolyManShader = ShaderProgramCreator("low_poly_man").attributeLocations(
+    lowPolyMan->getVAO()->getAttributeLocations()).create();
+  //cubeShader = ShaderProgramCreator("cube").attributeLocations(
+  //  vao->getAttributeLocations()).create();
+  //cubeShader = ShaderProgramCreator("cube").attributeLocations(
+  //  lowPolyMan->getVAO()->getAttributeLocations()).create();
   clothShader = ShaderProgramCreator("cloth").attributeLocations(
     cloth->getVAO()->getAttributeLocations()).create();
 
@@ -142,8 +147,8 @@ void PlayState::init(CGame *game) {
   skyboxShader->use();
   skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
 
-  cubeShader->use();
-  cubeShader->setTexture("uTexture", cube->getTexture(), 2);
+  //cubeShader->use();
+  //cubeShader->setTexture("uTexture", lowPolyMan->getTexture(), 2);
 
   debug() << "Texture for cube: " << skybox->getTexture() << endl;
   debug() << "Textures set" << endl;
@@ -174,12 +179,14 @@ void PlayState::draw(CGame *g, float *delta) {
   glDepthFunc(GL_LESS);
 
 
-  // cubeShader->use();
+  lowPolyManShader->use();
+  //cubeShader->use();
 
   // // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
-  cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  cube->render(cubeShader, &viewProjectioMatrix);
+  lowPolyManShader->setUniform("uViewMatrix", camera.getViewMatrix());
+  lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
 
+  //cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
 
   // drawing
 
@@ -260,7 +267,8 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_R) {
-      ShaderProgramCreator("cube").update(cubeShader);
+      //ShaderProgramCreator("cube").update(cubeShader);
+      ShaderProgramCreator("low_poly_man").update(lowPolyManShader);
       ShaderProgramCreator("skybox").update(skyboxShader);
       ShaderProgramCreator("cloth").update(skyboxShader);
     }

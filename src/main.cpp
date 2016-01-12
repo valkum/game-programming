@@ -70,6 +70,7 @@ void setGLFWHintsForOpenGLVersion(unsigned int _version)
   glfwWindowHint(GLFW_OPENGL_PROFILE,        GLFW_OPENGL_CORE_PROFILE);
     # endif // ifdef ACGL_OPENGL_PROFILE_CORE
 #endif // ifdef __APPLE__
+   glfwSwapInterval(0);
 }
 
 int createWindow() {
