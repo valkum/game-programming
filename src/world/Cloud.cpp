@@ -73,17 +73,38 @@ void Cloud::spawn(uint_t num) {
   }
 }
 
-void Cloud::update(float dt) {
+void Cloud::density() {
+  float distance = 0.0f;
+  float neighbors;
   // Update all particles
   for (uint_t i = 0; i < this->amount; ++i)
   {
       CloudParticle &p = this->particles[i];
-      // p.Life -= dt; // reduce life
-      // if (p.Life > 0.0f)
-      // { // particle is alive, thus update
-          // p.Position += p.Velocity * dt;
-          p.Color.a -= tanh(p.Life);
-      // }
+      if (p.Life > 0.0f) // particle is alive, thus update
+      {
+          neighbors = 0;
+          for (uint_t j = 0; j < this->amount; ++j) // calculate liveness based on neighboring particles
+          {
+              CloudParticle &n = this->particles[j];
+              if (n.Life > 0.0f) // online live neighbors are relevant
+              {
+                  distance = sqrtf(dot(n.Position - p.Position, n.Position - p.Position));
+                  if (distance > 0 && distance <= 0.75f){
+                      neighbors += 1/distance;
+                  }
+              }
+          }
+          p.Life = neighbors / 10.0f;
+          // debug() << p.Life << endl;
+          if (p.Life < 0.1f) { // Life in range 0.5 to 1.0
+              p.Life = 0.1f;
+          } else if (p.Life > 1.0f) {
+              p.Life = 1.0f;
+          }
+          // debug() << p.Life << endl;
+          // p.Color.a -= tanh(p.Life);
+          p.Color.a *= p.Life;
+      }
   }
 }
 
