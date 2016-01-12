@@ -38,7 +38,7 @@ PlayState PlayState::m_PlayState;
 GenericCamera camera;
 
 Skybox *skybox;
-//TestObject *cube;
+// TestObject *cube;
 Cloud *cloud;
 Cloth *cloth;
 float ball_time = 0;
@@ -123,13 +123,11 @@ void PlayState::init(CGame *game) {
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  // cubeShader = ShaderProgramCreator("cube").attributeLocations(
-    // vao->getAttributeLocations()).create();
-  clothShader = ShaderProgramCreator("cloth").attributeLocations(
-    cloth->getVAO()->getAttributeLocations()).create();
+  // cubeShader = ShaderProgramCreator("cube").attributeLocations(vao->getAttributeLocations()).create();
 
-  skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
-    vao->getAttributeLocations()).create();
+  clothShader = ShaderProgramCreator("cloth").attributeLocations(cloth->getVAO()->getAttributeLocations()).create();
+
+  skyboxShader = ShaderProgramCreator("skybox").attributeLocations(vao->getAttributeLocations()).create();
 
   cloudShader = ShaderProgramCreator("cloudParticle").attributeLocations(cloud->getVao()->getAttributeLocations()).create();
 
@@ -179,13 +177,12 @@ void PlayState::draw(CGame *g, float *delta) {
   glm::vec3 cameraRight_worldspace = glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
   glm::vec3 cameraUp_worldspace = glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
 
+  // drawing
+
   glDepthFunc(GL_LEQUAL);
   skyboxShader->use();
   skybox->render(skyboxShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
-
-
-
 
   // cubeShader->use();
   // // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
@@ -196,11 +193,6 @@ void PlayState::draw(CGame *g, float *delta) {
   cloudShader->setUniform("uCameraRight_worldspace", cameraRight_worldspace);
   cloudShader->setUniform("uCameraUp_worldspace", cameraUp_worldspace);
   cloud->render(cloudShader, &viewProjectionMatrix);
-
-
-
-
-  // drawing
 
   //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   clothShader->use();
@@ -224,9 +216,6 @@ void PlayState::update(CGame *g, float dt) {
   glm::vec3 random = sphericalRand(0.5f);
   cloth->windForce((vec3(0.3f,0.3f,0.03f)+random)*dt); // generate some wind each frame
   cloth->timeStep(dt); // calculate the particle positions of the next frame
-
-  // Sollte glaube ich eher nach render?
-  cloud->update(dt);
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
