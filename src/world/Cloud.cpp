@@ -5,6 +5,7 @@
 #include <ACGL/OpenGL/Managers.hh>
 #include <ACGL/Utils/Log.hh>
 #include <glm/gtc/random.hpp>
+#include <math.h>
 
 
 using namespace ACGL::OpenGL;
@@ -24,7 +25,7 @@ static GLfloat particle_quad[6*5] = {
 
 
 Cloud::Cloud(uint_t amount) : Entity(vec3(0.f, 0.f, -1.f), vec3(0.f)), amount(amount) {
-  texture = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("box.png"));
+  texture = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("cloud_particle.png"));
   nr_particles = amount;
   init();
 }
@@ -43,7 +44,7 @@ void Cloud::init() {
     particles.push_back(CloudParticle());
   }
 
-  spawnParticles(100);
+  spawn(100);
 }
 
 void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
@@ -67,12 +68,10 @@ void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProj
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Cloud::spawnParticles(uint_t newParticles) {
-  // Add new particles 
-  for (uint_t i = 0; i < newParticles; ++i)
-  {
-      int unusedParticle = firstUnusedParticle();
-      respawnParticle(particles[unusedParticle], vec3(0));
+void Cloud::spawn(uint_t num) {
+  for(uint_t i = 0; i < num; ++i) {
+    int unusedParticle = firstUnusedParticle();
+    respawnParticle(particles[unusedParticle], vec3(this->particles[i].Position.x+1,0 ,0)); 
   }
 }
 
@@ -84,8 +83,8 @@ void Cloud::update(float dt) {
       // p.Life -= dt; // reduce life
       // if (p.Life > 0.0f)
       // { // particle is alive, thus update
-          p.Position += p.Velocity * dt; 
-          p.Color.a -= dt * 1.5;
+          p.Position += p.Velocity * dt;
+          p.Color.a -= tanh(p.Life);
       // }
   }
 }
@@ -116,6 +115,6 @@ void Cloud::respawnParticle(CloudParticle &particle, glm::vec3 offset) {
     float rColor = 0.4 + ((rand() % 100) / 100.0f);
     particle.Position = position + random + offset;
     particle.Color = glm::vec4(rColor, rColor, rColor, 1.0f);
-    particle.Life = 1.0f;
-    particle.Velocity = vec3(0,1,0) * 10.0f;
+    particle.Life = 10.0f;
+    particle.Velocity = vec3(0,1,0) * 1.0f;
 }
