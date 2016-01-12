@@ -25,6 +25,7 @@ static GLfloat particle_quad[6*5] = {
 
 Cloud::Cloud(uint_t amount) : Entity(vec3(0.f, 0.f, -1.f), vec3(0.f)), amount(amount) {
   texture = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("box.png"));
+  nr_particles = amount;
   init();
 }
 
@@ -80,12 +81,12 @@ void Cloud::update(float dt) {
   for (uint_t i = 0; i < this->amount; ++i)
   {
       CloudParticle &p = this->particles[i];
-      p.Life -= dt; // reduce life
-      if (p.Life > 0.0f)
-      { // particle is alive, thus update
+      // p.Life -= dt; // reduce life
+      // if (p.Life > 0.0f)
+      // { // particle is alive, thus update
           p.Position += p.Velocity * dt; 
           p.Color.a -= dt * 1.5;
-      }
+      // }
   }
 }
 
