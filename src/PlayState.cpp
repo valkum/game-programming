@@ -103,9 +103,7 @@ void PlayState::init(CGame *game) {
   cloud = new Cloud(500);
   cloud->setPosition(vec3(3.0f, 3.0f, -1.0f));
 
-  // cube   =
-  //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
-  //                  vec3(0.0f, 0.0f, 0.0f));
+  // cube = new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   // cube   = new TestObject(Model("aphroditegirl.obj", 100.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   cloth = new Cloth(10,20,24,24);
 
