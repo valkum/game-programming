@@ -301,7 +301,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     if (key == GLFW_KEY_R) {
       ShaderProgramCreator("cube").update(cubeShader);
       ShaderProgramCreator("skybox").update(skyboxShader);
-      ShaderProgramCreator("cloth").update(skyboxShader);
+      ShaderProgramCreator("cloth").update(clothShader);
     }
     
     if (key == GLFW_KEY_SPACE) {
