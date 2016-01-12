@@ -148,8 +148,8 @@ void PlayState::init(CGame *game) {
 
 
   debug() << "Set Textures Stage" << endl;
-  // skyboxShader->use();
-  // skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
+  skyboxShader->use();
+  skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
 
 
   // cubeShader->use();
@@ -179,10 +179,10 @@ void PlayState::draw(CGame *g, float *delta) {
   glm::vec3 cameraRight_worldspace = glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
   glm::vec3 cameraUp_worldspace = glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
 
-  // glDepthFunc(GL_LEQUAL);
-  // skyboxShader->use();
-  // skybox->render(skyboxShader, &viewProjectionMatrix);
-  // glDepthFunc(GL_LESS);
+  glDepthFunc(GL_LEQUAL);
+  skyboxShader->use();
+  skybox->render(skyboxShader, &viewProjectionMatrix);
+  glDepthFunc(GL_LESS);
 
 
 
