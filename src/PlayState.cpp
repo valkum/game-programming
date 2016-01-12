@@ -218,7 +218,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
 void PlayState::update(CGame *g, float dt) {
 
-  cloud->update(dt);
+  // cloud->update(dt);
 
   cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
   glm::vec3 random = sphericalRand(0.5f);

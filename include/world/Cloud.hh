@@ -13,7 +13,7 @@ public:
   ACGL::OpenGL::SharedVertexArrayObject getVao() { return vao; }
   ACGL::OpenGL::SharedArrayBuffer getAb() {return ab;}
   inline ACGL::OpenGL::SharedTexture2D getTexture() {
-    return this->texture;
+    return this->cloudTex;
   }
   void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix);
   void update(float dt);
@@ -30,7 +30,7 @@ private:
   std::vector<CloudParticle> particles;
   ACGL::OpenGL::SharedVertexArrayObject vao;
   ACGL::OpenGL::SharedArrayBuffer ab;
-  ACGL::OpenGL::SharedTexture2D texture;
+  ACGL::OpenGL::SharedTexture2D cloudTex;
 };
 
 

@@ -25,7 +25,7 @@ static GLfloat particle_quad[6*5] = {
 
 
 Cloud::Cloud(uint_t amount) : Entity(vec3(0.f, 0.f, -1.f), vec3(0.f)), amount(amount) {
-  texture = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("cloud_particle.png"));
+  cloudTex = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("cloud_particle.png"));
   nr_particles = amount;
   init();
 }
@@ -50,7 +50,7 @@ void Cloud::init() {
 void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
   // Use additive blending to give it a 'glow' effect
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-  shader->use();
+  // shader->use();
   mat4 mvp = (*viewProjectionMatrix) * glm::scale(vec3(.2f));
   shader->setUniform("uMVP", mvp);
 
@@ -59,7 +59,8 @@ void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProj
       // if (particle.Life > 0.0f)
       // {
           shader->setUniform("uOffset", particle.Position);
-          shader->setUniform("uColor", particle.Color);
+          // shader->setUniform("uColor", particle.Color);
+          shader->setTexture("uTexture", cloudTex, 3);
           
           vao->render();
       // }
@@ -83,7 +84,7 @@ void Cloud::update(float dt) {
       // p.Life -= dt; // reduce life
       // if (p.Life > 0.0f)
       // { // particle is alive, thus update
-          p.Position += p.Velocity * dt;
+          // p.Position += p.Velocity * dt;
           p.Color.a -= tanh(p.Life);
       // }
   }
