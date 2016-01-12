@@ -5,6 +5,7 @@
 #include <ACGL/OpenGL/Managers.hh>
 #include <ACGL/Utils/Log.hh>
 #include <glm/gtc/random.hpp>
+#include <glm/gtc/noise.hpp>
 #include <math.h>
 
 
@@ -43,7 +44,20 @@ void Cloud::init() {
     particles.push_back(CloudParticle());
   }
 
-  spawn(100);
+  // spawn(25);
+  for (float i = 0.0f; i < 15.0f; i+=0.5f)
+  {
+    for (float j = 0.0f; j < 15.0f; j+=0.5f)
+    {
+      for (float k = 5.0f; k < 7.5f; k+=0.5f)
+      {
+        float noise = (glm::perlin(vec3(i, k, j)) + 2) / 3.0f;
+        debug() << noise << endl;
+        respawnParticle(particles[firstUnusedParticle()], vec3(i, k, j), 1.0f, vec3(0.0f), noise);
+      }
+    }
+  }
+  density();
 }
 
 void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
@@ -106,6 +120,18 @@ void Cloud::density() {
           p.Color.a *= p.Life;
       }
   }
+}
+
+void Cloud::update(float dt) {
+  // Update all particles
+  for (uint_t i = 0; i < this->amount; ++i)
+  {
+      CloudParticle &p = this->particles[i];
+      if (p.Life > 0.0f) // particle is alive, thus update
+      {
+          p.Position += p.Velocity * dt;
+      }
+  }  
 }
 
 uint_t Cloud::firstUnusedParticle() {

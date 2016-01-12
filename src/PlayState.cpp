@@ -100,8 +100,8 @@ void PlayState::init(CGame *game) {
   };
   skybox = new Skybox(Model("cube.obj", 50.0f), paths);
 
-  cloud = new Cloud(500);
-  cloud->setPosition(vec3(3.0f, 3.0f, -1.0f));
+  cloud = new Cloud(5000);
+  cloud->setPosition(vec3(0.0f, 0.0f, 0.0f));
 
   // cube = new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   // cube   = new TestObject(Model("aphroditegirl.obj", 100.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
@@ -208,7 +208,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
 void PlayState::update(CGame *g, float dt) {
 
-  // cloud->update(dt);
+  cloud->update(dt);
 
   cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
   glm::vec3 random = sphericalRand(0.5f);
