@@ -101,7 +101,7 @@ void PlayState::init(CGame *game) {
   skybox = new Skybox(Model("cube.obj", 50.0f), paths);
 
   cloud = new Cloud(500);
-  cloud->setPosition(vec3(0.0f, 1.0f, -1.0f));
+  cloud->setPosition(vec3(3.0f, 3.0f, -1.0f));
 
   // cube   =
   //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
@@ -148,8 +148,8 @@ void PlayState::init(CGame *game) {
 
 
   debug() << "Set Textures Stage" << endl;
-  skyboxShader->use();
-  skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
+  // skyboxShader->use();
+  // skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
 
   // cubeShader->use();
   // cubeShader->setTexture("uTexture", cube->getTexture(), 2);
@@ -174,13 +174,13 @@ void PlayState::draw(CGame *g, float *delta) {
 
   glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() * camera.getViewMatrix();
 
-  glDepthFunc(GL_LEQUAL);
-  skyboxShader->use();
-  skybox->render(skyboxShader, &viewProjectionMatrix);
-  glDepthFunc(GL_LESS);
+  // glDepthFunc(GL_LEQUAL);
+  // skyboxShader->use();
+  // skybox->render(skyboxShader, &viewProjectionMatrix);
+  // glDepthFunc(GL_LESS);
 
 
-  cloudShader->use();
+  // cloudShader->use();
   cloud->render(cloudShader, &viewProjectionMatrix);
 
   // cubeShader->use();
@@ -206,7 +206,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
 void PlayState::update(CGame *g, float dt) {
 
-  cloud->update(dt, 5);
+  cloud->update(dt);
 
   cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
   glm::vec3 random = sphericalRand(0.5f);

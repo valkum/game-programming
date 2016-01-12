@@ -16,7 +16,8 @@ public:
     return this->texture;
   }
   void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix);
-  void update(float dt, uint_t num);
+  void spawnParticles(uint_t newParticles);
+  void update(float dt);
   void init();
   uint_t firstUnusedParticle();
   void respawnParticle(CloudParticle &particle, glm::vec3 offset);

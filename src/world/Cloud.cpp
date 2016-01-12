@@ -41,36 +41,41 @@ void Cloud::init() {
   for (uint_t i = 0; i < nr_particles; ++i) {
     particles.push_back(CloudParticle());
   }
+
+  spawnParticles(100);
 }
 
-void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectioMatrix) {
+void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
   // Use additive blending to give it a 'glow' effect
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   shader->use();
-  mat4 mvp = (*viewProjectioMatrix) * glm::scale(vec3(.2f));
+  mat4 mvp = (*viewProjectionMatrix) * glm::scale(vec3(.2f));
   shader->setUniform("uMVP", mvp);
 
   for (CloudParticle particle : particles)
   {
-      if (particle.Life > 0.0f)
-      {
+      // if (particle.Life > 0.0f)
+      // {
           shader->setUniform("uOffset", particle.Position);
           shader->setUniform("uColor", particle.Color);
           
           vao->render();
-      }
+      // }
   }
   // Don't forget to reset to default blending mode
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Cloud::update(float dt, uint_t newParticles) {
+void Cloud::spawnParticles(uint_t newParticles) {
   // Add new particles 
   for (uint_t i = 0; i < newParticles; ++i)
   {
       int unusedParticle = firstUnusedParticle();
       respawnParticle(particles[unusedParticle], vec3(0));
   }
+}
+
+void Cloud::update(float dt) {
   // Update all particles
   for (uint_t i = 0; i < this->amount; ++i)
   {
