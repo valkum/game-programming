@@ -26,7 +26,6 @@ static GLfloat particle_quad[6*5] = {
 
 Cloud::Cloud(uint_t amount) : Entity(vec3(0.f, 0.f, -1.f), vec3(0.f)), amount(amount) {
   cloudTex = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("cloud_particle.png"));
-  nr_particles = amount;
   init();
 }
 
@@ -40,7 +39,7 @@ void Cloud::init() {
   vao->attachAllAttributes(ab);
 
 
-  for (uint_t i = 0; i < nr_particles; ++i) {
+  for (uint_t i = 0; i < amount; ++i) {
     particles.push_back(CloudParticle());
   }
 
@@ -55,14 +54,14 @@ void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProj
 
   for (CloudParticle particle : particles)
   {
-      // if (particle.Life > 0.0f)
-      // {
+      if (particle.Life > 0.0f)
+      {
           shader->setUniform("uOffset", particle.Position);
           shader->setUniform("uColor", particle.Color);
           shader->setTexture("uTexture", cloudTex, 3);
           
           vao->render();
-      // }
+      }
   }
   // Don't forget to reset to default blending mode
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -70,8 +69,7 @@ void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProj
 
 void Cloud::spawn(uint_t num) {
   for(uint_t i = 0; i < num; ++i) {
-    int unusedParticle = firstUnusedParticle();
-    respawnParticle(particles[unusedParticle], vec3(this->particles[i].Position.x+1,0 ,0)); 
+    respawnParticle(particles[firstUnusedParticle()]); 
   }
 }
 
@@ -110,11 +108,11 @@ uint_t Cloud::firstUnusedParticle() {
     return 0;
 }
 
-void Cloud::respawnParticle(CloudParticle &particle, glm::vec3 offset) {
-    glm::vec3 random = sphericalRand(1.0f);
+void Cloud::respawnParticle(CloudParticle &particle, vec3 position, float randomOffset, glm::vec3 offset, float alpha, float life, vec3 velocity) {
+    glm::vec3 random = sphericalRand(randomOffset);
     float rColor = 0.4 + ((rand() % 100) / 100.0f);
     particle.Position = position + random + offset;
-    particle.Color = glm::vec4(rColor, rColor, rColor, 1.0f);
-    particle.Life = 10.0f;
-    particle.Velocity = vec3(0,1,0) * 1.0f;
+    particle.Color = glm::vec4(rColor, rColor, rColor, alpha);
+    particle.Life = life;
+    particle.Velocity = velocity;
 }

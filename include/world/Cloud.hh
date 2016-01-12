@@ -19,14 +19,14 @@ public:
   void update(float dt);
   void init();
   uint_t firstUnusedParticle();
-  void respawnParticle(CloudParticle &particle, glm::vec3 offset);
+  // void respawnParticle(CloudParticle &particle, glm::vec3 offset);
+  void respawnParticle(CloudParticle &particle, vec3 position = vec3(0.0f), float randomOffset = 0.0f, glm::vec3 offset = vec3(0.0f), float alpha = 1.0f, float life = 10.0f, vec3 velocity = vec3(1,0,1) * 0.1f);
   void spawn (uint_t nun);
 protected:
 private:
   uint_t amount;
   // Stores the index of the last particle used (for quick access to next dead particle)
   uint_t lastUsedParticle = 0;
-  uint_t nr_particles = 500;
   std::vector<CloudParticle> particles;
   ACGL::OpenGL::SharedVertexArrayObject vao;
   ACGL::OpenGL::SharedArrayBuffer ab;
