@@ -36,7 +36,7 @@ class Cloth : public Entity {
 
 	void windForce(const vec3 direction);
 
-	void ballCollision(const vec3 center,const float radius );
+	void modelCollision(const vec3 center,const float radius );
 
 	void doFrame();
   ACGL::OpenGL::SharedVertexArrayObject getVAO() { return vao; }

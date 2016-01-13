@@ -61,8 +61,8 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
     for(int x=0; x<num_particles_width; x++){
         for(int y=0; y<num_particles_height; y++){
             vec3 pos = vec3(width * (x/(float)num_particles_width),
-                    -height * (y/(float)num_particles_height),
-                    0);
+                    0,
+                    -height * (y/(float)num_particles_height));
             particles[y*num_particles_width+x]= Particle(pos); // insert particle in column x at y'th row
             //@TODO wird das hier optimal gefüllt? Sollte eher x*num_height+y sein damit die bytes sequentiell und nicht mit sprüngen geschrieben werden.
         }
@@ -259,7 +259,7 @@ void Cloth::windForce(const vec3 direction){
    This is based on a very simples scheme where the position of each particle is simply compared to the sphere and corrected.
    This also means that the sphere can "slip through" if the ball is small enough compared to the distance in the grid bewteen particles
    */
-void Cloth::ballCollision(const vec3 center,const float radius ){
+void Cloth::modelCollision(const vec3 center,const float radius ){
     std::vector<Particle>::iterator particle;
         for(particle = particles.begin(); particle != particles.end(); particle++)
         {

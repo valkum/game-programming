@@ -101,7 +101,7 @@ void PlayState::init(CGame *game) {
   // cube   =
   //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
   //                  vec3(0.0f, 0.0f, 0.0f));
-  lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
+  lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(0.0f, 0.0f, -10.0f), vec3(0.0f, 0.0f, 0.0f));
   cloth = new Cloth(10,20,24,24);
   debug() << "Geometry loaded" << endl;
 
@@ -155,7 +155,8 @@ void PlayState::init(CGame *game) {
 
 
   camera.setVerticalFieldOfView(90.0);
-  camera.setPosition(vec3(0.0f, 0.0f, 1.0f));
+  camera.setPosition(vec3(-9.3f, 0.0f, 15.0f));
+  camera.setTarget((lowPolyMan->getPosition()+vec3(0.0f, 0.0f, -8.0f)), vec3(0.0f, 1.0f, 0.0f));
 
   // debug()<<"Camera Position: \n"<<to_string(camera.getPosition())<<endl;
   // debug()<<"Camera View: \n"<<to_string(camera.getViewMatrix())<<endl;
@@ -274,6 +275,30 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
     if (key == GLFW_KEY_SPACE) {
       cloth->windForce((vec3(1.0f,-0.2f,0.3f)));
+    }
+    if (key == GLFW_KEY_UP) {
+      lowPolyMan->setPosition(lowPolyMan->getPosition()+vec3(0,0,2));
+      cloth->setPosition(cloth->getPosition()+vec3(0,0,2));
+    }
+    if (key == GLFW_KEY_DOWN) {
+      lowPolyMan->setPosition(lowPolyMan->getPosition()+vec3(0,0,-2));
+      cloth->setPosition(cloth->getPosition()+vec3(0,0,-2));
+    }
+    if (key == GLFW_KEY_RIGHT) {
+      lowPolyMan->setPosition(lowPolyMan->getPosition()+vec3(2,0,0));
+      cloth->setPosition(cloth->getPosition()+vec3(2,0,0));
+    }
+    if (key == GLFW_KEY_LEFT) {
+      lowPolyMan->setPosition(lowPolyMan->getPosition()+vec3(-2,0,0));
+      cloth->setPosition(cloth->getPosition()+vec3(-2,0,0));
+    }
+    if (key == GLFW_KEY_1) {
+        vec3 offset = vec3(0.1f,0.0f,0.0f);
+        mat4 rotation = glm::rotate(offset.x, vec3(1.0f, 0.0f, 0.0f)) *
+                        glm::rotate(offset.y, vec3(0.0f, 1.0f, 0.0f)) *
+                        glm::rotate(offset.z, vec3(0.0f, 0.0f, 1.0f));
+        mat4 curRotation = lowPolyMan->getRotation();
+        lowPolyMan->setRotation(curRotation+rotation);
     }
   }
 }
