@@ -184,7 +184,7 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
   //Update FPS Camera for Debug:
   vec2 mouseDelta = (m_lastMousePos - m_mousePos);
-  camera.FPSstyleLookAround(mouseDelta.x/m_game->g_windowSize.x, mouseDelta.y/m_game->g_windowSize.y);
+  camera.FPSstyleLookAround(-mouseDelta.x/m_game->g_windowSize.x, -mouseDelta.y/m_game->g_windowSize.y);
 }
 
 void PlayState::handleMouseButtonEvents(GLFWwindow *window,
