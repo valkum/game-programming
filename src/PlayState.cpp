@@ -154,7 +154,7 @@ openGLCriticalError();
   terrain->render(lightningShader, &viewProjectionMatrix);
 
 
-  for(int i = 0; i<objects.size(); i++) {
+  for(uint_t i = 0; i<objects.size(); i++) {
     objects[i]->render(lightningShader, &viewProjectionMatrix);  
   }
   
@@ -162,7 +162,7 @@ openGLCriticalError();
   if(renderDebug) {
       debugShader->use();
       terrain->render(debugShader, &viewProjectionMatrix);
-      for(int i = 0; i<objects.size(); i++) {
+      for(uint_t i = 0; i<objects.size(); i++) {
         objects[i]->render(debugShader, &viewProjectionMatrix);  
       }
   }
