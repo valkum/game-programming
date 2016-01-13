@@ -46,6 +46,7 @@ public:
   }
 
 protected:
+  CGame* m_game;
 
   CGameState() {}
 };

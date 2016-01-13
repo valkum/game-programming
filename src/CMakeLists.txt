@@ -19,9 +19,10 @@ set(SOURCE_FILES
     TextureLoadStore.cpp
     Model.cpp
     world/Entity.cpp
-    world/TestObject.cpp
+    world/Object.cpp
     world/Skybox.cpp
     world/Terrain.cpp
+    world/SkyScraper.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")

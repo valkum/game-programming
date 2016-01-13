@@ -8,14 +8,14 @@
 #include <ACGL/OpenGL/Creator/Texture2DCreator.hh>
 #include <ACGL/OpenGL/Data/TextureLoadStore.hh>
 
-class TestObject : public Entity {
+class Object : public Entity {
 public:
 
-  TestObject(Model model,
+  Object(Model model,
              vec3  position,
              vec3  rotation);
-  TestObject();
-  ~TestObject();
+  Object();
+  ~Object();
   void                                 render(
     ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectioMatrix);

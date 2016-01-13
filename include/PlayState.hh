@@ -11,7 +11,6 @@ using namespace ACGL::OpenGL;
 
 class PlayState : public CGameState {
 public:
-
   void init(CGame *game);
   void draw(CGame *game,
             float *delta);
@@ -43,12 +42,12 @@ protected:
   PlayState() {}
 
 private:
-
+  //int m_MouseState;
+  glm::vec2   m_mousePos, m_lastMousePos;
   static PlayState m_PlayState;
   bool renderDebug;
   SharedShaderProgram skyboxShader;
-  SharedShaderProgram terrainShader;
-  SharedShaderProgram cubeShader;
+  SharedShaderProgram lightningShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;
   SharedShaderProgram     debugShader;
