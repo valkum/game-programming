@@ -14,7 +14,7 @@
 #include <vector>
 #include "Helper.hh"
 #include "Model.hh"
-#include "world/Skybox.hh"
+#include "world/SkyDome.hh"
 #include "world/SkyScraper.hh"
 #include "world/Terrain.hh"
 
@@ -29,7 +29,7 @@ PlayState PlayState::m_PlayState;
 GenericCamera camera;
 
 
-Skybox *skybox;
+SkyDome *skydome;
 vector<Object*> objects;
 Terrain *terrain;
 
@@ -47,7 +47,7 @@ void PlayState::init(CGame *game) {
 
   camera.setVerticalFieldOfView(95.0);
   camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
-  camera.setTarget(vec3(1.f, .0f, .0f), vec3(.0f, 1.f, .0f));
+  camera.setTarget(vec3(1.0f, .0f, .0f));
 
   // define where shaders and textures can be found:
   Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
@@ -58,18 +58,9 @@ void PlayState::init(CGame *game) {
 
   debug() << "Loading objects stage" << endl;
 
-  // Texture
-  std::vector<std::string> paths = {
-    Settings::the()->getFullTexturePath() + "nuke_rt.png",
-    Settings::the()->getFullTexturePath() + "nuke_lf.png",
-    Settings::the()->getFullTexturePath() + "nuke_dn.png",
-    Settings::the()->getFullTexturePath() + "nuke_up.png",
-    Settings::the()->getFullTexturePath() + "nuke_bk.png",
-    Settings::the()->getFullTexturePath() + "nuke_ft.png",
-  };
-  // skybox = new Skybox(Model("cube.obj", 50.0f), paths);
-  Object* skyScraper = new SkyScraper(vec3(0.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
-  objects.push_back(skyScraper);
+  skydome = new SkyDome(Model("SkyDome.obj", 100.0f), "Sky.png");
+  Object* skyscraper = new SkyScraper(vec3(0.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
+  objects.push_back(skyscraper);
   terrain = new Terrain();
 
   debug() << "Geometry loaded" << endl;
@@ -86,29 +77,20 @@ void PlayState::init(CGame *game) {
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
-  vao->getAttributeLocations()).create();
+  skydomeShader = ShaderProgramCreator("SkyDome").attributeLocations(
+  skydome->getModel().getVAO()->getAttributeLocations()).create();
 
   lightningShader = ShaderProgramCreator("lightningShader").attributeLocations(
     vao->getAttributeLocations()).create();
 
-  // debug_ab = SharedArrayBuffer(new ArrayBuffer());
-  // debug_ab->defineAttribute("aPosition", GL_FLOAT, 3);
-  // debug_ab->defineAttribute("aColor", GL_FLOAT, 3);
-  // debug_vao = SharedVertexArrayObject(new VertexArrayObject());
-  // debug_vao->attachAllAttributes(debug_ab);
-  // debug_vao->setMode(GL_LINES);
-
   debugShader =
   ShaderProgramCreator("debug").attributeLocations(vao->getAttributeLocations()).create();
-
-
   debug() << "Shaders loaded" << endl;
 
 
   debug() << "Set Textures Stage" << endl;
-  // skyboxShader->use();
-  // skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
+  skydomeShader->use();
+  skydomeShader->setTexture("uTexture", skydome->getTexture(), 2);
 
   // cubeShader->use();
   // cubeShader->setTexture("uTexture", cube->getTexture(), 2);
@@ -134,11 +116,11 @@ void PlayState::draw(CGame *g, float *delta) {
 
   glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
                                   camera.getViewMatrix();
-  //skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
+  //skydome->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
 
-  //glDepthFunc(GL_LEQUAL);
-  // skyboxShader->use();
-  // skybox->render(skyboxShader, &viewProjectionMatrix);
+  glDepthFunc(GL_LEQUAL);
+  skydomeShader->use();
+  skydome->render(skydomeShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
 openGLCriticalError();

@@ -8,22 +8,23 @@
 
 using namespace std;
 
-class Skybox : public Entity {
+class SkyDome : public Entity {
 public:
 
-  Skybox(Model         model,
-         vector<string>fileNames);
-  Skybox();
-  ~Skybox();
+  SkyDome(Model         model,
+         string fileName);
+  SkyDome();
+  ~SkyDome();
+  Model getModel() {return model;};
   void                               render(
     ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectioMatrix);
-  ACGL::OpenGL::SharedTextureCubeMap getTexture();
+  ACGL::OpenGL::SharedTexture2D getTexture(){return texture;};
 
 private:
 
   Model model;
-  ACGL::OpenGL::SharedTextureCubeMap texture;
+  ACGL::OpenGL::SharedTexture2D texture;
 };
 
 #endif // SKYBOX_H

@@ -46,7 +46,7 @@ private:
   glm::vec2   m_mousePos, m_lastMousePos;
   static PlayState m_PlayState;
   bool renderDebug;
-  SharedShaderProgram skyboxShader;
+  SharedShaderProgram skydomeShader;
   SharedShaderProgram lightningShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;

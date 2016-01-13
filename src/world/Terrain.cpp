@@ -117,7 +117,7 @@ float* Terrain::generate(float a, float b) {
   return height;
 }
 void Terrain::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
-  glm::mat4 modelMatrix = glm::translate(glm::vec3(0.0f,0.0f,-32.0f)) * glm::scale<float>(glm::vec3(10.0f));
+  glm::mat4 modelMatrix = glm::translate(glm::vec3(-32.0f,.0f,0.0f)) * glm::scale<float>(glm::vec3(1.0f));
   glm::mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
   shader->setUniform("uModel", modelMatrix);
   shader->setUniform("uMVP",         mvp);

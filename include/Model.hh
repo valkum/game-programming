@@ -13,7 +13,7 @@ public:
   inline float getScale() {
     return scale;
   }
-
+  ACGL::OpenGL::SharedVertexArrayObject getVAO() { return object; };
   void setScale(float scale);
   void render();
 

@@ -20,7 +20,7 @@ set(SOURCE_FILES
     Model.cpp
     world/Entity.cpp
     world/Object.cpp
-    world/Skybox.cpp
+    world/SkyDome.cpp
     world/Terrain.cpp
     world/SkyScraper.cpp
 )
