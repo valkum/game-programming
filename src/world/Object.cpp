@@ -1,13 +1,13 @@
-#include "world/TestObject.hh"
+#include "world/Object.hh"
 
 #include <ACGL/Utils/Log.hh>
 
 using namespace ACGL::Utils;
 using namespace std;
 
-class TestObject;
+class Object;
 
-TestObject::TestObject(Model model, vec3 position, vec3 rotation) : Entity(
+Object::Object(Model model, vec3 position, vec3 rotation) : Entity(
     position,
     rotation) {
   this->model = model;
@@ -21,14 +21,14 @@ TestObject::TestObject(Model model, vec3 position, vec3 rotation) : Entity(
   // texture->generateMipmaps();
   // texture->setMinFilter(GL_NEAREST_MIPMAP_LINEAR);
   // texture->setMagFilter(GL_LINEAR);
-  debug() << "Scale of TestObject: " << model.getScale() << endl;
+  debug() << "Scale of Object: " << model.getScale() << endl;
 }
 
-TestObject::TestObject() {}
+Object::Object() {}
 
-TestObject::~TestObject() {}
+Object::~Object() {}
 
-void TestObject::render(ACGL::OpenGL::SharedShaderProgram shader,
+void Object::render(ACGL::OpenGL::SharedShaderProgram shader,
                         mat4                             *viewProjectioMatrix) {
   mat4 modelMatrix = translate(getPosition()) * getRotation() *
                      scale<float>(vec3(model.getScale()));

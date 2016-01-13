@@ -92,6 +92,8 @@ int run(char *argv[]) {
   game->init(g_window);
   game->changeState(IntroState::instance());
 
+  glfwSwapInterval(0);
+
   // Ensure we can capture the escape key being pressed below
   // glfwSetInputMode( g_window, GLFW_STICKY_KEYS, 1 );
   // glfwSetWindowSizeCallback(  g_window, resizeCallback );
@@ -109,8 +111,6 @@ int run(char *argv[]) {
   while (!glfwWindowShouldClose(g_window))
   {
     loops = 0;
-    double now = glfwGetTime();
-
     while (glfwGetTime() > newTime && loops < MAX_FRAMESKIP) {
       /* Poll for and process events */
       glfwPollEvents();
@@ -124,13 +124,6 @@ int run(char *argv[]) {
 
     // glfwGetFramebufferSize(g_window, &width, &height);
     game->draw(&extrapolation);
-
-    // @todo betterFPS meter? maybe draw in context?
-    std::stringstream sstream(std::stringstream::in | std::stringstream::out);
-    sstream << std::setprecision(1) << std::fixed
-            << tmp[tmp.size() - 1] << " - FPS: " << 1 / (glfwGetTime() - now) <<
-    " " << 1000 * (glfwGetTime() - now) / 1 << " msec";
-    glfwSetWindowTitle(g_window, sstream.str().c_str());
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glfwSwapBuffers(g_window);

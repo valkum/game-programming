@@ -15,7 +15,8 @@
 #include "Helper.hh"
 #include "Model.hh"
 #include "world/Skybox.hh"
-#include "world/TestObject.hh"
+#include "world/SkyScraper.hh"
+#include "world/Terrain.hh"
 
 using namespace glm;
 using namespace std;
@@ -29,10 +30,13 @@ GenericCamera camera;
 
 
 Skybox *skybox;
-TestObject *cube;
+vector<Object*> objects;
+Terrain *terrain;
+
 
 void PlayState::init(CGame *game) {
   renderDebug = false;
+  m_game = game;
 
   glClearColor(0.0, 0.0, 0.0, 1.0);
   glEnable(GL_DEPTH_TEST);
@@ -41,6 +45,9 @@ void PlayState::init(CGame *game) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
+  camera.setVerticalFieldOfView(95.0);
+  camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
+  camera.setTarget(vec3(1.f, .0f, .0f), vec3(.0f, 1.f, .0f));
 
   // define where shaders and textures can be found:
   Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
@@ -60,10 +67,11 @@ void PlayState::init(CGame *game) {
     Settings::the()->getFullTexturePath() + "nuke_bk.png",
     Settings::the()->getFullTexturePath() + "nuke_ft.png",
   };
-  skybox = new Skybox(Model("cube.obj", 50.0f), paths);
-  cube   =
-    new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
-                   vec3(0.0f, 0.0f, 0.0f));
+  // skybox = new Skybox(Model("cube.obj", 50.0f), paths);
+  Object* skyScraper = new SkyScraper(vec3(0.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
+  objects.push_back(skyScraper);
+  terrain = new Terrain();
+
   debug() << "Geometry loaded" << endl;
 
 
@@ -73,16 +81,15 @@ void PlayState::init(CGame *game) {
   // construct VAO to give shader correct Attribute locations
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
-  ab->defineAttribute("aTexCoord", GL_FLOAT, 3);
   ab->defineAttribute("aNormal",   GL_FLOAT, 3);
 
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  cubeShader = ShaderProgramCreator("cube").attributeLocations(
-    vao->getAttributeLocations()).create();
-
   skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
+  vao->getAttributeLocations()).create();
+
+  lightningShader = ShaderProgramCreator("lightningShader").attributeLocations(
     vao->getAttributeLocations()).create();
 
   // debug_ab = SharedArrayBuffer(new ArrayBuffer());
@@ -92,66 +99,93 @@ void PlayState::init(CGame *game) {
   // debug_vao->attachAllAttributes(debug_ab);
   // debug_vao->setMode(GL_LINES);
 
-  // debugShader =
-  // ShaderProgramCreator("debug").attributeLocations(debug_vao->getAttributeLocations()).create();
+  debugShader =
+  ShaderProgramCreator("debug").attributeLocations(vao->getAttributeLocations()).create();
 
 
   debug() << "Shaders loaded" << endl;
 
 
   debug() << "Set Textures Stage" << endl;
-  skyboxShader->use();
-  skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
+  // skyboxShader->use();
+  // skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
 
-  cubeShader->use();
-  cubeShader->setTexture("uTexture", cube->getTexture(), 2);
+  // cubeShader->use();
+  // cubeShader->setTexture("uTexture", cube->getTexture(), 2);
 
-  debug() << "Texture for cube: " << skybox->getTexture() << endl;
+  //terrainShader->use();
+  //terrainShader->setTexture("uTexture", cube->getTexture(), 2);
+
+  // debug() << "Texture for skybox: " << skybox->getTexture() << endl;
   debug() << "Textures set" << endl;
 
-
-  camera.setVerticalFieldOfView(90.0);
-  camera.setPosition(vec3(0.0f, 0.0f, 1.0f));
 
   // debug()<<"Camera Position: \n"<<to_string(camera.getPosition())<<endl;
   // debug()<<"Camera View: \n"<<to_string(camera.getViewMatrix())<<endl;
 
   openGLCriticalError();
+  glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void PlayState::draw(CGame *g, float *delta) {
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-  glm::mat4 viewProjectioMatrix = camera.getProjectionMatrix() *
+
+  glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
                                   camera.getViewMatrix();
+  //skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
 
-
-  cubeShader->use();
-
-  // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
-  cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  cube->render(cubeShader, &viewProjectioMatrix);
-
-  glDepthFunc(GL_LEQUAL);
-  skyboxShader->use();
-  skybox->render(skyboxShader, &viewProjectioMatrix);
+  //glDepthFunc(GL_LEQUAL);
+  // skyboxShader->use();
+  // skybox->render(skyboxShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
+openGLCriticalError();
 
-  // if(renderDebug) {
-  //     debugShader->use();
-  //     debugShader->setUniform("uViewProjectionMatrix", viewProjectioMatrix);
-  //     debug_vao->render();
-  // }
+  lightningShader->use();
+  lightningShader->setUniform("uLight.direction", vec3(-1,1.5,1));
+  lightningShader->setUniform("uLight.color", vec3(0.75f, 0.75f, 0.75f));
+  lightningShader->setUniform("uLight.ambient", 0.1f);
+  lightningShader->setUniform("uLight.specular", 0.3f);
+  lightningShader->setUniform("uLight.diffuse", 0.8f);
+  lightningShader->setUniform("uViewMatrix", camera.getViewMatrix());
+  lightningShader->setUniform("camera", camera.getPosition());
+  terrain->render(lightningShader, &viewProjectionMatrix);
+
+
+  for(uint_t i = 0; i<objects.size(); i++) {
+    objects[i]->render(lightningShader, &viewProjectionMatrix);  
+  }
+  
+
+  if(renderDebug) {
+      debugShader->use();
+      terrain->render(debugShader, &viewProjectionMatrix);
+      for(uint_t i = 0; i<objects.size(); i++) {
+        objects[i]->render(debugShader, &viewProjectionMatrix);  
+      }
+  }
+
+  //glFlush();
+  // bring backbuffer to foreground
+  // SDL_GL_SwapBuffers();
+  //SwapBuffers(g_HDC);
+
   openGLCriticalError();
 }
 
 void PlayState::update(CGame *g, float delta) {
-  skybox->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
 }
 
-void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
+void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
+  m_lastMousePos = m_mousePos;
+  m_mousePos = mousePos;
+
+  //Update FPS Camera for Debug:
+  vec2 mouseDelta = (m_lastMousePos - m_mousePos);
+  camera.FPSstyleLookAround(mouseDelta.x/m_game->g_windowSize.x, mouseDelta.y/m_game->g_windowSize.y);
+}
 
 void PlayState::handleMouseButtonEvents(GLFWwindow *window,
                                         glm::vec2   mousePos,
@@ -170,15 +204,11 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
   // rendered!
   double timeElapsed = .05;
 
-  double speed = 5.0;        // magic value to scale the camera speed
+  double speed = 100.0;        // magic value to scale the camera speed
 
   if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
     if (key == GLFW_KEY_W) { // upper case!
       camera.moveForward(timeElapsed * speed);
-    }
-
-    if (key == GLFW_KEY_Q) { // upper case!
-      camera.FPSstyleLookAround(-timeElapsed * speed, 0);
     }
 
     if (key == GLFW_KEY_S) { // upper case!
@@ -198,26 +228,17 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_P) {
-      debug() << "uViewProjectionMatrix Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uViewProjectionMatrix") << endl;
-      debug() << "uViewMatrix Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uViewMatrix") << endl;
-      debug() << "uMVP Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uMVP") << endl;
-      debug() << "uProjectionMatrix Location = " << glGetUniformLocation(
-        cubeShader->getObjectName(),
-        "uProjectionMatrix") << endl;
+      renderDebug = !renderDebug;
+      if(renderDebug) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);} else { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);}
     }
-
     if (key == GLFW_KEY_R) {
-      ShaderProgramCreator("cube").update(cubeShader);
-      ShaderProgramCreator("skybox").update(skyboxShader);
+
+      ShaderProgramCreator("lightningShader").update(lightningShader);
     }
   }
 }
+
+
 
 void PlayState::handleResizeEvents(GLFWwindow *window, glm::uvec2 windowSize) {
   camera.resize(windowSize.x, windowSize.y);
