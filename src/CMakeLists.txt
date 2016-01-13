@@ -2,10 +2,13 @@
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
+if(NOT DEFINED ENV{TRAVIS})
+    set(CMAKE_CXX_FLAGS "$CMAKE_CXX_FLAGS -fsanitize=address")
+  endif()
 set(C_FLAGS_COMMON "-Wall -Werror")
 set(CMAKE_CXX_FLAGS "-std=c++11 -g ${C_FLAGS_COMMON}")
 set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
-set( CMAKE_VERBOSE_MAKEFILE 1 )
+set( CMAKE_VERBOSE_MAKEFILE 0 )
 
 set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
 set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
@@ -123,6 +126,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 			COMMAND rm ${dir}/assets && ln -s ../assets ${dir}/assets
 		ELSE()
 			COMMAND echo "u dun goofed"
-		ENDIF())
+		ENDIF()
+    )
 
 endif()

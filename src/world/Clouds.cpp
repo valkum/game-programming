@@ -46,7 +46,7 @@ void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewPro
 }
 
 void Clouds::update(float dt){
-	for (Cloud cloud : clouds)
+	for (auto&& cloud : clouds)
 	{
 		cloud.update(dt);
 	}
