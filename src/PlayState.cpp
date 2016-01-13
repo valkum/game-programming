@@ -19,7 +19,7 @@
 #include "world/Skybox.hh"
 #include "world/Vec3.hh"
 #include "world/TestObject.hh"
-#include "world/Cloud.hh"
+#include "world/Clouds.hh"
 #include "world/Cloth.hh"
 
 
@@ -39,7 +39,7 @@ GenericCamera camera;
 
 Skybox *skybox;
 // TestObject *cube;
-Cloud *cloud;
+Clouds *clouds;
 Cloth *cloth;
 float ball_time = 0;
 float ball_radius = 2;
@@ -98,10 +98,9 @@ void PlayState::init(CGame *game) {
     Settings::the()->getFullTexturePath() + "nuke_bk.png",
     Settings::the()->getFullTexturePath() + "nuke_ft.png",
   };
-  skybox = new Skybox(Model("cube.obj", 50.0f), paths);
+  skybox = new Skybox(Model("cube.obj", 500.0f), paths);
 
-  cloud = new Cloud(5000);
-  cloud->setPosition(vec3(0.0f, 0.0f, 0.0f));
+  clouds = new Clouds(10, 250);
 
   // cube = new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
   // cube   = new TestObject(Model("aphroditegirl.obj", 100.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
@@ -127,7 +126,7 @@ void PlayState::init(CGame *game) {
 
   skyboxShader = ShaderProgramCreator("skybox").attributeLocations(vao->getAttributeLocations()).create();
 
-  cloudShader = ShaderProgramCreator("cloudParticle").attributeLocations(cloud->getVao()->getAttributeLocations()).create();
+  cloudShader = ShaderProgramCreator("cloudParticle").attributeLocations(clouds->getVao()->getAttributeLocations()).create();
 
   // debug_ab = SharedArrayBuffer(new ArrayBuffer());
   // debug_ab->defineAttribute("aPosition", GL_FLOAT, 3);
@@ -190,7 +189,7 @@ void PlayState::draw(CGame *g, float *delta) {
   cloudShader->use();
   cloudShader->setUniform("uCameraRight_worldspace", cameraRight_worldspace);
   cloudShader->setUniform("uCameraUp_worldspace", cameraUp_worldspace);
-  cloud->render(cloudShader, &viewProjectionMatrix);
+  clouds->render(cloudShader, &viewProjectionMatrix);
 
   //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   clothShader->use();
@@ -208,7 +207,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
 void PlayState::update(CGame *g, float dt) {
 
-  cloud->update(dt);
+  clouds->update(dt);
 
   cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
   glm::vec3 random = sphericalRand(0.5f);
@@ -293,10 +292,6 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     
     if (key == GLFW_KEY_SPACE) {
       cloth->windForce((vec3(1.0f,-0.2f,0.3f)));
-    }
-
-    if (key == GLFW_KEY_C) {
-      cloud->spawn(5);
     }
   }
 }

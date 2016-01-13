@@ -8,21 +8,9 @@
 #include <glm/gtc/noise.hpp>
 #include <math.h>
 
-
 using namespace ACGL::OpenGL;
 using namespace ACGL::Utils;
 using namespace std;
-
-  // CloudParticle: aPosition and aColor in one vector.
-static GLfloat particle_quad[6*5] = {
-      -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
-      0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
-      -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
-
-      0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-      0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
-      -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
-  }; 
 
 
 Cloud::Cloud(uint_t amount) : Entity(vec3(0.f, 0.f, -1.f), vec3(0.f)), amount(amount) {
@@ -30,16 +18,12 @@ Cloud::Cloud(uint_t amount) : Entity(vec3(0.f, 0.f, -1.f), vec3(0.f)), amount(am
   init();
 }
 
+Cloud::Cloud(uint_t amount, vec3 pos) : Entity(pos, vec3(0.f)), amount(amount) {
+  cloudTex = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("cloud_particle.png"));
+  init();
+}
+
 void Cloud::init() {
-  ab = SharedArrayBuffer(new ArrayBuffer());
-  ab->defineAttribute("aPosition", GL_FLOAT, 3);
-  ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
-  ab->setDataElements(6, particle_quad);
-
-  vao = SharedVertexArrayObject(new VertexArrayObject());
-  vao->attachAllAttributes(ab);
-
-
   for (uint_t i = 0; i < amount; ++i) {
     particles.push_back(CloudParticle());
   }
@@ -60,7 +44,7 @@ void Cloud::init() {
   density();
 }
 
-void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
+void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, ACGL::OpenGL::SharedVertexArrayObject vao) {
   // Use additive blending to give it a 'glow' effect
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   mat4 mvp = (*viewProjectionMatrix) * glm::scale(vec3(.2f));

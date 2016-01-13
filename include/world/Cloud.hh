@@ -10,12 +10,11 @@
 class Cloud : public Entity {
 public:
   Cloud(uint_t amount);
-  ACGL::OpenGL::SharedVertexArrayObject getVao() { return vao; }
-  ACGL::OpenGL::SharedArrayBuffer getAb() {return ab;}
+  Cloud(uint_t amount, vec3 pos);
   inline ACGL::OpenGL::SharedTexture2D getTexture() {
     return this->cloudTex;
   }
-  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix);
+  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, ACGL::OpenGL::SharedVertexArrayObject vao);
   void update(float dt);
   void init();
   uint_t firstUnusedParticle();
@@ -29,8 +28,6 @@ private:
   // Stores the index of the last particle used (for quick access to next dead particle)
   uint_t lastUsedParticle = 0;
   std::vector<CloudParticle> particles;
-  ACGL::OpenGL::SharedVertexArrayObject vao;
-  ACGL::OpenGL::SharedArrayBuffer ab;
   ACGL::OpenGL::SharedTexture2D cloudTex;
 };
 
