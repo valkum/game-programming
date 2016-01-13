@@ -209,10 +209,6 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_P) {
-      for (int i = 0; i < 10; ++i)
-      {
-      debug() << graph->values[i] << endl;
-      }
       
      
     }

@@ -8,7 +8,6 @@
 #include <string>
 
 
-#define GRAPH_HISTORY_COUNT 100
 #define GPU_QUERY_COUNT 5
 enum GraphRenderStyle {
             GRAPH_RENDER_FPS,
@@ -68,11 +67,11 @@ class PerfGraph: public GUIObject {
 
         virtual bool mouseButtonEvent(const ivec2 &p, int button, bool down, int modifiers);
         virtual void draw(NVGcontext *ctx);
-        float values[GRAPH_HISTORY_COUNT];
     private:
         int mStyle;
         
         int head;
+        float* values;
         float prevt;
         //GPUtimer *gputimer;
     protected:
@@ -83,6 +82,7 @@ class PerfGraph: public GUIObject {
         Color mTextColor;
         std::function<void()> mCallback;
         std::function<void(bool)> mChangeCallback;
+        int graphHistoryCount = 100;
 
 };
 

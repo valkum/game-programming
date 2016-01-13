@@ -56,10 +56,8 @@ int PerfGraph::stopGPUTimer(GPUtimer* timer, float* times, int maxTimes)
 PerfGraph::PerfGraph(GUIObject *parent, int style, std::string name)
     : GUIObject(parent), mStyle(style), mCaption(name), mBackgroundColor(Color(0,0)), mForegroundColor(Color(100,125)), mTextColor(Color(0,0)){
 	    prevt = glfwGetTime();
-	    for (int i = 0; i < GRAPH_HISTORY_COUNT; ++i)
-	    {
-	    	values[i] = 0.0f;
-	    }
+	    head = 0;
+	    values = new float[graphHistoryCount]{};
     }
 	//memset(fps, 0, sizeof(PerfGraph));
     //initGPUTimer(gputimer);
@@ -75,7 +73,7 @@ PerfGraph::PerfGraph(GUIObject *parent, int style, std::string name)
 
 void PerfGraph::updateGraph(float frameTime)
 {
-	head = (head+1) % GRAPH_HISTORY_COUNT;
+	head = (head+1) % graphHistoryCount;
 	values[head] = frameTime;
 }
 
@@ -83,10 +81,10 @@ float PerfGraph::getGraphAverage()
 {
 	int i;
 	float avg = 0;
-	for (i = 0; i < GRAPH_HISTORY_COUNT; i++) {
+	for (i = 0; i < graphHistoryCount; i++) {
 		avg += values[i];
 	}
-	return avg / (float)GRAPH_HISTORY_COUNT;
+	return avg / (float)graphHistoryCount;
 }
 
 void PerfGraph::draw(NVGcontext* vg)
@@ -106,29 +104,29 @@ void PerfGraph::draw(NVGcontext* vg)
 	nvgBeginPath(vg);
 	nvgMoveTo(vg, mPosition.x, mPosition.y+mSize.y);
 	if (mStyle == GRAPH_RENDER_FPS) {
-		for (i = 0; i < GRAPH_HISTORY_COUNT; i++) {
-			float v = 1.0f / (0.00001f + values[(head+i) % GRAPH_HISTORY_COUNT]);
+		for (i = 0; i < graphHistoryCount; i++) {
+			float v = 1.0f / (0.00001f + values[(head+i) % graphHistoryCount]);
 			float vx, vy;
 			if (v > 80.0f) v = 80.0f;
-			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * mSize.x;
+			vx = mPosition.x + ((float)i/(graphHistoryCount-1)) * mSize.x;
 			vy = mPosition.y +mSize.y - ((v / 80.0f) * mSize.y);
 			nvgLineTo(vg, vx, vy);
 		}
 	} else if (mStyle == GRAPH_RENDER_PERCENT) {
-		for (i = 0; i < GRAPH_HISTORY_COUNT; i++) {
-			float v = values[(head+i) % GRAPH_HISTORY_COUNT] * 1.0f;
+		for (i = 0; i < graphHistoryCount; i++) {
+			float v = values[(head+i) % graphHistoryCount] * 1.0f;
 			float vx, vy;
 			if (v > 100.0f) v = 100.0f;
-			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * mSize.x;
+			vx = mPosition.x + ((float)i/(graphHistoryCount-1)) * mSize.x;
 			vy = mPosition.y +mSize.y - ((v / 100.0f) * mSize.y);
 			nvgLineTo(vg, vx, vy);
 		}
 	} else {
-		for (i = 0; i < GRAPH_HISTORY_COUNT; i++) {
-			float v = values[(head+i) % GRAPH_HISTORY_COUNT] * 1000.0f;
+		for (i = 0; i < graphHistoryCount; i++) {
+			float v = values[(head+i) % graphHistoryCount] * 1000.0f;
 			float vx, vy;
 			if (v > 20.0f) v = 20.0f;
-			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * mSize.x;
+			vx = mPosition.x + ((float)i/(graphHistoryCount-1)) * mSize.x;
 			vy = mPosition.y +mSize.y - ((v / 20.0f) * mSize.y);
 			nvgLineTo(vg, vx, vy);
 		}
