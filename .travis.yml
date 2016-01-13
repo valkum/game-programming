@@ -4,6 +4,9 @@ notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
 env:
   - PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$HOME/glfw3/lib/pkgconfig"
+  - CXX="clang++-3.7 -stdlib=libc++"
+  - CXXFLAGS="$CXXFLAGS -nostdinc++ -I/usr/local/opt/llvm37/lib/llvm-3.7/include/c++/v1"
+  - LDFLAGS="$LDFLAGS -L/usr/local/opt/llvm37/lib/llvm-3.7/lib"
 os:
   - linux
   - osx
@@ -20,7 +23,7 @@ cache:
   directories:
   - $HOME/glfw3
 before_install:
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew update; brew install glfw3; brew install llvm37; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew update; brew install glfw3; brew install llvm37; brew link --force llvm37; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then bash travis_get_glfw3.sh; fi
 
 script: ./build.sh
