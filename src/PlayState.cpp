@@ -34,6 +34,7 @@ SkyDome *skydome;
 vector<Object*> objects;
 Terrain *terrain;
 PerfGraph *graph;
+bool showFrames = false;
 
 
 void PlayState::init(CGame *game) {
@@ -45,7 +46,6 @@ void PlayState::init(CGame *game) {
   glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
   camera.setVerticalFieldOfView(95.0);
   camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
@@ -98,7 +98,7 @@ void PlayState::init(CGame *game) {
 
   debug() << "Set Textures Stage" << endl;
   skydomeShader->use();
-  skydomeShader->setTexture("uTexture", skydome->getTexture(), 2);
+  skydomeShader->setTexture("uTexture", skydome->getTexture(), 1);
 
   // cubeShader->use();
   // cubeShader->setTexture("uTexture", cube->getTexture(), 2);
@@ -163,8 +163,10 @@ openGLCriticalError();
   //SwapBuffers(g_HDC);
 
   openGLCriticalError();
+  if(showFrames) {
+    gui->drawAll();
+  }
 
-  gui->drawAll();
 }
 
 void PlayState::update(CGame *g, float delta) {
@@ -196,7 +198,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
   // rendered!
   double timeElapsed = .05;
 
-  double speed = 100.0;        // magic value to scale the camera speed
+  double speed = 10.0;        // magic value to scale the camera speed
 
   if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
     if (key == GLFW_KEY_W) { // upper case!
@@ -217,6 +219,9 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
     if (key == GLFW_KEY_D) { // upper case!
       camera.moveRight(timeElapsed * speed);
+    }
+    if (key == GLFW_KEY_F) {
+      showFrames = !showFrames;
     }
 
     if (key == GLFW_KEY_P) {
