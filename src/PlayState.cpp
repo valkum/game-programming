@@ -77,7 +77,7 @@ void PlayState::init(CGame *game) {
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  skydomeShader = ShaderProgramCreator("SkyDome").attributeLocations(
+  skydomeShader = ShaderProgramCreator("skyDome").attributeLocations(
   skydome->getModel().getVAO()->getAttributeLocations()).create();
 
   lightningShader = ShaderProgramCreator("lightningShader").attributeLocations(
