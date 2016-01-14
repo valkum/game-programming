@@ -7,11 +7,7 @@ if(NOT DEFINED ENV{TRAVIS})
 endif()
 
 set(C_FLAGS_COMMON "-Wall -Werror")
-<<<<<<< HEAD
-set(CMAKE_CXX_FLAGS "-std=c++11 -fsanitize=address -g ${C_FLAGS_COMMON}")
-=======
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g ${C_FLAGS_COMMON}")
->>>>>>> GUI
 set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
