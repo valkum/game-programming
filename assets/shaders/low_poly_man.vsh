@@ -10,5 +10,5 @@ uniform mat4 uMVP;
 void main()
 {
     gl_Position = uMVP * vec4(aPosition, 1.0);
-    vertexColor = vec4(0.75f, 0.75f, 0.75f, 0.5f);
+    vertexColor = vec4(0.75f, 0.75f, 0.75f, 1.0f);
 }

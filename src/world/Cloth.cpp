@@ -8,6 +8,7 @@
 using namespace std;
 using namespace glm;
 using namespace ACGL::OpenGL;
+using namespace ACGL::Utils;
 class Cloth;
 
 
@@ -48,9 +49,10 @@ void Cloth::addWindForcesForTriangle(Particle *p1,Particle *p2,Particle *p3, con
 
 
 /* This is a important constructor for the entire system of particles and constraints*/
-Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : 
+Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 modelPosition) : 
     Entity(
-        vec3(0.0f,0.0f,-5.0f),
+        //vec3(0.0f,0.0f,-5.0f),
+		modelPosition, //+ vec3(5.0f, 0.0f, 5.0f),
         vec3(0.0f,0.0f,0.0f)
     ), 
     num_particles_width(num_particles_width), 
@@ -60,7 +62,7 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
     // creating particles in a grid of particles from (0,0,0) to (width,-height,0)
     for(int x=0; x<num_particles_width; x++){
         for(int y=0; y<num_particles_height; y++){
-            vec3 pos = vec3(width * (x/(float)num_particles_width),
+            vec3 pos = modelPosition + vec3(width * (x/(float)num_particles_width),
                     0,
                     -height * (y/(float)num_particles_height));
             particles[y*num_particles_width+x]= Particle(pos); // insert particle in column x at y'th row
@@ -100,10 +102,10 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
 
     // making the upper left most three and right most three particles unmovable
     for(int i=0;i<3; i++){
-        getParticle(0+i ,0)->offsetPos(vec3(0.5,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
+        getParticle(0+i ,0)->offsetPos(vec3(2,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
         getParticle(0+i ,0)->makeUnmovable(); 
 
-        getParticle(0+i ,0)->offsetPos(vec3(-0.5,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
+        getParticle(0+i ,0)->offsetPos(vec3(-2,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
         getParticle(num_particles_width-1-i ,0)->makeUnmovable();
     }
 
@@ -132,9 +134,8 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
 
     vao = SharedVertexArrayObject(new VertexArrayObject());
     vao->attachAllAttributes(ab);
-
-
 }
+
 
 /* drawing the cloth as a smooth shaded (and colored according to column) OpenGL triangular mesh
    Called from the display() method
@@ -259,15 +260,55 @@ void Cloth::windForce(const vec3 direction){
    This is based on a very simples scheme where the position of each particle is simply compared to the sphere and corrected.
    This also means that the sphere can "slip through" if the ball is small enough compared to the distance in the grid bewteen particles
    */
-void Cloth::modelCollision(const vec3 center,const float radius ){
-    std::vector<Particle>::iterator particle;
-        for(particle = particles.begin(); particle != particles.end(); particle++)
-        {
-            vec3 v = (*particle).getPos()-center;
-            float l = length(v);
-            if ( length(v) < radius) // if the particle is inside the ball
-            {
-                (*particle).offsetPos(normalize(v)*(radius-l)); // project the particle to the surface of the ball
-            }
-        }
+void Cloth::modelCollision(const vec3 modelPosition){
+	std::vector<Particle>::iterator particle;
+	
+	float rad0 = 3;
+	float rad1 = 4;
+	float rad2 = 6;
+	float rad3 = 4;
+	float rad4 = 4;
+
+	for(particle = particles.begin(); particle != particles.end(); particle++)
+	{
+		vec3 v0 = (*particle).getPos()-(modelPosition + vec3(5.0f, -rad0/2, -rad0/2));
+		float l0 = length(v0);
+		if ( length(v0) < rad0) // if the particle is inside the ball
+		{
+			//debug() << "collision detected @ "<< &particle << endl;
+			(*particle).offsetPos(normalize(v0)*(rad0-l0)); // project the particle to the surface of the ball
+		}
+
+		vec3 v1 = (*particle).getPos()-(modelPosition + vec3(5.0f, -3.0f, -3.0f));
+		float l1 = length(v1);
+		if ( length(v1) < rad1) // if the particle is inside the ball
+		{
+			//debug() << "collision detected @ "<< &particle << endl;
+			(*particle).offsetPos(normalize(v1)*(rad1-l1)); // project the particle to the surface of the ball
+		}
+
+		vec3 v2 = (*particle).getPos()-(modelPosition + vec3(5.0f, -7.5f, -9.0f));
+		float l2 = length(v2);
+		if ( length(v2) < rad2) // if the particle is inside the ball
+		{
+			//debug() << "collision detected @ "<< &particle << endl;
+			(*particle).offsetPos(normalize(v2)*(rad2-l2)); // project the particle to the surface of the ball
+		}
+
+		vec3 v3 = (*particle).getPos()-(modelPosition + vec3(5.0f, -9.5f, -15.0f));
+		float l3 = length(v3);
+		if ( length(v3) < rad3) // if the particle is inside the ball
+		{
+			//debug() << "collision detected @ "<< &particle << endl;
+			(*particle).offsetPos(normalize(v3)*(rad3-l3)); // project the particle to the surface of the ball
+		}
+
+		vec3 v4 = (*particle).getPos()-(modelPosition + vec3(5.0f, -13.5f, -17.0f));
+		float l4 = length(v4);
+		if ( length(v4) < rad4) // if the particle is inside the ball
+		{
+			//debug() << "collision detected @ "<< &particle << endl;
+			(*particle).offsetPos(normalize(v4)*(rad4-l4)); // project the particle to the surface of the ball
+		}
+	}
 }

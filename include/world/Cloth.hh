@@ -25,7 +25,7 @@ struct Vertex {
 
 class Cloth : public Entity {
 	public:
-	Cloth(float width, float height, int num_particles_width, int num_particles_height);
+	Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 modelPosition);
 
 	void render(ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectionMatrix);
@@ -36,7 +36,7 @@ class Cloth : public Entity {
 
 	void windForce(const vec3 direction);
 
-	void modelCollision(const vec3 center,const float radius );
+	void modelCollision(const vec3 modelPosition);
 
 	void doFrame();
   ACGL::OpenGL::SharedVertexArrayObject getVAO() { return vao; }

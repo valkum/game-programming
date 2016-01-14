@@ -40,25 +40,10 @@ Skybox *skybox;
 //TestObject *cube;
 TestObject *lowPolyMan;
 Cloth *cloth;
-float ball_time = 0;
-float ball_radius = 2;
-vec3 ball_pos(7,-5,0);
 
-
-
-/*
-void reshape(int w, int h){
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION); 
-	glLoadIdentity();  
-	if (h==0)  
-		gluPerspective(80,(float)w,1.0,5000.0);
-	else
-		gluPerspective (80,( float )w /( float )h,1.0,5000.0 );
-	glMatrixMode(GL_MODELVIEW);  
-	glLoadIdentity(); 
-}
-*/
+vec3 clothOffset = vec3(-1.4f, 4.8f, 8.9f);
+bool triggerWind = false;
+bool triggerMesh = true;
 
 PerfGraph *graph;
 
@@ -101,8 +86,8 @@ void PlayState::init(CGame *game) {
   // cube   =
   //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
   //                  vec3(0.0f, 0.0f, 0.0f));
-  lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(0.0f, 0.0f, -10.0f), vec3(0.0f, 0.0f, 0.0f));
-  cloth = new Cloth(10,20,24,24);
+  lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(-1.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
+  cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition() + clothOffset);
   debug() << "Geometry loaded" << endl;
 
   debug() << "Loading shaders stage" << endl;
@@ -154,9 +139,12 @@ void PlayState::init(CGame *game) {
   debug() << "Textures set" << endl;
 
 
-  camera.setVerticalFieldOfView(90.0);
-  camera.setPosition(vec3(-9.3f, 0.0f, 15.0f));
-  camera.setTarget((lowPolyMan->getPosition()+vec3(0.0f, 0.0f, -8.0f)), vec3(0.0f, 1.0f, 0.0f));
+  camera.setVerticalFieldOfView(70.0);
+  //camera.setPosition(vec3(-9.3f, 0.0f, 15.0f));
+  //camera.setPosition(vec3(0.0f, 0.0f, -12.0f));
+  camera.setPosition(vec3(10.0f, 0.0f, 3.0f));
+  //camera.setTarget(lowPolyMan->getPosition() + vec3(0.0f, 3.0f, 6.0f), vec3(0.0f, 1.0f, 0.0f));
+  camera.setTarget(cloth->getPosition(), vec3(0.0f, 1.0f, 0.0f));
 
   // debug()<<"Camera Position: \n"<<to_string(camera.getPosition())<<endl;
   // debug()<<"Camera View: \n"<<to_string(camera.getViewMatrix())<<endl;
@@ -180,18 +168,21 @@ void PlayState::draw(CGame *g, float *delta) {
   glDepthFunc(GL_LESS);
 
 
-  lowPolyManShader->use();
-  //cubeShader->use();
-
-  // // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
-  lowPolyManShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
-
-  //cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-
   // drawing
 
-  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  lowPolyManShader->use();
+  lowPolyManShader->setUniform("uViewMatrix", camera.getViewMatrix());
+
+  if (triggerMesh) {
+	  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	  lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
+	  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  } else {
+	  lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
+  }
+
+
+
   clothShader->use();
   cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
 
@@ -207,9 +198,13 @@ void PlayState::draw(CGame *g, float *delta) {
 
 void PlayState::update(CGame *g, float dt) {
   cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
-  glm::vec3 random = sphericalRand(0.5f);
-  cloth->windForce((vec3(0.3f,0.3f,0.03f)+random)*dt); // generate some wind each frame
+  //glm::vec3 random = sphericalRand(0.5f);
+  if (triggerWind) {
+	  //cloth->windForce((vec3(0.0f, 0.3f,-1.0f)+random)*dt); // generate some wind each frame
+	  cloth->windForce(vec3(0.0f, 0.05f,-0.2f)); 
+  } 
   cloth->timeStep(dt); // calculate the particle positions of the next frame
+  cloth->modelCollision(lowPolyMan->getPosition() + clothOffset);
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
@@ -258,13 +253,36 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       camera.moveRight(timeElapsed * speed);
     }
 
+    if (key == GLFW_KEY_K) { // upper case!
+      camera.moveUp(timeElapsed * speed);
+    }
+
+    if (key == GLFW_KEY_J) { // upper case!
+      camera.moveDown(timeElapsed * speed);
+    }
+
+	if (key == GLFW_KEY_DOWN) { // upper case!
+	  camera.setPosition(vec3(0.0f, 5.0f, -5.0f));
+	  camera.setTarget(lowPolyMan->getPosition()+vec3(0.0f, 5.0f, 15.0f), vec3(0.0f, 1.0f, 0.0f));
+    }
+    if (key == GLFW_KEY_UP) {
+	  camera.setPosition(vec3(0.0f, 0.0f, 10.0f));
+	  camera.setTarget(lowPolyMan->getPosition(), vec3(0.0f, 1.0f, 0.0f));
+    }
+    if (key == GLFW_KEY_RIGHT) {
+	  camera.setPosition(vec3(6.0f, 5.0f, -5.0f));
+	  camera.setTarget(cloth->getPosition(), vec3(0.0f, 1.0f, 0.0f));
+    }
+    if (key == GLFW_KEY_LEFT) {
+	  camera.setPosition(vec3(-6.0f, 5.0f, -5.0f));
+	  camera.setTarget(cloth->getPosition(), vec3(0.0f, 1.0f, 0.0f));
+    }
+
     if (key == GLFW_KEY_P) {
       for (int i = 0; i < 10; ++i)
       {
       debug() << graph->values[i] << endl;
       }
-      
-     
     }
 
     if (key == GLFW_KEY_R) {
@@ -274,31 +292,14 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       ShaderProgramCreator("cloth").update(skyboxShader);
     }
     if (key == GLFW_KEY_SPACE) {
-      cloth->windForce((vec3(1.0f,-0.2f,0.3f)));
+      //cloth->windForce((vec3(1.0f,-0.2f,0.3f)));
+      //cloth->windForce((vec3(0.0f,0.5f,-1.5f)));
+	  triggerWind = !triggerWind;
     }
-    if (key == GLFW_KEY_UP) {
-      lowPolyMan->setPosition(lowPolyMan->getPosition()+vec3(0,0,2));
-      cloth->setPosition(cloth->getPosition()+vec3(0,0,2));
-    }
-    if (key == GLFW_KEY_DOWN) {
-      lowPolyMan->setPosition(lowPolyMan->getPosition()+vec3(0,0,-2));
-      cloth->setPosition(cloth->getPosition()+vec3(0,0,-2));
-    }
-    if (key == GLFW_KEY_RIGHT) {
-      lowPolyMan->setPosition(lowPolyMan->getPosition()+vec3(2,0,0));
-      cloth->setPosition(cloth->getPosition()+vec3(2,0,0));
-    }
-    if (key == GLFW_KEY_LEFT) {
-      lowPolyMan->setPosition(lowPolyMan->getPosition()+vec3(-2,0,0));
-      cloth->setPosition(cloth->getPosition()+vec3(-2,0,0));
-    }
-    if (key == GLFW_KEY_1) {
-        vec3 offset = vec3(0.1f,0.0f,0.0f);
-        mat4 rotation = glm::rotate(offset.x, vec3(1.0f, 0.0f, 0.0f)) *
-                        glm::rotate(offset.y, vec3(0.0f, 1.0f, 0.0f)) *
-                        glm::rotate(offset.z, vec3(0.0f, 0.0f, 1.0f));
-        mat4 curRotation = lowPolyMan->getRotation();
-        lowPolyMan->setRotation(curRotation+rotation);
+    if (key == GLFW_KEY_M) {
+      //cloth->windForce((vec3(1.0f,-0.2f,0.3f)));
+      //cloth->windForce((vec3(0.0f,0.5f,-1.5f)));
+	  triggerMesh = !triggerMesh;
     }
   }
 }
