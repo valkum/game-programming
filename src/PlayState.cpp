@@ -18,6 +18,7 @@
 #include "world/SkyScraper.hh"
 #include "world/Terrain.hh"
 
+
 using namespace glm;
 using namespace std;
 using namespace ACGL::OpenGL;
@@ -32,6 +33,7 @@ GenericCamera camera;
 SkyDome *skydome;
 vector<Object*> objects;
 Terrain *terrain;
+PerfGraph *graph;
 
 
 void PlayState::init(CGame *game) {
@@ -48,6 +50,12 @@ void PlayState::init(CGame *game) {
   camera.setVerticalFieldOfView(95.0);
   camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
   camera.setTarget(vec3(1.0f, .0f, .0f));
+
+  gui = new Gui(vg, game->g_window);
+  graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
+  graph->setPosition(ivec2(400,400));
+  graph->setSize(ivec2(200,35));
+
 
   // define where shaders and textures can be found:
   Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
@@ -155,6 +163,8 @@ openGLCriticalError();
   //SwapBuffers(g_HDC);
 
   openGLCriticalError();
+
+  gui->drawAll();
 }
 
 void PlayState::update(CGame *g, float delta) {

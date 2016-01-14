@@ -2,9 +2,19 @@
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
+if(NOT DEFINED ENV{TRAVIS})
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+endif()
+
 set(C_FLAGS_COMMON "-Wall -Werror")
+<<<<<<< HEAD
 set(CMAKE_CXX_FLAGS "-std=c++11 -fsanitize=address -g ${C_FLAGS_COMMON}")
+=======
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g ${C_FLAGS_COMMON}")
+>>>>>>> GUI
 set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
 set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
@@ -23,6 +33,11 @@ set(SOURCE_FILES
     world/SkyDome.cpp
     world/Terrain.cpp
     world/SkyScraper.cpp
+    GUI/common.cpp
+    GUI/GUIObject.cpp
+    GUI/Gui.cpp
+    GUI/Button.cpp
+    GUI/PerfGraph.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
@@ -70,7 +85,7 @@ if(UNIX)
 	find_package(PkgConfig REQUIRED)
 	pkg_search_module(GLFW REQUIRED glfw3)
 	include_directories(${GLFW_INCLUDE_DIRS})
-  link_directories(${GLFW_LIBRARY_DIRS})
+    link_directories(${GLFW_LIBRARY_DIRS})
 
 	#find_package(GLM REQUIRED)
 	#include_directories(${GLM_INCLUDE_DIR})
@@ -106,9 +121,10 @@ TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${REQUIRED_LIBS})
 # 		PRE_BUILD
 # 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "${dir}/assets"
 # )
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  message(STATUS "Linking Assets: ${dir}/assets -> ${CMAKE_SOURCE_DIR}/assets")
+  add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
         POST_BUILD
-        COMMAND ln -s ${CMAKE_SOURCE_DIR}/assets ${dir}/assets)
+        COMMAND rm ${dir}/assets && ln -s ../assets ${dir}/assets)
 
 endif()
