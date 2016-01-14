@@ -38,6 +38,8 @@ protected:
 private:
 
   static IntroState m_IntroState;
-  int m_MouseState;
+  int mMouseState, mModifiers;
+  glm::vec2 mMousePos;
+  float mPixelRatio;
 };
 #endif // ifndef INTROSTATE_H
