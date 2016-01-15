@@ -5,9 +5,19 @@
 #include <ACGL/OpenGL/GL.hh>
 #include <GLFW/glfw3.h>
 
+
+#include "world/SkyDome.hh"
+#include "world/SkyScraper.hh"
+#include "world/Terrain.hh"
+#include <ACGL/Scene/GenericCamera.hh>
+
 #include <ACGL/OpenGL/Creator/VertexArrayObjectCreator.hh>
 
 using namespace ACGL::OpenGL;
+using namespace ACGL::Base;
+using namespace ACGL::Utils;
+using namespace ACGL::Scene;
+
 
 class PlayState : public CGameState {
 public:
@@ -45,11 +55,20 @@ private:
   //int m_MouseState;
   glm::vec2   m_mousePos, m_lastMousePos;
   static PlayState m_PlayState;
-  bool renderDebug;
+  bool renderDebug, showFrames;
   SharedShaderProgram skydomeShader;
   SharedShaderProgram lightningShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;
   SharedShaderProgram     debugShader;
+
+  SkyDome *skydome;
+  vector<Object*> objects;
+  Terrain *terrain;
+  GUIObject *graph;
+
+  GenericCamera camera;
+
+
 };
 #endif // ifndef PLAYSTATE_H
