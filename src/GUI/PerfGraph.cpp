@@ -1,15 +1,11 @@
 #include "GUI/PerfGraph.hh"
-#include <ACGL/OpenGL/GL.hh>
+
+#include "GUI/nanovg.hh"
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#ifdef NANOVG_GLEW
-#  include <GL/glew.h>
-#endif
-#include <GLFW/glfw3.h>
-#include "nanovg.h"
 
-#include <iconv.h>
 
 // timer query support
 #ifndef GL_ARB_timer_query

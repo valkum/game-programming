@@ -3,7 +3,6 @@
 
 #include "GUI/GUIObject.hh"
 
-#include "GUI/nanovg.hh"
 #include <functional>
 #include <string>
 
