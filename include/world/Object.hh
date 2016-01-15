@@ -22,6 +22,9 @@ public:
   inline ACGL::OpenGL::SharedTexture2D getTexture() {
     return this->texture;
   }
+  inline void setTexture(ACGL::OpenGL::SharedTexture2D texture) {
+    this->texture = texture;
+  }
 
 private:
 

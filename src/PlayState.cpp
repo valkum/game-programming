@@ -3,7 +3,6 @@
 
 #include <ACGL/OpenGL/Data/GeometryDataLoadStore.hh>
 #include <ACGL/OpenGL/Data/TextureLoadStore.hh>
-#include <ACGL/Scene/GenericCamera.hh>
 #include "TextureLoadStore.hh"
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Base/Settings.hh>
@@ -14,9 +13,6 @@
 #include <vector>
 #include "Helper.hh"
 #include "Model.hh"
-#include "world/SkyDome.hh"
-#include "world/SkyScraper.hh"
-#include "world/Terrain.hh"
 
 
 using namespace glm;
@@ -27,15 +23,6 @@ using namespace ACGL::Utils;
 using namespace ACGL::Scene;
 
 PlayState PlayState::m_PlayState;
-GenericCamera camera;
-
-
-SkyDome *skydome;
-vector<Object*> objects;
-Terrain *terrain;
-PerfGraph *graph;
-bool showFrames = false;
-
 
 void PlayState::init(CGame *game) {
   renderDebug = false;
@@ -47,9 +34,9 @@ void PlayState::init(CGame *game) {
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  camera.setVerticalFieldOfView(95.0);
+  //camera.setVerticalFieldOfView(95.0);
   camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
-  camera.setTarget(vec3(1.0f, .0f, .0f));
+  camera.setStateFromString("ACGL_GenericCamera | 1 | (-0.152289,1.16336,2.27811) | ((-0.999868,-0.00162319,-0.0161718),(0,0.995,-0.0998699),(0.0162531,-0.0998567,-0.994869)) | PERSPECTIVE_PROJECTION | MONO | EYE_LEFT | 75 | 1.33333 | 0.064 | 0.1 | 5000 | 500 | (0,0)");
 
   gui = new Gui(vg, game->g_window);
   graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
@@ -63,12 +50,14 @@ void PlayState::init(CGame *game) {
   Settings::the()->setGeometryPath("geometry/");
   Settings::the()->setTexturePath("textures/");
 
-
   debug() << "Loading objects stage" << endl;
 
   skydome = new SkyDome(Model("SkyDome.obj", 100.0f), "Sky.png");
   Object* skyscraper = new SkyScraper(vec3(0.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
   objects.push_back(skyscraper);
+  Object* cube = new Object(Model("cube.obj", 5.0f), vec3(5.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
+  objects.push_back(cube);
+
   terrain = new Terrain();
 
   debug() << "Geometry loaded" << endl;
@@ -98,10 +87,10 @@ void PlayState::init(CGame *game) {
 
   debug() << "Set Textures Stage" << endl;
   skydomeShader->use();
-  skydomeShader->setTexture("uTexture", skydome->getTexture(), 1);
+  skydomeShader->setTexture("uTexture", skydome->getTexture(), 2);
 
-  // cubeShader->use();
-  // cubeShader->setTexture("uTexture", cube->getTexture(), 2);
+  // lightningShader->use();
+  // lightningShader->setTexture("uTexture", cube->getTexture(), 3);
 
   //terrainShader->use();
   //terrainShader->setTexture("uTexture", cube->getTexture(), 2);
@@ -127,6 +116,10 @@ void PlayState::draw(CGame *g, float *delta) {
   //skydome->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
 
   glDepthFunc(GL_LEQUAL);
+  // Workarround needed somhow for nanovg, as nanovg calls glActiveTexture(...). 
+  // Found no proper way for use with ACGL if this is nessecary with more than one texture.
+  // Saxum works without I think.
+  skydome->getTexture()->bind(2);
   skydomeShader->use();
   skydome->render(skydomeShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
@@ -165,6 +158,7 @@ openGLCriticalError();
   openGLCriticalError();
   if(showFrames) {
     gui->drawAll();
+    glEnable(GL_DEPTH_TEST);
   }
 
 }
@@ -222,6 +216,9 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
+    }
+    if (key == GLFW_KEY_V) {
+      debug() << camera.storeStateToString() << std::endl;
     }
 
     if (key == GLFW_KEY_P) {

@@ -4,9 +4,6 @@ notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
 env:
   - PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$HOME/glfw3/lib/pkgconfig"
-  - CXX="clang++-3.7 -stdlib=libc++"
-  - CXXFLAGS="$CXXFLAGS -nostdinc++ -I/usr/local/opt/llvm37/lib/llvm-3.7/include/c++/v1"
-  - LDFLAGS="$LDFLAGS -L/usr/local/opt/llvm37/lib/llvm-3.7/lib"
 os:
   - linux
   - osx

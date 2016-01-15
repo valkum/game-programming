@@ -20,8 +20,31 @@ using namespace ACGL::Utils;
 
 int main(int argc, char *argv[])
 {
-  // @todo: add loadLevel and version maybe
-  run(argv);
+  int opt;
+  bool debug = false;
+  bool printVersion = false;
+
+  //Shut GetOpt error messages down (return '?'):
+  opterr = 0;
+
+  //Retrieve the options:
+  while ( (opt = getopt(argc, argv, "dv")) != -1 ) {  // for each option...
+     switch ( opt ) {
+         case 'd':
+                 debug = true;
+             break;
+         case 'v':
+                 printVersion = true;
+             break;
+         case '?':  // unknown option...
+                 cerr << "Unknown option: '" << char(optopt) << "'!" << endl;
+             break;
+     }
+  }
+  if(!printVersion)
+    run(debug);
+  else
+    printf("Version: none");
 }
 
 void setGLFWHintsForOpenGLVersion(unsigned int _version)
@@ -79,18 +102,20 @@ int createWindow() {
   return true;
 }
 
-int run(char *argv[]) {
+int run(bool debug) {
   if (!createWindow()) {
     glfwTerminate();
     exit(-1);
   }
 
-  vector<std::string> tmp;
-  tmp.push_back(std::string(argv[0]));
-  glfwSetWindowTitle(g_window, tmp[tmp.size() - 1].c_str());
+
+  glfwSetWindowTitle(g_window, "Himmel Build: -1");
   CGame *game = CGame::instance();
   game->init(g_window);
-  game->changeState(IntroState::instance());
+  if(debug)
+    game->changeState(PlayState::instance());
+  else
+    game->changeState(IntroState::instance());
 
   glfwSwapInterval(0);
 

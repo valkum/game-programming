@@ -121,12 +121,6 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
   message(STATUS "Linking Assets: ${dir}/assets -> ${CMAKE_SOURCE_DIR}/assets")
   add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
 	  POST_BUILD
-	  #COMMAND rm ${dir}/assets && ln -s ../assets ${dir}/assets)
-	  IF(EXISTS "${dir}/assets" AND IS_DIRECTORY "${dir}/assets")
-		  COMMAND rm -r ${dir}/assets && ln -s ../assets ${dir}/assets
-	  ELSEIF(EXISTS "${dir}/assets")
-		  COMMAND rm ${dir}/assets && ln -s ../assets ${dir}/assets
-	  ELSE()
-		  COMMAND echo "u dun goofed"
-	  ENDIF())
+      COMMAND ${CMAKE_SOURCE_DIR}/linkAssets.sh ${dir}
+  )
 endif()
