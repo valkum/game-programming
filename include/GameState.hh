@@ -4,6 +4,7 @@
 #include "Game.hh"
 #include "GUI/Gui.hh"
 #include "GUI/elements.hh"
+#include "Level.hh"
 
 class CGameState {
 public:

@@ -28,8 +28,8 @@
     }
   ],
   "camera": {
-    "position": [-0.152289,1.16336,2.27811],
-    "rotation": [-1.0, 1.0, -1.0]
+    "position": [-0.152289, 1.16336, 2.27811],
+    "rotation": [[-1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[0.0, 0.0, -1.0]]
   },
   "terrain": {
     "size": [64, 32]
@@ -37,5 +37,9 @@
   "skydome": {
     "texture": "Sky.png",
     "scale": 60.0
+  },
+  "loadingScreen": {
+    "text" : "Wake up Mr. Freeman!",
+    "textColor" [255,165,0]
   }
 }

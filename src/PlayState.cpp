@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include <vector>
-#include "Level.hh"
 #include "Model.hh"
 
 
@@ -34,8 +33,8 @@ void PlayState::init(CGame *game) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   //camera.setVerticalFieldOfView(95.0);
-  camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
-  camera.setStateFromString("ACGL_GenericCamera | 1 | (-0.152289,1.16336,2.27811) | ((-0.999868,-0.00162319,-0.0161718),(0,0.995,-0.0998699),(0.0162531,-0.0998567,-0.994869)) | PERSPECTIVE_PROJECTION | MONO | EYE_LEFT | 75 | 1.33333 | 0.064 | 0.1 | 5000 | 500 | (0,0)");
+  // camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
+  // camera.setStateFromString("ACGL_GenericCamera | 1 | (-0.152289,1.16336,2.27811) | ((-0.999868,-0.00162319,-0.0161718),(0,0.995,-0.0998699),(0.0162531,-0.0998567,-0.994869)) | PERSPECTIVE_PROJECTION | MONO | EYE_LEFT | 75 | 1.33333 | 0.064 | 0.1 | 5000 | 500 | (0,0)");
 
   gui = new Gui(vg, game->g_window);
   graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
@@ -44,9 +43,10 @@ void PlayState::init(CGame *game) {
 
 
   if(game->cli_settings.flagLevel) {
-    debug() << "klappt" <<std::endl;
+    level = new Level(game->cli_settings.levelId);
+  }else {
+    level = new Level("fffff-00000");
   }
-  Level* level = new Level("fffff-00000");
   //Level* level = new Level("00000-00001");
   level->load();
 
@@ -111,8 +111,8 @@ void PlayState::draw(CGame *g, float *delta) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 
-  glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
-                                  camera.getViewMatrix();
+  glm::mat4 viewProjectionMatrix = level->getCamera()->getProjectionMatrix() *
+                                  level->getCamera()->getViewMatrix();
   //skydome->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
 
   glDepthFunc(GL_LEQUAL);
@@ -172,7 +172,7 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
   //Update FPS Camera for Debug:
   vec2 mouseDelta = (m_lastMousePos - m_mousePos);
-  camera.FPSstyleLookAround(-mouseDelta.x/m_game->g_windowSize.x, -mouseDelta.y/m_game->g_windowSize.y);
+  level->getCamera()->FPSstyleLookAround(-mouseDelta.x/m_game->g_windowSize.x, -mouseDelta.y/m_game->g_windowSize.y);
 }
 
 void PlayState::handleMouseButtonEvents(GLFWwindow *window,
@@ -196,23 +196,23 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
     if (key == GLFW_KEY_W) { // upper case!
-      camera.moveForward(timeElapsed * speed);
+      level->getCamera()->moveForward(timeElapsed * speed);
     }
 
     if (key == GLFW_KEY_S) { // upper case!
-      camera.moveBack(timeElapsed * speed);
+      level->getCamera()->moveBack(timeElapsed * speed);
     }
 
     if (key == GLFW_KEY_E) { // upper case!
-      camera.FPSstyleLookAround(timeElapsed * speed, 0);
+      level->getCamera()->FPSstyleLookAround(timeElapsed * speed, 0);
     }
 
     if (key == GLFW_KEY_A) { // upper case!
-      camera.moveLeft(timeElapsed * speed);
+      level->getCamera()->moveLeft(timeElapsed * speed);
     }
 
     if (key == GLFW_KEY_D) { // upper case!
-      camera.moveRight(timeElapsed * speed);
+      level->getCamera()->moveRight(timeElapsed * speed);
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;

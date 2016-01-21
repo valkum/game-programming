@@ -68,6 +68,7 @@ private:
   GUIObject *graph;
 
   GenericCamera camera;
+  Level* level;
 
 
 };
