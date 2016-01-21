@@ -15,6 +15,7 @@
 #include <vector>
 #include "Helper.hh"
 #include "Model.hh"
+#include "Sphere.hh"
 #include "world/Skybox.hh"
 #include "world/Vec3.hh"
 #include "world/TestObject.hh"
@@ -40,12 +41,14 @@ Skybox *skybox;
 //TestObject *cube;
 TestObject *lowPolyMan;
 Cloth *cloth;
+Sphere *sphere;
 
 vec3 clothOffset = vec3(-1.4f, 4.8f, 8.9f);
 bool triggerWind = false;
 bool triggerMesh = true;
 
 PerfGraph *graph;
+
 
 void PlayState::init(CGame *game) {
     renderDebug = false;
@@ -87,7 +90,13 @@ void PlayState::init(CGame *game) {
     //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
     //                  vec3(0.0f, 0.0f, 0.0f));
     lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(-1.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
+
+
     cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition() + clothOffset);
+
+    vec3 spherePos = cloth->getSphereOffset1() + cloth->getPosition();
+    sphere = new Sphere(spherePos);
+
     debug() << "Geometry loaded" << endl;
 
     debug() << "Loading shaders stage" << endl;
@@ -102,14 +111,16 @@ void PlayState::init(CGame *game) {
     SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
     vao->attachAllAttributes(ab);
 
+
+
     lowPolyManShader = ShaderProgramCreator("low_poly_man").attributeLocations(
             lowPolyMan->getVAO()->getAttributeLocations()).create();
-    //cubeShader = ShaderProgramCreator("cube").attributeLocations(
-    //  vao->getAttributeLocations()).create();
-    //cubeShader = ShaderProgramCreator("cube").attributeLocations(
-    //  lowPolyMan->getVAO()->getAttributeLocations()).create();
+
     clothShader = ShaderProgramCreator("cloth").attributeLocations(
             cloth->getVAO()->getAttributeLocations()).create();
+
+    sphereShader = ShaderProgramCreator("cloth").attributeLocations(
+            sphere->getVAO()->getAttributeLocations()).create();
 
     skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
             vao->getAttributeLocations()).create();
@@ -169,7 +180,6 @@ void PlayState::draw(CGame *g, float *delta) {
 
 
     // drawing
-
     lowPolyManShader->use();
     lowPolyManShader->setUniform("uViewMatrix", camera.getViewMatrix());
 
@@ -182,6 +192,8 @@ void PlayState::draw(CGame *g, float *delta) {
     }
 
 
+    sphereShader->use();
+    sphere->render(sphereShader, &viewProjectioMatrix); 
 
     clothShader->use();
     cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading

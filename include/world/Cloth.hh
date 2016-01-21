@@ -27,6 +27,12 @@ class Cloth : public Entity {
 	public:
 	Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 modelPosition);
 
+    vec3 getSphereOffset1();
+    vec3 getSphereOffset2();
+    vec3 getSphereOffset3();
+    vec3 getSphereOffset4();
+    vec3 getSphereOffset5();
+
 	void render(ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectionMatrix);
 
