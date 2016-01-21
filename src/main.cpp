@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include <getopt.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
