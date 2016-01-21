@@ -25,13 +25,13 @@ struct Vertex {
 
 class Cloth : public Entity {
 	public:
-	Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 modelPosition);
+	Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 position, vec3 offset);
 
+    vec3 getSphereOffset0();
     vec3 getSphereOffset1();
     vec3 getSphereOffset2();
     vec3 getSphereOffset3();
     vec3 getSphereOffset4();
-    vec3 getSphereOffset5();
 
 	void render(ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectionMatrix);
@@ -42,7 +42,7 @@ class Cloth : public Entity {
 
 	void windForce(const vec3 direction);
 
-	void modelCollision(const vec3 modelPosition);
+	void modelCollision();
 
 	void doFrame();
   ACGL::OpenGL::SharedVertexArrayObject getVAO() { return vao; }
@@ -50,12 +50,12 @@ class Cloth : public Entity {
 private:
 	int num_particles_width;
 	int num_particles_height;
-  
+
   ACGL::OpenGL::SharedVertexArrayObject vao;
   ACGL::OpenGL::SharedArrayBuffer ab;
 
-	std::vector<Particle> particles; 
-	std::vector<Constraint> constraints; 
+	std::vector<Particle> particles;
+	std::vector<Constraint> constraints;
 
 	Particle* getParticle(int x, int y);
 	void makeConstraint(Particle *p1, Particle *p2);

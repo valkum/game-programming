@@ -19,16 +19,16 @@ class Sphere : public Entity {
   private:
     ACGL::OpenGL::SharedVertexArrayObject vao;
     ACGL::OpenGL::SharedArrayBuffer ab;
-
+    vec3 sphereOffset;
     std::vector<Vertex> vertexDataTest;
 
   public:
-    Sphere(vec3 spherePosition):
+    Sphere(vec3 position, vec3 sphereOffset):
       Entity(
           //vec3(0.0f,0.0f,-5.0f),
-          spherePosition, //+ vec3(5.0f, 0.0f, 5.0f),
+          position, //+ vec3(5.0f, 0.0f, 5.0f),
           vec3(0.0f,0.0f,0.0f)
-          ){
+        ), sphereOffset(sphereOffset){
         //static GLuint vertexArrayObject = 0;
         //static int elementCount;
         //static GLuint sphereTex;
@@ -50,7 +50,7 @@ class Sphere : public Entity {
             float sinLong = sin(longitude);
             float cosLong = cos(longitude);
             vec3 normal = vec3(cosLong * cosLat1, sinLat1, sinLong * cosLat1);
-            vec3 position = normal * radius;
+            vec3 position = (normal * radius) + sphereOffset;
             //Vertex v = {position, vec2(j/(float)stacks, i/(float)slices), normal};
             Vertex v = {position, vec3(0.3f, 0.6f, 0.2f), normal};
             vertexData.push_back(v);

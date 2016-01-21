@@ -17,17 +17,17 @@ float rad2 = 6;
 float rad3 = 4;
 float rad4 = 4;
 
-vec3 sphereOffset1 = vec3(5.0f, -rad0/2, -rad0/2);
-vec3 sphereOffset2 = vec3(5.0f, -3.0f, -3.0f);
-vec3 sphereOffset3 = vec3(5.0f, -7.5f, -9.0f);
-vec3 sphereOffset4 = vec3(5.0f, -9.5f, -15.0f);
-vec3 sphereOffset5 = vec3(5.0f, -13.5f, -17.0f);
+vec3 sphereOffset0 = vec3(5.0f, -rad0/2, -rad0/2);
+vec3 sphereOffset1 = vec3(5.0f, -3.0f, -3.0f);
+vec3 sphereOffset2 = vec3(5.0f, -7.5f, -9.0f);
+vec3 sphereOffset3 = vec3(5.0f, -9.5f, -15.0f);
+vec3 sphereOffset4 = vec3(5.0f, -13.5f, -17.0f);
 
+vec3 Cloth::getSphereOffset0(){return sphereOffset0;}
 vec3 Cloth::getSphereOffset1(){return sphereOffset1;}
 vec3 Cloth::getSphereOffset2(){return sphereOffset2;}
 vec3 Cloth::getSphereOffset3(){return sphereOffset3;}
 vec3 Cloth::getSphereOffset4(){return sphereOffset4;}
-vec3 Cloth::getSphereOffset5(){return sphereOffset5;}
 
 Particle* Cloth::getParticle(int x, int y) {return &particles[y*num_particles_width + x];}
 void Cloth::makeConstraint(Particle *p1, Particle *p2) {
@@ -35,7 +35,7 @@ void Cloth::makeConstraint(Particle *p1, Particle *p2) {
 }
 
 
-/* A private method used by drawShaded() and addWindForcesForTriangle() to retrieve the  
+/* A private method used by drawShaded() and addWindForcesForTriangle() to retrieve the
    normal vector of the triangle defined by the position of the particles p1, p2, and p3.
    The magnitude of the normal vector is equal to the area of the parallelogram defined by p1, p2 and p3
    */
@@ -51,7 +51,7 @@ vec3 Cloth::calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3)
     return cross(v1,v2);
 }
 
-/* A private method used by windForce() to calcualte the wind force for a single triangle 
+/* A private method used by windForce() to calcualte the wind force for a single triangle
    defined by p1,p2,p3*/
 void Cloth::addWindForcesForTriangle(Particle *p1,Particle *p2,Particle *p3, const vec3 direction)
 {
@@ -66,20 +66,20 @@ void Cloth::addWindForcesForTriangle(Particle *p1,Particle *p2,Particle *p3, con
 
 
 /* This is a important constructor for the entire system of particles and constraints*/
-Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 modelPosition) : 
+Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 modelPosition, vec3 offset) :
     Entity(
             //vec3(0.0f,0.0f,-5.0f),
             modelPosition, //+ vec3(5.0f, 0.0f, 5.0f),
             vec3(0.0f,0.0f,0.0f)
-          ), 
-    num_particles_width(num_particles_width), 
+          ),
+    num_particles_width(num_particles_width),
     num_particles_height(num_particles_height) {
         particles.resize(num_particles_width*num_particles_height); //I am essentially using this vector as an array with room for num_particles_width*num_particles_height particles
 
         // creating particles in a grid of particles from (0,0,0) to (width,-height,0)
         for(int x=0; x<num_particles_width; x++){
             for(int y=0; y<num_particles_height; y++){
-                vec3 pos = modelPosition + vec3(width * (x/(float)num_particles_width),
+                vec3 pos = offset + vec3(width * (x/(float)num_particles_width),
                         0,
                         -height * (y/(float)num_particles_height));
                 particles[y*num_particles_width+x]= Particle(pos); // insert particle in column x at y'th row
@@ -105,25 +105,25 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
         // Connecting secondary neighbors with constraints (distance 2 and sqrt(4) in the grid)
         for(int x=0; x<num_particles_width; x++){
             for(int y=0; y<num_particles_height; y++){
-                if (x<num_particles_width-2) 
+                if (x<num_particles_width-2)
                     makeConstraint(getParticle(x,y),getParticle(x+2,y));
                 if (y<num_particles_height-2)
                     makeConstraint(getParticle(x,y),getParticle(x,y+2));
                 if (x<num_particles_width-2 && y<num_particles_height-2)
                     makeConstraint(getParticle(x,y),getParticle(x+2,y+2));
                 if (x<num_particles_width-2 && y<num_particles_height-2)
-                    makeConstraint(getParticle(x+2,y),getParticle(x,y+2));			
+                    makeConstraint(getParticle(x+2,y),getParticle(x,y+2));
             }
         }
-
 
         // making the upper left most three and right most three particles unmovable
         for(int i=0;i<3; i++){
             getParticle(0+i ,0)->offsetPos(vec3(2,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
-            getParticle(0+i ,0)->makeUnmovable(); 
+            getParticle(0+i ,0)->makeUnmovable();
 
             getParticle(0+i ,0)->offsetPos(vec3(-2,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
             getParticle(num_particles_width-1-i ,0)->makeUnmovable();
+
         }
 
         //Create ACGL::ArrayBuffer
@@ -277,49 +277,48 @@ void Cloth::windForce(const vec3 direction){
    This is based on a very simples scheme where the position of each particle is simply compared to the sphere and corrected.
    This also means that the sphere can "slip through" if the ball is small enough compared to the distance in the grid bewteen particles
    */
-void Cloth::modelCollision(const vec3 modelPosition){
+void Cloth::modelCollision(){
     std::vector<Particle>::iterator particle;
 
     for(particle = particles.begin(); particle != particles.end(); particle++)
     {
-        vec3 v0 = (*particle).getPos()-(modelPosition + sphereOffset1);
+        vec3 v0 = (*particle).getPos()-(sphereOffset0);
         float l0 = length(v0);
-        if ( length(v0) < rad0) // if the particle is inside the ball
+        if (l0 < rad0) // if the particle is inside the ball
         {
-            //debug() << "collision detected @ "<< &particle << endl;
             (*particle).offsetPos(normalize(v0)*(rad0-l0)); // project the particle to the surface of the ball
         }
 
-        vec3 v1 = (*particle).getPos()-(modelPosition + sphereOffset2);
-        float l1 = length(v1);
-        if ( length(v1) < rad1) // if the particle is inside the ball
-        {
-            //debug() << "collision detected @ "<< &particle << endl;
-            (*particle).offsetPos(normalize(v1)*(rad1-l1)); // project the particle to the surface of the ball
-        }
+        //vec3 v1 = (*particle).getPos()-(modelPosition + sphereOffset1);
+        //float l1 = length(v1);
+        //if ( length(v1) < rad1) // if the particle is inside the ball
+        //{
+        //    //debug() << "collision detected @ "<< &particle << endl;
+        //    (*particle).offsetPos(normalize(v1)*(rad1-l1)); // project the particle to the surface of the ball
+        //}
 
-        vec3 v2 = (*particle).getPos()-(modelPosition + sphereOffset3);
-        float l2 = length(v2);
-        if ( length(v2) < rad2) // if the particle is inside the ball
-        {
-            //debug() << "collision detected @ "<< &particle << endl;
-            (*particle).offsetPos(normalize(v2)*(rad2-l2)); // project the particle to the surface of the ball
-        }
+        //vec3 v2 = (*particle).getPos()-(modelPosition + sphereOffset2);
+        //float l2 = length(v2);
+        //if ( length(v2) < rad2) // if the particle is inside the ball
+        //{
+        //    //debug() << "collision detected @ "<< &particle << endl;
+        //    (*particle).offsetPos(normalize(v2)*(rad2-l2)); // project the particle to the surface of the ball
+        //}
 
-        vec3 v3 = (*particle).getPos()-(modelPosition + sphereOffset4);
-        float l3 = length(v3);
-        if ( length(v3) < rad3) // if the particle is inside the ball
-        {
-            //debug() << "collision detected @ "<< &particle << endl;
-            (*particle).offsetPos(normalize(v3)*(rad3-l3)); // project the particle to the surface of the ball
-        }
+        //vec3 v3 = (*particle).getPos()-(modelPosition + sphereOffset3);
+        //float l3 = length(v3);
+        //if ( length(v3) < rad3) // if the particle is inside the ball
+        //{
+        //    //debug() << "collision detected @ "<< &particle << endl;
+        //    (*particle).offsetPos(normalize(v3)*(rad3-l3)); // project the particle to the surface of the ball
+        //}
 
-        vec3 v4 = (*particle).getPos()-(modelPosition + sphereOffset5);
-        float l4 = length(v4);
-        if ( length(v4) < rad4) // if the particle is inside the ball
-        {
-            //debug() << "collision detected @ "<< &particle << endl;
-            (*particle).offsetPos(normalize(v4)*(rad4-l4)); // project the particle to the surface of the ball
-        }
+        //vec3 v4 = (*particle).getPos()-(modelPosition + sphereOffset4);
+        //float l4 = length(v4);
+        //if ( length(v4) < rad4) // if the particle is inside the ball
+        //{
+        //    //debug() << "collision detected @ "<< &particle << endl;
+        //    (*particle).offsetPos(normalize(v4)*(rad4-l4)); // project the particle to the surface of the ball
+        //}
     }
 }

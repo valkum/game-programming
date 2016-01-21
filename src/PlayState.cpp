@@ -89,13 +89,14 @@ void PlayState::init(CGame *game) {
     // cube   =
     //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
     //                  vec3(0.0f, 0.0f, 0.0f));
-    lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(-1.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
+    lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(0.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
 
 
-    cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition() + clothOffset);
+    cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition(), clothOffset);
 
-    vec3 spherePos = cloth->getSphereOffset1() + cloth->getPosition();
-    sphere = new Sphere(spherePos);
+    //vec3 spherePos = lowPolyMan->getPosition() + clothOffset + cloth->getSphereOffset0() ;
+    vec3 spherePos = cloth->getSphereOffset0() ;
+    sphere = new Sphere(lowPolyMan->getPosition(), spherePos);
 
     debug() << "Geometry loaded" << endl;
 
@@ -184,16 +185,18 @@ void PlayState::draw(CGame *g, float *delta) {
     lowPolyManShader->setUniform("uViewMatrix", camera.getViewMatrix());
 
     if (triggerMesh) {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     } else {
         lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
     }
 
 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     sphereShader->use();
-    sphere->render(sphereShader, &viewProjectioMatrix); 
+    sphere->render(sphereShader, &viewProjectioMatrix);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     clothShader->use();
     cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
@@ -214,10 +217,10 @@ void PlayState::update(CGame *g, float dt) {
     //glm::vec3 random = sphericalRand(0.5f);
     if (triggerWind) {
         //cloth->windForce((vec3(0.0f, 0.3f,-1.0f)+random)*dt); // generate some wind each frame
-        cloth->windForce(vec3(0.0f, 0.05f,-0.2f)); 
-    } 
+        cloth->windForce(vec3(0.0f, 0.05f,-0.2f));
+    }
     cloth->timeStep(dt); // calculate the particle positions of the next frame
-    cloth->modelCollision(lowPolyMan->getPosition() + clothOffset);
+    cloth->modelCollision();
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
