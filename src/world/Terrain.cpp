@@ -93,10 +93,10 @@ float* Terrain::generate(float a, float b) {
 
   float xFactor = 1.0f / (width - 1);
   float yFactor = 1.0f / (length - 1);
-  for( int row = 0; row < length; row++ ) {
-    for( int col = 0 ; col < width; col++ ) {
-      float x = xFactor * col;
-      float y = yFactor * row;
+  for( int row = 0; row < width; row++ ) {
+    for( int col = 0 ; col < length; col++ ) {
+      float x = xFactor * row;
+      float y = yFactor * col;
       float sum = 0.0f;
       float freq = a;
       float scale = b;

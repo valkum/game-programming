@@ -2,8 +2,11 @@
 #include "GameState.hh"
 #include <iostream>
 #include <glm/glm.hpp>
+#include <ACGL/Base/Settings.hh>
+#include "Helper.hh"
 
 using namespace glm;
+using namespace ACGL::Base;
 CGame CGame::m_CGame;
 class CGame;
 
@@ -49,6 +52,11 @@ void CGame::init(GLFWwindow *_g_window) {
     g->handleResizeEvents(w, width, height);
   }
                                  );
+
+  Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
+  Settings::the()->setShaderPath("shaders/");
+  Settings::the()->setGeometryPath("geometry/");
+  Settings::the()->setTexturePath("textures/");
 }
 
 void CGame::cleanup() {

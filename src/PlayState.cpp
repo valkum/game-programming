@@ -5,13 +5,12 @@
 #include <ACGL/OpenGL/Data/TextureLoadStore.hh>
 #include "TextureLoadStore.hh"
 #include <ACGL/OpenGL/Objects.hh>
-#include <ACGL/Base/Settings.hh>
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
 
 #include <iostream>
 #include <vector>
-#include "Helper.hh"
+#include "Level.hh"
 #include "Model.hh"
 
 
@@ -44,11 +43,10 @@ void PlayState::init(CGame *game) {
   graph->setSize(ivec2(200,35));
 
 
-  // define where shaders and textures can be found:
-  Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
-  Settings::the()->setShaderPath("shaders/");
-  Settings::the()->setGeometryPath("geometry/");
-  Settings::the()->setTexturePath("textures/");
+
+  Level* level = new Level("fffff-00000");
+  //Level* level = new Level("00000-00001");
+  level->load();
 
   debug() << "Loading objects stage" << endl;
 

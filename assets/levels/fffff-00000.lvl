@@ -1,0 +1,41 @@
+{
+  "name": "Debug Level",
+  "uuid": "fffff-00000",
+  "objects": [
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.5,
+      "position": [0.0,0.0,3.0],
+      "rotation": [0.0,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.45,
+      "position": [1.0,0.0,3.0],
+      "rotation": [0.0,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.55,
+      "position": [3.0,0.0,1.0],
+      "rotation": [0.0,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.5,
+      "position": [2.0,0.0,2.0],
+      "rotation": [0.0,0.0,0.0]
+    }
+  ],
+  "camera": {
+    "position": [-0.152289,1.16336,2.27811],
+    "rotation": [-1.0, 1.0, -1.0]
+  },
+  "terrain": {
+    "size": [64, 32]
+  },
+  "skydome": {
+    "texture": "Sky.png",
+    "scale": 60.0
+  }
+}

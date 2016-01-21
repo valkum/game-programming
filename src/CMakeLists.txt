@@ -10,7 +10,7 @@ set(C_FLAGS_COMMON "-Wall -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g ${C_FLAGS_COMMON}")
 set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
 set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
@@ -24,6 +24,7 @@ set(SOURCE_FILES
     Helper.cpp
     TextureLoadStore.cpp
     Model.cpp
+    Level.cpp
     world/Entity.cpp
     world/Object.cpp
     world/SkyDome.cpp

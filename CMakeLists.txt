@@ -28,6 +28,8 @@ set(EXECUTABLE_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
 #add_subdirectory(lib)
 include_directories(lib/nanovg/src)
 add_subdirectory(lib/nanovg)
+include_directories(lib/json/src)
+
 add_subdirectory(src)
 
 # install(FILES assets DESTINATION assets)
