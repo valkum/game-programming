@@ -25,6 +25,10 @@ PlayState PlayState::m_PlayState;
 void PlayState::init(CGame *game) {
   renderDebug = false;
   m_game = game;
+  double* x = new double;
+  double* y = new double;
+  glfwGetCursorPos(game->g_window, x, y);
+  m_mousePos = vec2(*x, *y);
 
   glClearColor(0.0, 0.0, 0.0, 1.0);
   glEnable(GL_DEPTH_TEST);
