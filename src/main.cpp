@@ -19,31 +19,33 @@ using namespace glm;
 using namespace ACGL;
 using namespace ACGL::Utils;
 
-int main(int argc, char *argv[])
+
+int main(int argc, char **argv)
 {
   int opt;
-  bool debug = false;
-  bool printVersion = false;
 
   //Shut GetOpt error messages down (return '?'):
   opterr = 0;
+  cli_settings.flagLevel = false;
+  cli_settings.flagVersion = false;
 
   //Retrieve the options:
-  while ( (opt = getopt(argc, argv, "dv")) != -1 ) {  // for each option...
+  while ( (opt = getopt(argc, argv, "l:v")) != -1 ) {  // for each option...
      switch ( opt ) {
-         case 'd':
-                 debug = true;
+         case 'l':
+                 cli_settings.flagLevel = true;
+                 cli_settings.levelId = optarg;
              break;
          case 'v':
-                 printVersion = true;
+                 cli_settings.flagVersion = true;
              break;
          case '?':  // unknown option...
                  cerr << "Unknown option: '" << char(optopt) << "'!" << endl;
              break;
      }
   }
-  if(!printVersion)
-    run(debug);
+  if(!cli_settings.flagVersion)
+    run();
   else
     printf("Version: none");
 }
@@ -103,17 +105,18 @@ int createWindow() {
   return true;
 }
 
-int run(bool debug) {
+int run() {
   if (!createWindow()) {
     glfwTerminate();
     exit(-1);
   }
 
 
-  glfwSetWindowTitle(g_window, "Himmel Build: -1");
+  glfwSetWindowTitle(g_window, "Himmel Build: none");
   CGame *game = CGame::instance();
   game->init(g_window);
-  if(debug)
+  game->cli_settings = cli_settings;
+  if(cli_settings.flagLevel)
     game->changeState(PlayState::instance());
   else
     game->changeState(IntroState::instance());

@@ -43,7 +43,9 @@ void PlayState::init(CGame *game) {
   graph->setSize(ivec2(200,35));
 
 
-
+  if(game->cli_settings.flagLevel) {
+    debug() << "klappt" <<std::endl;
+  }
   Level* level = new Level("fffff-00000");
   //Level* level = new Level("00000-00001");
   level->load();

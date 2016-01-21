@@ -7,6 +7,7 @@
 
 using namespace glm;
 using namespace ACGL::Base;
+
 CGame CGame::m_CGame;
 class CGame;
 
