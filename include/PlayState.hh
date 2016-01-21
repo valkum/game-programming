@@ -51,7 +51,9 @@ private:
   SharedShaderProgram skyboxShader;
   //SharedShaderProgram cubeShader;
   SharedShaderProgram lowPolyManShader;
-  SharedShaderProgram sphereShader;
+  SharedShaderProgram sphereShader0;
+  SharedShaderProgram sphereShader1;
+  SharedShaderProgram sphereShader2;
   SharedShaderProgram clothShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;

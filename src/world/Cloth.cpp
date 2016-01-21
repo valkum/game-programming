@@ -17,11 +17,11 @@ float rad2 = 6;
 float rad3 = 4;
 float rad4 = 4;
 
-vec3 sphereOffset0 = vec3(5.0f, -rad0/2, -rad0/2);
-vec3 sphereOffset1 = vec3(5.0f, -3.0f, -3.0f);
-vec3 sphereOffset2 = vec3(5.0f, -7.5f, -9.0f);
-vec3 sphereOffset3 = vec3(5.0f, -9.5f, -15.0f);
-vec3 sphereOffset4 = vec3(5.0f, -13.5f, -17.0f);
+vec3 sphereOffset0 = vec3(0.0f, 1.0f, -1.0f);
+vec3 sphereOffset1 = vec3(0.0f, 0.0f, 0.0f);
+vec3 sphereOffset2 = vec3(0.0f, 0.0f, 0.0f);
+vec3 sphereOffset3 = vec3(0.0f, -9.5f, -15.0f);
+vec3 sphereOffset4 = vec3(0.0f, -13.5f, -17.0f);
 
 vec3 Cloth::getSphereOffset0(){return sphereOffset0;}
 vec3 Cloth::getSphereOffset1(){return sphereOffset1;}
@@ -79,7 +79,7 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
         // creating particles in a grid of particles from (0,0,0) to (width,-height,0)
         for(int x=0; x<num_particles_width; x++){
             for(int y=0; y<num_particles_height; y++){
-                vec3 pos = offset + vec3(width * (x/(float)num_particles_width),
+                vec3 pos = offset + vec3((-width) * (x/(float)num_particles_width),
                         0,
                         -height * (y/(float)num_particles_height));
                 particles[y*num_particles_width+x]= Particle(pos); // insert particle in column x at y'th row

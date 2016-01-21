@@ -41,9 +41,12 @@ Skybox *skybox;
 //TestObject *cube;
 TestObject *lowPolyMan;
 Cloth *cloth;
-Sphere *sphere;
+Sphere *sphere0;
+Sphere *sphere1;
+Sphere *sphere2;
 
-vec3 clothOffset = vec3(-1.4f, 4.8f, 8.9f);
+
+vec3 clothOffset = vec3(0.0f, 0.0f, -3.0f);
 bool triggerWind = false;
 bool triggerMesh = true;
 
@@ -95,8 +98,13 @@ void PlayState::init(CGame *game) {
     cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition(), clothOffset);
 
     //vec3 spherePos = lowPolyMan->getPosition() + clothOffset + cloth->getSphereOffset0() ;
-    vec3 spherePos = cloth->getSphereOffset0() ;
-    sphere = new Sphere(lowPolyMan->getPosition(), spherePos);
+    vec3 spherePos0 = cloth->getSphereOffset0() ;
+    vec3 spherePos1 = cloth->getSphereOffset1() ;
+    vec3 spherePos2 = cloth->getSphereOffset2() ;
+
+    sphere0 = new Sphere(lowPolyMan->getPosition(), spherePos0);
+    sphere1 = new Sphere(lowPolyMan->getPosition(), spherePos1);
+    sphere2 = new Sphere(lowPolyMan->getPosition(), spherePos2);
 
     debug() << "Geometry loaded" << endl;
 
@@ -120,8 +128,14 @@ void PlayState::init(CGame *game) {
     clothShader = ShaderProgramCreator("cloth").attributeLocations(
             cloth->getVAO()->getAttributeLocations()).create();
 
-    sphereShader = ShaderProgramCreator("cloth").attributeLocations(
-            sphere->getVAO()->getAttributeLocations()).create();
+    sphereShader0 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere0->getVAO()->getAttributeLocations()).create();
+
+    sphereShader1 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere1->getVAO()->getAttributeLocations()).create();
+
+    sphereShader2 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere2->getVAO()->getAttributeLocations()).create();
 
     skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
             vao->getAttributeLocations()).create();
@@ -154,9 +168,9 @@ void PlayState::init(CGame *game) {
     camera.setVerticalFieldOfView(70.0);
     //camera.setPosition(vec3(-9.3f, 0.0f, 15.0f));
     //camera.setPosition(vec3(0.0f, 0.0f, -12.0f));
-    camera.setPosition(vec3(10.0f, 0.0f, 3.0f));
+    camera.setPosition(vec3(0.0f, 0.0f, 10.0f));
     //camera.setTarget(lowPolyMan->getPosition() + vec3(0.0f, 3.0f, 6.0f), vec3(0.0f, 1.0f, 0.0f));
-    camera.setTarget(cloth->getPosition(), vec3(0.0f, 1.0f, 0.0f));
+    //camera.setTarget(vec3(0.0f, 0.0f, -10.0f), vec3(0.0f, 1.0f, 0.0f));
 
     // debug()<<"Camera Position: \n"<<to_string(camera.getPosition())<<endl;
     // debug()<<"Camera View: \n"<<to_string(camera.getViewMatrix())<<endl;
@@ -194,12 +208,16 @@ void PlayState::draw(CGame *g, float *delta) {
 
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    sphereShader->use();
-    sphere->render(sphereShader, &viewProjectioMatrix);
+    sphereShader0->use();
+    sphere0->render(sphereShader0, &viewProjectioMatrix);
+    sphereShader1->use();
+    sphere1->render(sphereShader1, &viewProjectioMatrix);
+    sphereShader2->use();
+    sphere2->render(sphereShader2, &viewProjectioMatrix);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    clothShader->use();
-    cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
+    //clothShader->use();
+    //cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
 
     // if(renderDebug) {
     //     debugShader->use();
