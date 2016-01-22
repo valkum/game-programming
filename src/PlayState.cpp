@@ -9,6 +9,7 @@
 #include <ACGL/Base/Settings.hh>
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/random.hpp>
 
 #include <iostream>
@@ -216,8 +217,8 @@ void PlayState::draw(CGame *g, float *delta) {
     sphere2->render(sphereShader2, &viewProjectioMatrix);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    //clothShader->use();
-    //cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
+    clothShader->use();
+    cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
 
     // if(renderDebug) {
     //     debugShader->use();
@@ -238,7 +239,7 @@ void PlayState::update(CGame *g, float dt) {
         cloth->windForce(vec3(0.0f, 0.05f,-0.2f));
     }
     cloth->timeStep(dt); // calculate the particle positions of the next frame
-    cloth->modelCollision();
+    //cloth->modelCollision();
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
@@ -334,6 +335,30 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
             //cloth->windForce((vec3(1.0f,-0.2f,0.3f)));
             //cloth->windForce((vec3(0.0f,0.5f,-1.5f)));
             triggerMesh = !triggerMesh;
+        }
+        if (key == GLFW_KEY_KP_7) {
+          cloth->setPosition(cloth->getPosition() + vec3(0.5f,0.0f,0.0f));
+          debug() << to_string(cloth->getPosition()) << endl;
+        }
+        if (key == GLFW_KEY_KP_4) {
+          cloth->setPosition(cloth->getPosition() - vec3(0.5f,0.0f,0.0f));
+          debug() << to_string(cloth->getPosition()) << endl;
+        }
+        if (key == GLFW_KEY_KP_8) {
+          cloth->setPosition(cloth->getPosition() + vec3(0.0f,0.5f,0.0f));
+          debug() << to_string(cloth->getPosition()) << endl;
+        }
+        if (key == GLFW_KEY_KP_5) {
+          cloth->setPosition(cloth->getPosition() - vec3(0.0f,0.5f,0.0f));
+          debug() << to_string(cloth->getPosition()) << endl;
+        }
+        if (key == GLFW_KEY_KP_9) {
+          cloth->setPosition(cloth->getPosition() + vec3(0.0f,0.0f,0.5f));
+          debug() << to_string(cloth->getPosition()) << endl;
+        }
+        if (key == GLFW_KEY_KP_6) {
+          cloth->setPosition(cloth->getPosition() - vec3(0.0f,0.0f,0.5f));
+          debug() << to_string(cloth->getPosition()) << endl;
         }
     }
 }

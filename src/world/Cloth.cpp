@@ -11,17 +11,28 @@ using namespace ACGL::OpenGL;
 using namespace ACGL::Utils;
 class Cloth;
 
-float rad0 = 3;
-float rad1 = 4;
-float rad2 = 6;
-float rad3 = 4;
-float rad4 = 4;
+float rad0 = 1;
+float rad1 = 1.3;
+float rad2 = 1.3;
+float rad3 = 1.2;
+float rad4 = 1.2;
+float rad5 = 1.2;
+float rad6 = 2;
 
-vec3 sphereOffset0 = vec3(0.0f, 1.0f, -1.0f);
-vec3 sphereOffset1 = vec3(0.0f, 0.0f, 0.0f);
-vec3 sphereOffset2 = vec3(0.0f, 0.0f, 0.0f);
-vec3 sphereOffset3 = vec3(0.0f, -9.5f, -15.0f);
-vec3 sphereOffset4 = vec3(0.0f, -13.5f, -17.0f);
+vec3 offsetOffset = vec3(5.0f, -1.5, -1.5);
+
+//Head
+vec3 sphereOffset0 = vec3(0.0f, 4.0f, -6.0f);
+//Shoulder
+vec3 sphereOffset1 = vec3(0.5f, -2.75f, -7.0f);
+vec3 sphereOffset2 = vec3(-0.5f, -2.75f, -7.0f);
+//Torso
+vec3 sphereOffset3 = vec3(0.0f, -4.0f, -5.0f);
+//Ass
+vec3 sphereOffset4 = vec3(0.5f, -4.5f, -4.0f);
+vec3 sphereOffset5 = vec3(-0.5f, -4.5f, -4.0f);
+//Legs
+vec3 sphereOffset6 = vec3(0.0f, -6.0f, -2.0f);
 
 vec3 Cloth::getSphereOffset0(){return sphereOffset0;}
 vec3 Cloth::getSphereOffset1(){return sphereOffset1;}
@@ -289,36 +300,52 @@ void Cloth::modelCollision(){
             (*particle).offsetPos(normalize(v0)*(rad0-l0)); // project the particle to the surface of the ball
         }
 
-        //vec3 v1 = (*particle).getPos()-(modelPosition + sphereOffset1);
-        //float l1 = length(v1);
-        //if ( length(v1) < rad1) // if the particle is inside the ball
-        //{
-        //    //debug() << "collision detected @ "<< &particle << endl;
-        //    (*particle).offsetPos(normalize(v1)*(rad1-l1)); // project the particle to the surface of the ball
-        //}
+        vec3 v1 = (*particle).getPos()-(sphereOffset1);
+        float l1 = length(v1);
+        if (l1 < rad1) // if the particle is inside the ball
+        {
+            //debug() << "collision detected @ "<< &particle << endl;
+            (*particle).offsetPos(normalize(v1)*(rad1-l1)); // project the particle to the surface of the ball
+        }
 
-        //vec3 v2 = (*particle).getPos()-(modelPosition + sphereOffset2);
-        //float l2 = length(v2);
-        //if ( length(v2) < rad2) // if the particle is inside the ball
-        //{
-        //    //debug() << "collision detected @ "<< &particle << endl;
-        //    (*particle).offsetPos(normalize(v2)*(rad2-l2)); // project the particle to the surface of the ball
-        //}
+        vec3 v2 = (*particle).getPos()-(sphereOffset2);
+        float l2 = length(v2);
+        if (l2 < rad2) // if the particle is inside the ball
+        {
+            //debug() << "collision detected @ "<< &particle << endl;
+            (*particle).offsetPos(normalize(v2)*(rad2-l2)); // project the particle to the surface of the ball
+        }
 
-        //vec3 v3 = (*particle).getPos()-(modelPosition + sphereOffset3);
-        //float l3 = length(v3);
-        //if ( length(v3) < rad3) // if the particle is inside the ball
-        //{
-        //    //debug() << "collision detected @ "<< &particle << endl;
-        //    (*particle).offsetPos(normalize(v3)*(rad3-l3)); // project the particle to the surface of the ball
-        //}
+        vec3 v3 = (*particle).getPos()-(sphereOffset3);
+        float l3 = length(v3);
+        if (l3 < rad3) // if the particle is inside the ball
+        {
+            //debug() << "collision detected @ "<< &particle << endl;
+            (*particle).offsetPos(normalize(v3)*(rad3-l3)); // project the particle to the surface of the ball
+        }
 
-        //vec3 v4 = (*particle).getPos()-(modelPosition + sphereOffset4);
-        //float l4 = length(v4);
-        //if ( length(v4) < rad4) // if the particle is inside the ball
-        //{
-        //    //debug() << "collision detected @ "<< &particle << endl;
-        //    (*particle).offsetPos(normalize(v4)*(rad4-l4)); // project the particle to the surface of the ball
-        //}
+        vec3 v4 = (*particle).getPos()-(sphereOffset4);
+        float l4 = length(v4);
+        if (l4 < rad4) // if the particle is inside the ball
+        {
+            //debug() << "collision detected @ "<< &particle << endl;
+            (*particle).offsetPos(normalize(v4)*(rad4-l4)); // project the particle to the surface of the ball
+        }
+
+        vec3 v5 = (*particle).getPos()-(sphereOffset5);
+        float l5 = length(v5);
+        if (l5 < rad5) // if the particle is inside the ball
+        {
+            //debug() << "collision detected @ "<< &particle << endl;
+            (*particle).offsetPos(normalize(v5)*(rad5-l5)); // project the particle to the surface of the ball
+        }
+
+        vec3 v6 = (*particle).getPos()-(sphereOffset6);
+        float l6 = length(v6);
+        if (l6 < rad6) // if the particle is inside the ball
+        {
+            //debug() << "collision detected @ "<< &particle << endl;
+            (*particle).offsetPos(normalize(v6)*(rad6-l6)); // project the particle to the surface of the ball
+        }
     }
 }
