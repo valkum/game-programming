@@ -12,33 +12,33 @@ using namespace ACGL::Utils;
 class Cloth;
 
 float rad0 = 1;
-float rad1 = 1.3;
-float rad2 = 1.3;
-float rad3 = 1.2;
-float rad4 = 1.2;
-float rad5 = 1.2;
+float rad1 = 1;
+float rad2 = 1;
+float rad3 = 1;
+float rad4 = 1;
+float rad5 = 1;
 float rad6 = 2;
 
-vec3 offsetOffset = vec3(5.0f, -1.5, -1.5);
 
 //Head
 vec3 sphereOffset0 = vec3(0.0f, 4.0f, -6.0f);
 //Shoulder
-vec3 sphereOffset1 = vec3(0.5f, -2.75f, -7.0f);
-vec3 sphereOffset2 = vec3(-0.5f, -2.75f, -7.0f);
-//Torso
-vec3 sphereOffset3 = vec3(0.0f, -4.0f, -5.0f);
+vec3 sphereOffset1 = vec3(-1.1f, 2.0f, -3.0f);
+vec3 sphereOffset2 = vec3(1.1f, 2.0f, -3.0f);
+vec3 sphereOffset3 = vec3(-2.0f, 1.3f, -3.0f);
+vec3 sphereOffset4 = vec3(2.0f, 1.3f, -3.0f);
 //Ass
-vec3 sphereOffset4 = vec3(0.5f, -4.5f, -4.0f);
-vec3 sphereOffset5 = vec3(-0.5f, -4.5f, -4.0f);
+vec3 sphereOffset5 = vec3(0.5f, -4.5f, -4.0f);
+vec3 sphereOffset6 = vec3(-0.5f, -4.5f, -4.0f);
 //Legs
-vec3 sphereOffset6 = vec3(0.0f, -6.0f, -2.0f);
+vec3 sphereOffset7 = vec3(0.0f, -6.0f, -2.0f);
 
 vec3 Cloth::getSphereOffset0(){return sphereOffset0;}
 vec3 Cloth::getSphereOffset1(){return sphereOffset1;}
 vec3 Cloth::getSphereOffset2(){return sphereOffset2;}
 vec3 Cloth::getSphereOffset3(){return sphereOffset3;}
 vec3 Cloth::getSphereOffset4(){return sphereOffset4;}
+vec3 Cloth::getSphereOffset5(){return sphereOffset5;}
 
 Particle* Cloth::getParticle(int x, int y) {return &particles[y*num_particles_width + x];}
 void Cloth::makeConstraint(Particle *p1, Particle *p2) {

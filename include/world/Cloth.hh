@@ -32,6 +32,7 @@ class Cloth : public Entity {
     vec3 getSphereOffset2();
     vec3 getSphereOffset3();
     vec3 getSphereOffset4();
+    vec3 getSphereOffset5();
 
 	void render(ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectionMatrix);

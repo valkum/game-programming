@@ -45,11 +45,14 @@ Cloth *cloth;
 Sphere *sphere0;
 Sphere *sphere1;
 Sphere *sphere2;
+Sphere *sphere3;
+Sphere *sphere4;
+Sphere *sphere5;
 
 
 vec3 clothOffset = vec3(0.0f, 0.0f, -3.0f);
 bool triggerWind = false;
-bool triggerMesh = true;
+bool triggerMesh = false;
 
 PerfGraph *graph;
 
@@ -99,13 +102,19 @@ void PlayState::init(CGame *game) {
     cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition(), clothOffset);
 
     //vec3 spherePos = lowPolyMan->getPosition() + clothOffset + cloth->getSphereOffset0() ;
-    vec3 spherePos0 = cloth->getSphereOffset0() ;
-    vec3 spherePos1 = cloth->getSphereOffset1() ;
-    vec3 spherePos2 = cloth->getSphereOffset2() ;
+    vec3 spherePos0 = cloth->getSphereOffset0();
+    vec3 spherePos1 = cloth->getSphereOffset1();
+    vec3 spherePos2 = cloth->getSphereOffset2();
+    vec3 spherePos3 = cloth->getSphereOffset3();
+    vec3 spherePos4 = cloth->getSphereOffset4();
+    vec3 spherePos5 = cloth->getSphereOffset5();
 
     sphere0 = new Sphere(lowPolyMan->getPosition(), spherePos0);
     sphere1 = new Sphere(lowPolyMan->getPosition(), spherePos1);
     sphere2 = new Sphere(lowPolyMan->getPosition(), spherePos2);
+    sphere3 = new Sphere(lowPolyMan->getPosition(), spherePos3);
+    sphere4 = new Sphere(lowPolyMan->getPosition(), spherePos4);
+    sphere5 = new Sphere(lowPolyMan->getPosition(), spherePos5);
 
     debug() << "Geometry loaded" << endl;
 
@@ -137,6 +146,15 @@ void PlayState::init(CGame *game) {
 
     sphereShader2 = ShaderProgramCreator("cloth").attributeLocations(
             sphere2->getVAO()->getAttributeLocations()).create();
+
+    sphereShader3 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere3->getVAO()->getAttributeLocations()).create();
+
+    sphereShader4 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere4->getVAO()->getAttributeLocations()).create();
+
+    sphereShader5 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere5->getVAO()->getAttributeLocations()).create();
 
     skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
             vao->getAttributeLocations()).create();
@@ -215,10 +233,16 @@ void PlayState::draw(CGame *g, float *delta) {
     sphere1->render(sphereShader1, &viewProjectioMatrix);
     sphereShader2->use();
     sphere2->render(sphereShader2, &viewProjectioMatrix);
+    sphereShader3->use();
+    sphere3->render(sphereShader3, &viewProjectioMatrix);
+    sphereShader4->use();
+    sphere4->render(sphereShader4, &viewProjectioMatrix);
+    sphereShader5->use();
+    sphere5->render(sphereShader5, &viewProjectioMatrix);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    clothShader->use();
-    cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
+    //clothShader->use();
+    //cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
 
     // if(renderDebug) {
     //     debugShader->use();
@@ -337,28 +361,28 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
             triggerMesh = !triggerMesh;
         }
         if (key == GLFW_KEY_KP_7) {
-          cloth->setPosition(cloth->getPosition() + vec3(0.5f,0.0f,0.0f));
-          debug() << to_string(cloth->getPosition()) << endl;
+          sphere1->setPosition(sphere1->getPosition() + vec3(0.1f,0.0f,0.0f));
+          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_4) {
-          cloth->setPosition(cloth->getPosition() - vec3(0.5f,0.0f,0.0f));
-          debug() << to_string(cloth->getPosition()) << endl;
+          sphere1->setPosition(sphere1->getPosition() - vec3(0.1f,0.0f,0.0f));
+          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_8) {
-          cloth->setPosition(cloth->getPosition() + vec3(0.0f,0.5f,0.0f));
-          debug() << to_string(cloth->getPosition()) << endl;
+          sphere1->setPosition(sphere1->getPosition() + vec3(0.0f,0.1f,0.0f));
+          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_5) {
-          cloth->setPosition(cloth->getPosition() - vec3(0.0f,0.5f,0.0f));
-          debug() << to_string(cloth->getPosition()) << endl;
+          sphere1->setPosition(sphere1->getPosition() - vec3(0.0f,0.1f,0.0f));
+          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_9) {
-          cloth->setPosition(cloth->getPosition() + vec3(0.0f,0.0f,0.5f));
-          debug() << to_string(cloth->getPosition()) << endl;
+          sphere1->setPosition(sphere1->getPosition() + vec3(0.0f,0.0f,0.1f));
+          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_6) {
-          cloth->setPosition(cloth->getPosition() - vec3(0.0f,0.0f,0.5f));
-          debug() << to_string(cloth->getPosition()) << endl;
+          sphere1->setPosition(sphere1->getPosition() - vec3(0.0f,0.0f,0.1f));
+          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
     }
 }
