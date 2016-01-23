@@ -20,7 +20,9 @@ using namespace ACGL::Base;
 using namespace ACGL::Utils;
 using namespace ACGL::Scene;
 
+class PlayState;
 PlayState PlayState::m_PlayState;
+PositionGUI* positionGui;
 
 void PlayState::init(CGame *game) {
   renderDebug = false;
@@ -41,9 +43,9 @@ void PlayState::init(CGame *game) {
   // camera.setStateFromString("ACGL_GenericCamera | 1 | (-0.152289,1.16336,2.27811) | ((-0.999868,-0.00162319,-0.0161718),(0,0.995,-0.0998699),(0.0162531,-0.0998567,-0.994869)) | PERSPECTIVE_PROJECTION | MONO | EYE_LEFT | 75 | 1.33333 | 0.064 | 0.1 | 5000 | 500 | (0,0)");
 
   gui = new Gui(vg, game->g_window);
-  GUIObject* graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
-  graph->setPosition(ivec2(400,400));
-  graph->setSize(ivec2(200,35));
+  GUIObject* fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
+  fpsGraph->setPosition(ivec2(400,400));
+  fpsGraph->setSize(ivec2(200,35));
 
 
   if(game->cli_settings.flagLevel) {
@@ -53,6 +55,9 @@ void PlayState::init(CGame *game) {
   }
   //Level* level = new Level("00000-00001");
   level->load();
+
+  positionGui = new PositionGUI(gui, "Position");
+  positionGui->setPosition(ivec2(20, 20));
 
 
   debug() << "Loading shaders stage" << endl;
@@ -89,12 +94,13 @@ void PlayState::init(CGame *game) {
 void PlayState::draw(CGame *g, float *delta) {
   // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  if(renderDebug) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);}
 
+  ACGL::Scene::GenericCamera* camera = level->getCamera();
+  glm::mat4 viewProjectionMatrix = camera->getProjectionMatrix() *
+                                  camera->getViewMatrix();
 
-  glm::mat4 viewProjectionMatrix = level->getCamera()->getProjectionMatrix() *
-                                  level->getCamera()->getViewMatrix();
-
-  //skydome->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
+  level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
 
   glDepthFunc(GL_LEQUAL);
   // Workarround needed somhow for nanovg, as nanovg calls glActiveTexture(...).
@@ -105,7 +111,7 @@ void PlayState::draw(CGame *g, float *delta) {
   level->getSkydome()->render(skydomeShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
-openGLCriticalError();
+  openGLCriticalError();
 
   lightningShader->use();
   lightningShader->setUniform("uLight.direction", vec3(-1,1.5,1));
@@ -113,8 +119,8 @@ openGLCriticalError();
   lightningShader->setUniform("uLight.ambient", 0.1f);
   lightningShader->setUniform("uLight.specular", 0.3f);
   lightningShader->setUniform("uLight.diffuse", 0.8f);
-  lightningShader->setUniform("uViewMatrix", level->getCamera()->getViewMatrix());
-  lightningShader->setUniform("camera", level->getCamera()->getPosition());
+  lightningShader->setUniform("uViewMatrix", camera->getViewMatrix());
+  lightningShader->setUniform("camera", camera->getPosition());
   level->getTerrain()->render(lightningShader, &viewProjectionMatrix);
 
 
@@ -127,7 +133,7 @@ openGLCriticalError();
     debugShader->use();
     level->getTerrain()->render(debugShader, &viewProjectionMatrix);
     for (auto object: level->getObjects()) {
-      object->render(lightningShader, &viewProjectionMatrix);
+      object->render(debugShader, &viewProjectionMatrix);
     }
   }
 
@@ -137,10 +143,9 @@ openGLCriticalError();
   //SwapBuffers(g_HDC);
 
   openGLCriticalError();
-  if(showFrames) {
-    gui->drawAll();
-    glEnable(GL_DEPTH_TEST);
-  }
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  gui->drawAll();
+  glEnable(GL_DEPTH_TEST);
 
 }
 
@@ -154,6 +159,7 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
   //Update FPS Camera for Debug:
   vec2 mouseDelta = (m_lastMousePos - m_mousePos);
   level->getCamera()->FPSstyleLookAround(-mouseDelta.x/m_game->g_windowSize.x, -mouseDelta.y/m_game->g_windowSize.y);
+  positionGui->setCameraDirection(level->getCamera()->getForwardDirection());
 }
 
 void PlayState::handleMouseButtonEvents(GLFWwindow *window,
@@ -178,25 +184,26 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
   if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
     if (key == GLFW_KEY_W) { // upper case!
       level->getCamera()->moveForward(timeElapsed * speed);
+      positionGui->setCameraPosition(level->getCamera()->getPosition());
     }
 
     if (key == GLFW_KEY_S) { // upper case!
       level->getCamera()->moveBack(timeElapsed * speed);
-    }
-
-    if (key == GLFW_KEY_E) { // upper case!
-      level->getCamera()->FPSstyleLookAround(timeElapsed * speed, 0);
+      positionGui->setCameraPosition(level->getCamera()->getPosition());
     }
 
     if (key == GLFW_KEY_A) { // upper case!
       level->getCamera()->moveLeft(timeElapsed * speed);
+      positionGui->setCameraPosition(level->getCamera()->getPosition());
     }
 
     if (key == GLFW_KEY_D) { // upper case!
       level->getCamera()->moveRight(timeElapsed * speed);
+      positionGui->setCameraPosition(level->getCamera()->getPosition());
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
+      if(showFrames) positionGui->show(); else positionGui->hide(); 
     }
     if (key == GLFW_KEY_V) {
       debug() << level->getCamera()->storeStateToString() << std::endl;
@@ -204,7 +211,6 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
     if (key == GLFW_KEY_P) {
       renderDebug = !renderDebug;
-      if(renderDebug) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);} else { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);}
     }
     if (key == GLFW_KEY_R) {
 

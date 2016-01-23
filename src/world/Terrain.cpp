@@ -17,15 +17,13 @@ Terrain::Terrain(int x, int y, float a, float b) {
   width = x;
   length = y;
   height = generate(a, b);
-  //vao->setMode(GL_TRIANGLE_STRIP);
-  // int floatsPerVertex = 8;
+
   std::vector<Vertex> vertexData;
-  for (int x = 0; x < length-1; x++) { 
-    for (int z = 0; z < width-1; z++) {
+  for (int x = 0; x < width-1; x++) {
+    for (int z = 0; z < length-1; z++) {
       insertQuad(vertexData, height, x, z);
     }
   }
-  debug() << vertexData.size() << std::endl;
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
   ab->defineAttribute("aNormal", GL_FLOAT, 3);
@@ -95,10 +93,10 @@ float* Terrain::generate(float a, float b) {
 
   float xFactor = 1.0f / (width - 1);
   float yFactor = 1.0f / (length - 1);
-  for( int row = 0; row < width; row++ ) {
-    for( int col = 0 ; col < length; col++ ) {
-      float x = xFactor * row;
-      float y = yFactor * col;
+  for( int w = 0; w < width; w++ ) {
+    for( int l = 0 ; l < length; l++ ) {
+      float x = xFactor * w;
+      float y = yFactor * l;
       float sum = 0.0f;
       float freq = a;
       float scale = b;
@@ -110,7 +108,7 @@ float* Terrain::generate(float a, float b) {
         sum += val;
         // float result = (sum + 1.0f)/ 2.0f;
         // Store in texture buffer
-        height[index(row, col)] = sum;
+        height[index(w,l)] = sum;
         freq *= 2.0f; // Double the frequency
         scale *= b; // Next power of b
       }

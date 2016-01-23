@@ -11,19 +11,19 @@
     {
       "model": "SkyScraper.obj",
       "scale": 0.45,
-      "position": [1.0,0.0,3.0],
+      "position": [5.0,0.0,5.0],
       "rotation": [0.0,0.0,0.0]
     },
     {
       "model": "SkyScraper.obj",
       "scale": 0.55,
-      "position": [3.0,0.0,1.0],
+      "position": [-5.0,0.0,10.0],
       "rotation": [0.0,0.0,0.0]
     },
     {
       "model": "SkyScraper.obj",
       "scale": 0.5,
-      "position": [2.0,0.0,2.0],
+      "position": [4.0,0.0,20.0],
       "rotation": [0.0,0.0,0.0]
     }
   ],
@@ -43,5 +43,5 @@
     "text" : "Wake up Mr. Freeman!",
     "textColor": [255,165,0]
   },
-  "mapSize": [64, 32]
+  "mapSize": [32, 64]
 }

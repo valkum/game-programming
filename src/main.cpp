@@ -83,10 +83,12 @@ int createWindow() {
   setGLFWHintsForOpenGLVersion(ACGL_OPENGL_VERSION);
 
   // activate multisampling (second parameter is the number of samples):
-  // glfwWindowHint( GLFW_SAMPLES, 8 );
+  glfwWindowHint( GLFW_SAMPLES, 4 );
 
   // request an OpenGL debug context:
+  // @TODO: Only to this when the Debug define is defined.
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+
 
   /* Create a windowed mode window and its OpenGL context */
 
@@ -113,6 +115,7 @@ int run() {
 
 
   glfwSetWindowTitle(g_window, "Himmel Build: none");
+  glEnable(GL_MULTISAMPLE); 
   CGame *game = CGame::instance();
   game->init(g_window);
   game->cli_settings = cli_settings;

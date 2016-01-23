@@ -4,27 +4,7 @@
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Types.hh>
 #include <glm/gtc/type_ptr.hpp>
-//#include <ACGL/OpenGL/GL.hh>
-//#include <GLFW/glfw3.h>
 
-
-/*
-Basic Terrain Buildup:
----------------------------
-|/|\|/|\|/|\|/|\|/|\|/|\|/|
----------------------------
-|\|/|\|/|\|/|\|/|\|/|\|/|\|
----------------------------
-
-
-|\|/|
------  Builds one terrain point.
-|/|\|
-
-
-0,
-
-*/
 class Terrain{
 public:
   struct Vertex {
@@ -37,14 +17,14 @@ public:
 *viewProjectionMatrix);
 
 private:
-  size_t index( int x, int y ) const { return x + width * y; }
+  size_t index( int w, int l ) const { return w * length + l; }
   float* generate(float a, float b);
   void insertQuad(std::vector<Vertex> &vertexData, float* height, int x, int z);
   glm::vec3 calcTriangleNormal(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 pos3);
   ACGL::OpenGL::SharedVertexArrayObject vao;
+  int width;
+  int length;
   float* height;
-  int length = 64;
-  int width = 32;
 };
 
 #endif
