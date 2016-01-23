@@ -27,7 +27,9 @@ public:
 
   bool focused() const { return mFocused; }
   void setFocused(bool focused) { mFocused = focused; }
-
+  void hide() {mRender = false; }
+  void show() {mRender = true; }
+  
   const std::vector<GUIObject *> &children() const {return mChildren; }
   void addChild(GUIObject *child);
   void removeChild(const GUIObject *child);
@@ -72,6 +74,7 @@ protected:
   int mFontSize;
   std::vector<GUIObject *> mChildren;
   bool mFocused, mMouseFocus;
+  bool mRender = true;
 };
 
 

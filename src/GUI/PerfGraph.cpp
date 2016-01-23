@@ -85,6 +85,7 @@ float PerfGraph::getGraphAverage()
 
 void PerfGraph::draw(NVGcontext* vg)
 {
+	GUIObject::draw(vg);
 	int i;
 	float avg;
 	char str[64];
@@ -137,7 +138,7 @@ void PerfGraph::draw(NVGcontext* vg)
 		nvgFontSize(vg, 14.0f);
 		nvgTextAlign(vg, NVG_ALIGN_LEFT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,192));
-		nvgText(vg, mPosition.x+3,mPosition.y+1, mCaption.c_str(), NULL);
+		nvgText(vg, mPosition.x+3,mPosition.y+1, mCaption.c_str(), nullptr);
 
 
 	if (mStyle == GRAPH_RENDER_FPS) {
@@ -145,26 +146,26 @@ void PerfGraph::draw(NVGcontext* vg)
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,255));
 		sprintf(str, "%.2f FPS", 1.0f / avg);
-		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, nullptr);
 
 		nvgFontSize(vg, 15.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_BOTTOM);
 		nvgFillColor(vg, nvgRGBA(240,240,240,160));
 		sprintf(str, "%.2f ms", avg * 1000.0f);
-		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+mSize.y-1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+mSize.y-1, str, nullptr);
 	}
 	else if (mStyle == GRAPH_RENDER_PERCENT) {
 		nvgFontSize(vg, 18.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,255));
 		sprintf(str, "%.1f %%", avg * 1.0f);
-		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, nullptr);
 	} else {
 		nvgFontSize(vg, 18.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,255));
 		sprintf(str, "%.2f ms", avg * 1000.0f);
-		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, nullptr);
 	}
 
   double t = glfwGetTime();
