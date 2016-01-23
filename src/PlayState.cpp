@@ -41,7 +41,7 @@ void PlayState::init(CGame *game) {
   // camera.setStateFromString("ACGL_GenericCamera | 1 | (-0.152289,1.16336,2.27811) | ((-0.999868,-0.00162319,-0.0161718),(0,0.995,-0.0998699),(0.0162531,-0.0998567,-0.994869)) | PERSPECTIVE_PROJECTION | MONO | EYE_LEFT | 75 | 1.33333 | 0.064 | 0.1 | 5000 | 500 | (0,0)");
 
   gui = new Gui(vg, game->g_window);
-  graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
+  GUIObject* graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
   graph->setPosition(ivec2(400,400));
   graph->setSize(ivec2(200,35));
 
@@ -53,18 +53,6 @@ void PlayState::init(CGame *game) {
   }
   //Level* level = new Level("00000-00001");
   level->load();
-
-  debug() << "Loading objects stage" << endl;
-
-  skydome = new SkyDome(Model("SkyDome.obj", 100.0f), "Sky.png");
-  Object* skyscraper = new SkyScraper(vec3(0.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
-  objects.push_back(skyscraper);
-  Object* cube = new Object(Model("cube.obj", 5.0f), vec3(5.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
-  objects.push_back(cube);
-
-  terrain = new Terrain();
-
-  debug() << "Geometry loaded" << endl;
 
 
   debug() << "Loading shaders stage" << endl;
@@ -79,7 +67,7 @@ void PlayState::init(CGame *game) {
   vao->attachAllAttributes(ab);
 
   skydomeShader = ShaderProgramCreator("skyDome").attributeLocations(
-  skydome->getModel().getVAO()->getAttributeLocations()).create();
+  level->getSkydome()->getModel().getVAO()->getAttributeLocations()).create();
 
   lightningShader = ShaderProgramCreator("lightningShader").attributeLocations(
     vao->getAttributeLocations()).create();
@@ -91,20 +79,8 @@ void PlayState::init(CGame *game) {
 
   debug() << "Set Textures Stage" << endl;
   skydomeShader->use();
-  skydomeShader->setTexture("uTexture", skydome->getTexture(), 2);
-
-  // lightningShader->use();
-  // lightningShader->setTexture("uTexture", cube->getTexture(), 3);
-
-  //terrainShader->use();
-  //terrainShader->setTexture("uTexture", cube->getTexture(), 2);
-
-  // debug() << "Texture for skybox: " << skybox->getTexture() << endl;
+  skydomeShader->setTexture("uTexture", level->getSkydome()->getTexture(), 2);
   debug() << "Textures set" << endl;
-
-
-  // debug()<<"Camera Position: \n"<<to_string(camera.getPosition())<<endl;
-  // debug()<<"Camera View: \n"<<to_string(camera.getViewMatrix())<<endl;
 
   openGLCriticalError();
   glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -117,15 +93,16 @@ void PlayState::draw(CGame *g, float *delta) {
 
   glm::mat4 viewProjectionMatrix = level->getCamera()->getProjectionMatrix() *
                                   level->getCamera()->getViewMatrix();
+
   //skydome->setPosition(vec3(camera.getPosition().x, 0.0f, camera.getPosition().z));
 
   glDepthFunc(GL_LEQUAL);
-  // Workarround needed somhow for nanovg, as nanovg calls glActiveTexture(...). 
+  // Workarround needed somhow for nanovg, as nanovg calls glActiveTexture(...).
   // Found no proper way for use with ACGL if this is nessecary with more than one texture.
   // Saxum works without I think.
-  skydome->getTexture()->bind(2);
+  level->getSkydome()->getTexture()->bind(2);
   skydomeShader->use();
-  skydome->render(skydomeShader, &viewProjectionMatrix);
+  level->getSkydome()->render(skydomeShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
 openGLCriticalError();
@@ -136,22 +113,22 @@ openGLCriticalError();
   lightningShader->setUniform("uLight.ambient", 0.1f);
   lightningShader->setUniform("uLight.specular", 0.3f);
   lightningShader->setUniform("uLight.diffuse", 0.8f);
-  lightningShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  lightningShader->setUniform("camera", camera.getPosition());
-  terrain->render(lightningShader, &viewProjectionMatrix);
+  lightningShader->setUniform("uViewMatrix", level->getCamera()->getViewMatrix());
+  lightningShader->setUniform("camera", level->getCamera()->getPosition());
+  level->getTerrain()->render(lightningShader, &viewProjectionMatrix);
 
 
-  for(uint_t i = 0; i<objects.size(); i++) {
-    objects[i]->render(lightningShader, &viewProjectionMatrix);  
+  for (auto object: level->getObjects()) {
+    object->render(lightningShader, &viewProjectionMatrix);
   }
-  
+
 
   if(renderDebug) {
-      debugShader->use();
-      terrain->render(debugShader, &viewProjectionMatrix);
-      for(uint_t i = 0; i<objects.size(); i++) {
-        objects[i]->render(debugShader, &viewProjectionMatrix);  
-      }
+    debugShader->use();
+    level->getTerrain()->render(debugShader, &viewProjectionMatrix);
+    for (auto object: level->getObjects()) {
+      object->render(lightningShader, &viewProjectionMatrix);
+    }
   }
 
   //glFlush();
@@ -222,7 +199,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       showFrames = !showFrames;
     }
     if (key == GLFW_KEY_V) {
-      debug() << camera.storeStateToString() << std::endl;
+      debug() << level->getCamera()->storeStateToString() << std::endl;
     }
 
     if (key == GLFW_KEY_P) {
@@ -239,5 +216,5 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
 
 void PlayState::handleResizeEvents(GLFWwindow *window, glm::uvec2 windowSize) {
-  camera.resize(windowSize.x, windowSize.y);
+  level->getCamera()->resize(windowSize.x, windowSize.y);
 }

@@ -62,12 +62,6 @@ private:
   SharedVertexArrayObject debug_vao;
   SharedShaderProgram     debugShader;
 
-  SkyDome *skydome;
-  vector<Object*> objects;
-  Terrain *terrain;
-  GUIObject *graph;
-
-  GenericCamera camera;
   Level* level;
 
 

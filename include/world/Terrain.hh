@@ -31,7 +31,7 @@ public:
             glm::tvec3<float> position;
             glm::tvec3<float> normal;
         };
-  Terrain();
+  Terrain(int x, int y, float a = 100.f, float b = 6.f);
   ACGL::OpenGL::SharedVertexArrayObject getVAO() { return vao; };
   void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 
 *viewProjectionMatrix);

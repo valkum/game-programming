@@ -19,17 +19,24 @@ void Level::load(){
       try {
         levelFile >> levelJson;
       } catch(exception e) {
-        error() << "File " << levelDir + levelId + ".lvl could not be parsed." << std::endl;    
+        error() << "File " << levelDir + levelId + ".lvl could not be parsed." << std::endl;
       }
     }else {
       error() << "File: " << levelDir + levelId + ".lvl could not be opened." << std::endl;
     }
 
   try {
-    json cameraJson = levelJson["camera"];
     camera = new ACGL::Scene::GenericCamera();
-    camera->setPosition(parseVec3(cameraJson["position"]));
-    camera->setRotationMatrix(parseMat3(cameraJson["rotation"]));
+    camera->setPosition(parseVec3(levelJson["camera"]["position"]));
+    camera->setRotationMatrix(parseMat3(levelJson["camera"]["rotation"]));
+
+    skyDome = new SkyDome(Model("SkyDome.obj", levelJson["skydome"]["scale"]), levelJson["skydome"]["texture"]);
+    terrain = new Terrain(levelJson["mapSize"].at(0), levelJson["mapSize"].at(1));
+
+    for (auto object : levelJson["objects"]) {
+      levelObjects.push_back(new Object(Model(object["model"], object["scale"]), parseVec3(object["position"]), parseVec3(object["rotation"])));
+    }
+
   } catch (exception e) {
     error() << "parsing" << std::endl;
   }

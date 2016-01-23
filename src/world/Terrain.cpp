@@ -13,8 +13,10 @@ class Terrain;
 /**
  * Use random method for heightfield.
  */
-Terrain::Terrain() {
-  height = generate(100.f, 5.f);
+Terrain::Terrain(int x, int y, float a, float b) {
+  width = x;
+  length = y;
+  height = generate(a, b);
   //vao->setMode(GL_TRIANGLE_STRIP);
   // int floatsPerVertex = 8;
   std::vector<Vertex> vertexData;
@@ -89,7 +91,7 @@ vec3 Terrain::calcTriangleNormal(vec3 pos1, vec3 pos2, vec3 pos3)
 
 
 float* Terrain::generate(float a, float b) {
-  float* height = new float[length*width];
+  float* height = new float[width*length];
 
   float xFactor = 1.0f / (width - 1);
   float yFactor = 1.0f / (length - 1);
@@ -117,7 +119,7 @@ float* Terrain::generate(float a, float b) {
   return height;
 }
 void Terrain::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
-  glm::mat4 modelMatrix = glm::translate(glm::vec3(-32.0f,.0f,0.0f)) * glm::scale<float>(glm::vec3(1.0f));
+  glm::mat4 modelMatrix = glm::translate(glm::vec3(-width/2,.0f,-2.0f)) * glm::scale<float>(glm::vec3(1.0f));
   glm::mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
   shader->setUniform("uModel", modelMatrix);
   shader->setUniform("uMVP",         mvp);
