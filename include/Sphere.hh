@@ -23,19 +23,16 @@ class Sphere : public Entity {
     std::vector<Vertex> vertexDataTest;
 
   public:
-    Sphere(vec3 position, vec3 sphereOffset):
+    Sphere(vec3 position, float radius, vec3 color, vec3 sphereOffset):
       Entity(
           //vec3(0.0f,0.0f,-5.0f),
           position, //+ vec3(5.0f, 0.0f, 5.0f),
           vec3(0.0f,0.0f,0.0f)
-        ), sphereOffset(sphereOffset){
-        //static GLuint vertexArrayObject = 0;
-        //static int elementCount;
-        //static GLuint sphereTex;
+          ), 
+      sphereOffset(sphereOffset){
         std::vector<Vertex> vertexData;
         int slices = 64;
         int stacks = 32;
-        float radius = 1.9;
         //int vertexCount = (stacks+1) * (slices + 1);
         float piDivStacks = M_PI / stacks;
         float PIDiv2 = M_PI / 2;
@@ -52,7 +49,8 @@ class Sphere : public Entity {
             vec3 normal = vec3(cosLong * cosLat1, sinLat1, sinLong * cosLat1);
             vec3 position = (normal * radius) + sphereOffset;
             //Vertex v = {position, vec2(j/(float)stacks, i/(float)slices), normal};
-            Vertex v = {position, vec3(0.3f, 0.6f, 0.2f), normal};
+            //Vertex v = {position, vec3(0.3f, 0.6f, 0.2f), normal};
+            Vertex v = {position, color, normal};
             vertexData.push_back(v);
           }
         }

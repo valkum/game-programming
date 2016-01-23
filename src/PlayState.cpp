@@ -48,6 +48,17 @@ Sphere *sphere2;
 Sphere *sphere3;
 Sphere *sphere4;
 Sphere *sphere5;
+Sphere *sphere6;
+Sphere *sphere7;
+Sphere *sphere8;
+Sphere *sphere9;
+Sphere *sphere10;
+Sphere *sphere11;
+Sphere *sphere12;
+Sphere *sphere13;
+Sphere *sphere14;
+Sphere *sphere15;
+Sphere *sphere16;
 
 
 vec3 clothOffset = vec3(0.0f, 0.0f, -3.0f);
@@ -101,20 +112,23 @@ void PlayState::init(CGame *game) {
 
     cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition(), clothOffset);
 
-    //vec3 spherePos = lowPolyMan->getPosition() + clothOffset + cloth->getSphereOffset0() ;
-    vec3 spherePos0 = cloth->getSphereOffset0();
-    vec3 spherePos1 = cloth->getSphereOffset1();
-    vec3 spherePos2 = cloth->getSphereOffset2();
-    vec3 spherePos3 = cloth->getSphereOffset3();
-    vec3 spherePos4 = cloth->getSphereOffset4();
-    vec3 spherePos5 = cloth->getSphereOffset5();
-
-    sphere0 = new Sphere(lowPolyMan->getPosition(), spherePos0);
-    sphere1 = new Sphere(lowPolyMan->getPosition(), spherePos1);
-    sphere2 = new Sphere(lowPolyMan->getPosition(), spherePos2);
-    sphere3 = new Sphere(lowPolyMan->getPosition(), spherePos3);
-    sphere4 = new Sphere(lowPolyMan->getPosition(), spherePos4);
-    sphere5 = new Sphere(lowPolyMan->getPosition(), spherePos5);
+    sphere0  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius0(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset0());
+    sphere1  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius1(),  vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset1());
+    sphere2  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius2(),  vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset2());
+    sphere3  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius3(),  vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset3());
+    sphere4  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius4(),  vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset4());
+    sphere5  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius5(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset5());
+    sphere6  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius6(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset6());
+    sphere7  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius7(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset7());
+    sphere8  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius8(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset8());
+    sphere9  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius9(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset9());
+    sphere10 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius10(), vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset10());
+    sphere11 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius11(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset11());
+    sphere12 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius12(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset12());
+    sphere13 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius13(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset13());
+    sphere14 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius14(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset14());
+    sphere15 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius15(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset15());
+    sphere16 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius16(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset16());
 
     debug() << "Geometry loaded" << endl;
 
@@ -155,6 +169,39 @@ void PlayState::init(CGame *game) {
 
     sphereShader5 = ShaderProgramCreator("cloth").attributeLocations(
             sphere5->getVAO()->getAttributeLocations()).create();
+
+    sphereShader6 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere6->getVAO()->getAttributeLocations()).create();
+
+    sphereShader7 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere7->getVAO()->getAttributeLocations()).create();
+
+    sphereShader8 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere8->getVAO()->getAttributeLocations()).create();
+
+    sphereShader9 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere9->getVAO()->getAttributeLocations()).create();
+
+    sphereShader10 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere10->getVAO()->getAttributeLocations()).create();
+
+    sphereShader11 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere11->getVAO()->getAttributeLocations()).create();
+
+    sphereShader12 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere12->getVAO()->getAttributeLocations()).create();
+
+    sphereShader13 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere13->getVAO()->getAttributeLocations()).create();
+
+    sphereShader14 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere14->getVAO()->getAttributeLocations()).create();
+
+    sphereShader15 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere15->getVAO()->getAttributeLocations()).create();
+
+    sphereShader16 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere16->getVAO()->getAttributeLocations()).create();
 
     skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
             vao->getAttributeLocations()).create();
@@ -222,7 +269,7 @@ void PlayState::draw(CGame *g, float *delta) {
       lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     } else {
-        lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
+        //lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
     }
 
 
@@ -239,6 +286,28 @@ void PlayState::draw(CGame *g, float *delta) {
     sphere4->render(sphereShader4, &viewProjectioMatrix);
     sphereShader5->use();
     sphere5->render(sphereShader5, &viewProjectioMatrix);
+    sphereShader6->use();
+    sphere6->render(sphereShader6, &viewProjectioMatrix);
+    sphereShader7->use();
+    sphere7->render(sphereShader7, &viewProjectioMatrix);
+    sphereShader8->use();
+    sphere8->render(sphereShader8, &viewProjectioMatrix);
+    sphereShader9->use();
+    sphere9->render(sphereShader9, &viewProjectioMatrix);
+    sphereShader10->use();
+    sphere10->render(sphereShader10, &viewProjectioMatrix);
+    sphereShader11->use();
+    sphere11->render(sphereShader11, &viewProjectioMatrix);
+    sphereShader12->use();
+    sphere12->render(sphereShader12, &viewProjectioMatrix);
+    sphereShader13->use();
+    sphere13->render(sphereShader13, &viewProjectioMatrix);
+    sphereShader14->use();
+    sphere14->render(sphereShader14, &viewProjectioMatrix);
+    sphereShader15->use();
+    sphere15->render(sphereShader15, &viewProjectioMatrix);
+    sphereShader16->use();
+    sphere16->render(sphereShader16, &viewProjectioMatrix);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     //clothShader->use();

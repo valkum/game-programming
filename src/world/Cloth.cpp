@@ -11,13 +11,23 @@ using namespace ACGL::OpenGL;
 using namespace ACGL::Utils;
 class Cloth;
 
-float rad0 = 1;
-float rad1 = 1;
-float rad2 = 1;
-float rad3 = 1;
-float rad4 = 1;
-float rad5 = 1;
-float rad6 = 2;
+float rad0 = 1.7;
+float rad1 = 2;
+float rad2 = 2;
+float rad3 = 1.5f;
+float rad4 = 1.5f;
+float rad5 = 2.5;
+float rad6 = 1.5;
+float rad7 = 1.5;
+float rad8 = 1.5;
+float rad9 = 1.5;
+float rad10 = 2.5;
+float rad11 = 1.8;
+float rad12 = 1.8;
+float rad13 = 1.3;
+float rad14 = 1.3;
+float rad15 = 1.6;
+float rad16 = 1.6;
 
 
 //Head
@@ -27,11 +37,24 @@ vec3 sphereOffset1 = vec3(-1.1f, 2.0f, -3.0f);
 vec3 sphereOffset2 = vec3(1.1f, 2.0f, -3.0f);
 vec3 sphereOffset3 = vec3(-2.0f, 1.3f, -3.0f);
 vec3 sphereOffset4 = vec3(2.0f, 1.3f, -3.0f);
+//upper Torso
+vec3 sphereOffset5 = vec3(0.0f, 1.2f,-0.8f);
+vec3 sphereOffset6 = vec3(-2.0f, 2.2f, -1.8f);
+vec3 sphereOffset7 = vec3( 2.0f, 2.2f, -1.8f);
+vec3 sphereOffset8 = vec3(-1.0f, 0.8f, 1.8f);
+vec3 sphereOffset9 = vec3( 1.0f, 0.8f, 1.8f);
+//lower Torso
+vec3 sphereOffset10 = vec3(0.0f, -1.5f, 5.0f);
 //Ass
-vec3 sphereOffset5 = vec3(0.5f, -4.5f, -4.0f);
-vec3 sphereOffset6 = vec3(-0.5f, -4.5f, -4.0f);
+vec3 sphereOffset11 = vec3(-1.8f, -1.4f, 7.3f);
+vec3 sphereOffset12 = vec3( 1.8f, -1.4f, 7.3f);
 //Legs
-vec3 sphereOffset7 = vec3(0.0f, -6.0f, -2.0f);
+vec3 sphereOffset13 = vec3(-1.5f, -2.0f, 9.0f);
+vec3 sphereOffset14 = vec3( 1.5f, -2.0f, 9.0f);
+vec3 sphereOffset15 = vec3(-1.5f, -2.8f, 10.0f);
+vec3 sphereOffset16 = vec3( 1.5f, -2.8f, 10.0f);
+
+
 
 vec3 Cloth::getSphereOffset0(){return sphereOffset0;}
 vec3 Cloth::getSphereOffset1(){return sphereOffset1;}
@@ -39,6 +62,37 @@ vec3 Cloth::getSphereOffset2(){return sphereOffset2;}
 vec3 Cloth::getSphereOffset3(){return sphereOffset3;}
 vec3 Cloth::getSphereOffset4(){return sphereOffset4;}
 vec3 Cloth::getSphereOffset5(){return sphereOffset5;}
+vec3 Cloth::getSphereOffset6(){return sphereOffset6;}
+vec3 Cloth::getSphereOffset7(){return sphereOffset7;}
+vec3 Cloth::getSphereOffset8(){return sphereOffset8;}
+vec3 Cloth::getSphereOffset9(){return sphereOffset9;}
+vec3 Cloth::getSphereOffset10(){return sphereOffset10;}
+vec3 Cloth::getSphereOffset11(){return sphereOffset11;}
+vec3 Cloth::getSphereOffset12(){return sphereOffset12;}
+vec3 Cloth::getSphereOffset13(){return sphereOffset13;}
+vec3 Cloth::getSphereOffset14(){return sphereOffset14;}
+vec3 Cloth::getSphereOffset15(){return sphereOffset15;}
+vec3 Cloth::getSphereOffset16(){return sphereOffset16;}
+
+
+
+float Cloth::getSphereRadius0(){return rad0;}
+float Cloth::getSphereRadius1(){return rad1;}
+float Cloth::getSphereRadius2(){return rad2;}
+float Cloth::getSphereRadius3(){return rad3;}
+float Cloth::getSphereRadius4(){return rad4;}
+float Cloth::getSphereRadius5(){return rad5;}
+float Cloth::getSphereRadius6(){return rad6;}
+float Cloth::getSphereRadius7(){return rad7;}
+float Cloth::getSphereRadius8(){return rad8;}
+float Cloth::getSphereRadius9(){return rad9;}
+float Cloth::getSphereRadius10(){return rad10;}
+float Cloth::getSphereRadius11(){return rad11;}
+float Cloth::getSphereRadius12(){return rad12;}
+float Cloth::getSphereRadius13(){return rad13;}
+float Cloth::getSphereRadius14(){return rad14;}
+float Cloth::getSphereRadius15(){return rad15;}
+float Cloth::getSphereRadius16(){return rad16;}
 
 Particle* Cloth::getParticle(int x, int y) {return &particles[y*num_particles_width + x];}
 void Cloth::makeConstraint(Particle *p1, Particle *p2) {

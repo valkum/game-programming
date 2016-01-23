@@ -33,6 +33,35 @@ class Cloth : public Entity {
     vec3 getSphereOffset3();
     vec3 getSphereOffset4();
     vec3 getSphereOffset5();
+    vec3 getSphereOffset6();
+    vec3 getSphereOffset7();
+    vec3 getSphereOffset8();
+    vec3 getSphereOffset9();
+    vec3 getSphereOffset10();
+    vec3 getSphereOffset11();
+    vec3 getSphereOffset12();
+    vec3 getSphereOffset13();
+    vec3 getSphereOffset14();
+    vec3 getSphereOffset15();
+    vec3 getSphereOffset16();
+
+    float getSphereRadius0();
+    float getSphereRadius1();
+    float getSphereRadius2();
+    float getSphereRadius3();
+    float getSphereRadius4();
+    float getSphereRadius5();
+    float getSphereRadius6();
+    float getSphereRadius7();
+    float getSphereRadius8();
+    float getSphereRadius9();
+    float getSphereRadius10();
+    float getSphereRadius11();
+    float getSphereRadius12();
+    float getSphereRadius13();
+    float getSphereRadius14();
+    float getSphereRadius15();
+    float getSphereRadius16();
 
 	void render(ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectionMatrix);
