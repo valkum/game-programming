@@ -68,6 +68,8 @@ private:
   SharedShaderProgram sphereShader14;
   SharedShaderProgram sphereShader15;
   SharedShaderProgram sphereShader16;
+  SharedShaderProgram sphereShader17;
+  SharedShaderProgram sphereShader18;
   SharedShaderProgram clothShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;

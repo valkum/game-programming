@@ -5,6 +5,7 @@
 //#define TIME_STEPSIZE2 0.25f*0.25f
 // 1/64 Tickrate
 #define TIME_STEPSIZE2 0.0156f
+//#define DAMPING 0.01f
 #define DAMPING 0.01f
 
 using namespace glm;
@@ -41,6 +42,13 @@ class Particle {
 		vec3& getPos(){
 			return pos;
 		}
+
+		void setPos(const vec3 v){
+      if (movable) {
+        pos = v;
+      } 
+    }
+
 		void resetAccerlation(){
 			acceleration = vec3(0,0,0);
 		}
@@ -51,6 +59,9 @@ class Particle {
 		}
 		void makeUnmovable(){
 			movable = false;
+		}
+		void makeMovable(){
+			movable = true;
 		}
 		void addToNormal(vec3 normal){
 			accumulated_normal += normalize(normal);

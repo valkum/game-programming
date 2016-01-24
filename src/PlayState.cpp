@@ -58,9 +58,11 @@ Sphere *sphere13;
 Sphere *sphere14;
 Sphere *sphere15;
 Sphere *sphere16;
+Sphere *sphere17;
+Sphere *sphere18;
 
 
-vec3 clothOffset = vec3(5.0f, 4.0f, -3.0f);
+vec3 clothOffset = vec3(4.0f, 4.0f, -3.0f);
 bool triggerWind = false;
 bool triggerMesh = false;
 
@@ -109,7 +111,8 @@ void PlayState::init(CGame *game) {
     lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(0.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
 
 
-    cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition(), clothOffset);
+    //cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition(), clothOffset);
+    cloth = new Cloth(8,15,24,24, lowPolyMan->getPosition(), clothOffset);
 
     sphere0  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius0(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset0());
     sphere1  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius1(),  vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset1());
@@ -117,17 +120,19 @@ void PlayState::init(CGame *game) {
     sphere3  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius3(),  vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset3());
     sphere4  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius4(),  vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset4());
     sphere5  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius5(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset5());
-    sphere6  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius6(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset6());
-    sphere7  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius7(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset7());
+    sphere6  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius6(),  vec3(1.0f, 1.0f, 1.0f), cloth->getSphereOffset6());
+    sphere7  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius7(),  vec3(1.0f, 1.0f, 1.0f), cloth->getSphereOffset7());
     sphere8  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius8(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset8());
     sphere9  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius9(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset9());
-    sphere10 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius10(), vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset10());
-    sphere11 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius11(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset11());
-    sphere12 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius12(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset12());
-    sphere13 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius13(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset13());
-    sphere14 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius14(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset14());
-    sphere15 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius15(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset15());
-    sphere16 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius16(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset16());
+    sphere10 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius10(), vec3(0.0f, 1.0f, 1.0f), cloth->getSphereOffset10());
+    sphere11 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius11(), vec3(0.0f, 1.0f, 1.0f), cloth->getSphereOffset11());
+    sphere12 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius12(), vec3(0.0f, 1.0f, 1.0f), cloth->getSphereOffset12());
+    sphere13 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius13(), vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset13());
+    sphere14 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius14(), vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset14());
+    sphere15 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius15(), vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset15());
+    sphere16 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius16(), vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset16());
+    sphere17 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius17(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset17());
+    sphere18 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius18(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset18());
 
     debug() << "Geometry loaded" << endl;
 
@@ -202,6 +207,12 @@ void PlayState::init(CGame *game) {
     sphereShader16 = ShaderProgramCreator("cloth").attributeLocations(
             sphere16->getVAO()->getAttributeLocations()).create();
 
+    sphereShader17 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere17->getVAO()->getAttributeLocations()).create();
+
+    sphereShader18 = ShaderProgramCreator("cloth").attributeLocations(
+            sphere18->getVAO()->getAttributeLocations()).create();
+
     skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
             vao->getAttributeLocations()).create();
 
@@ -267,7 +278,7 @@ void PlayState::draw(CGame *g, float *delta) {
       lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     } else {
-        //lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
+        lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
     }
 
 
@@ -306,6 +317,10 @@ void PlayState::draw(CGame *g, float *delta) {
     sphere15->render(sphereShader15, &viewProjectioMatrix);
     sphereShader16->use();
     sphere16->render(sphereShader16, &viewProjectioMatrix);
+    sphereShader17->use();
+    sphere17->render(sphereShader17, &viewProjectioMatrix);
+    sphereShader18->use();
+    sphere18->render(sphereShader18, &viewProjectioMatrix);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     clothShader->use();
@@ -318,7 +333,7 @@ void PlayState::draw(CGame *g, float *delta) {
     // }
     openGLCriticalError();
 
-    gui->drawAll();
+    //gui->drawAll();
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -407,7 +422,8 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
         if (key == GLFW_KEY_P) {
             for (int i = 0; i < 10; ++i)
             {
-                debug() << graph->values[i] << endl;
+                //debug() << graph->values[i] << endl;
+                debug() << to_string(cloth->getPosition()) << endl;
             }
         }
 

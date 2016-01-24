@@ -44,6 +44,8 @@ class Cloth : public Entity {
     vec3 getSphereOffset14();
     vec3 getSphereOffset15();
     vec3 getSphereOffset16();
+    vec3 getSphereOffset17();
+    vec3 getSphereOffset18();
 
     float getSphereRadius0();
     float getSphereRadius1();
@@ -62,6 +64,8 @@ class Cloth : public Entity {
     float getSphereRadius14();
     float getSphereRadius15();
     float getSphereRadius16();
+    float getSphereRadius17();
+    float getSphereRadius18();
 
 	void render(ACGL::OpenGL::SharedShaderProgram shader,
     mat4                             *viewProjectionMatrix);

@@ -11,61 +11,65 @@ using namespace ACGL::OpenGL;
 using namespace ACGL::Utils;
 class Cloth;
 
-float rad0 = 1.7;
-float rad1 = 2;
-float rad2 = 2;
-float rad3 = 1.5f;
-float rad4 = 1.5f;
-float rad5 = 2.5;
-float rad6 = 1.5;
-float rad7 = 1.5;
-float rad8 = 1.5;
-float rad9 = 1.5;
-float rad10 = 2.5;
-float rad11 = 1.8;
-float rad12 = 1.8;
-float rad13 = 1.3;
-float rad14 = 1.3;
-float rad15 = 1.6;
-float rad16 = 1.6;
+float rad0  = 1.7f;
+float rad1  = 2.6f;
+float rad2  = 2.6f;
+float rad3  = 1.6f;
+float rad4  = 1.6f;
+float rad5  = 2.6f;
+float rad6  = 2.0f;
+float rad7  = 2.0f;
+float rad8  = 1.6f;
+float rad9  = 1.6f;
+float rad10 = 2.6f;
+float rad11 = 1.6f;
+float rad12 = 1.6f;
+float rad13 = 1.0f;
+float rad14 = 1.0f;
+float rad15 = 1.6f;
+float rad16 = 1.6f;
+float rad17 = 1.8f;
+float rad18 = 1.8f;
 
 
 //Head
 vec3 sphereOffset0 = vec3(0.0f, 4.0f, -6.0f);
 //Shoulder
 vec3 sphereOffset1 = vec3(-1.1f, 2.0f, -3.0f);
-vec3 sphereOffset2 = vec3(1.1f, 2.0f, -3.0f);
+vec3 sphereOffset2 = vec3( 1.1f, 2.0f, -3.0f);
 vec3 sphereOffset3 = vec3(-2.0f, 1.3f, -3.0f);
-vec3 sphereOffset4 = vec3(2.0f, 1.3f, -3.0f);
+vec3 sphereOffset4 = vec3( 2.0f, 1.3f, -3.0f);
 //upper Torso
-vec3 sphereOffset5 = vec3(0.0f, 1.2f,-0.8f);
-vec3 sphereOffset6 = vec3(-2.0f, 2.2f, -1.8f);
-vec3 sphereOffset7 = vec3( 2.0f, 2.2f, -1.8f);
+vec3 sphereOffset5 = vec3(0.0f, 1.5f, -1.0f);
+vec3 sphereOffset6 = vec3(-1.0f, 1.8f, 0.2f);
+vec3 sphereOffset7 = vec3( 1.0f, 1.8f, 0.2f);
 vec3 sphereOffset8 = vec3(-1.0f, 0.8f, 1.8f);
 vec3 sphereOffset9 = vec3( 1.0f, 0.8f, 1.8f);
 //lower Torso
 vec3 sphereOffset10 = vec3(0.0f, -1.5f, 5.0f);
+vec3 sphereOffset11 = vec3( 1.0f, 0.0f, 4.0f);
+vec3 sphereOffset12 = vec3(-1.0f, 0.0f, 4.0f);
 //Ass
-vec3 sphereOffset11 = vec3(-1.8f, -1.4f, 7.3f);
-vec3 sphereOffset12 = vec3( 1.8f, -1.4f, 7.3f);
+vec3 sphereOffset13 = vec3(-1.0f, 0.0f, 7.8f);
+vec3 sphereOffset14 = vec3( 1.0f, 0.0f, 7.8f);
+vec3 sphereOffset15 = vec3(-1.5f, -1.0f, 7.9f);
+vec3 sphereOffset16 = vec3( 1.5f, -1.0f, 7.9f);
 //Legs
-vec3 sphereOffset13 = vec3(-1.5f, -2.0f, 9.0f);
-vec3 sphereOffset14 = vec3( 1.5f, -2.0f, 9.0f);
-vec3 sphereOffset15 = vec3(-1.5f, -2.8f, 10.0f);
-vec3 sphereOffset16 = vec3( 1.5f, -2.8f, 10.0f);
+vec3 sphereOffset17 = vec3(-1.5f, -2.8f, 10.0f);
+vec3 sphereOffset18 = vec3( 1.5f, -2.8f, 10.0f);
 
 
 
-vec3 Cloth::getSphereOffset0(){return sphereOffset0;}
-vec3 Cloth::getSphereOffset1(){return sphereOffset1;}
-vec3 Cloth::getSphereOffset2(){return sphereOffset2;}
-vec3 Cloth::getSphereOffset3(){return sphereOffset3;}
-vec3 Cloth::getSphereOffset4(){return sphereOffset4;}
-vec3 Cloth::getSphereOffset5(){return sphereOffset5;}
-vec3 Cloth::getSphereOffset6(){return sphereOffset6;}
-vec3 Cloth::getSphereOffset7(){return sphereOffset7;}
-vec3 Cloth::getSphereOffset8(){return sphereOffset8;}
-vec3 Cloth::getSphereOffset9(){return sphereOffset9;}
+vec3 Cloth::getSphereOffset0 (){return sphereOffset0;}
+vec3 Cloth::getSphereOffset1 (){return sphereOffset1;}
+vec3 Cloth::getSphereOffset2 (){return sphereOffset2;}
+vec3 Cloth::getSphereOffset3 (){return sphereOffset3;}
+vec3 Cloth::getSphereOffset4 (){return sphereOffset4;}
+vec3 Cloth::getSphereOffset5 (){return sphereOffset5;}
+vec3 Cloth::getSphereOffset6 (){return sphereOffset6;}
+vec3 Cloth::getSphereOffset7 (){return sphereOffset7;}
+vec3 Cloth::getSphereOffset8 (){return sphereOffset8;}
+vec3 Cloth::getSphereOffset9 (){return sphereOffset9;}
 vec3 Cloth::getSphereOffset10(){return sphereOffset10;}
 vec3 Cloth::getSphereOffset11(){return sphereOffset11;}
 vec3 Cloth::getSphereOffset12(){return sphereOffset12;}
@@ -73,6 +77,8 @@ vec3 Cloth::getSphereOffset13(){return sphereOffset13;}
 vec3 Cloth::getSphereOffset14(){return sphereOffset14;}
 vec3 Cloth::getSphereOffset15(){return sphereOffset15;}
 vec3 Cloth::getSphereOffset16(){return sphereOffset16;}
+vec3 Cloth::getSphereOffset17(){return sphereOffset17;}
+vec3 Cloth::getSphereOffset18(){return sphereOffset18;}
 
 
 
@@ -93,6 +99,8 @@ float Cloth::getSphereRadius13(){return rad13;}
 float Cloth::getSphereRadius14(){return rad14;}
 float Cloth::getSphereRadius15(){return rad15;}
 float Cloth::getSphereRadius16(){return rad16;}
+float Cloth::getSphereRadius17(){return rad17;}
+float Cloth::getSphereRadius18(){return rad18;}
 
 Particle* Cloth::getParticle(int x, int y) {return &particles[y*num_particles_width + x];}
 void Cloth::makeConstraint(Particle *p1, Particle *p2) {
@@ -183,10 +191,12 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
 
         // making the upper left most three and right most three particles unmovable
         for(int i=0;i<3; i++){
-            getParticle(0+i ,0)->offsetPos(vec3(2,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
+            //getParticle(0+i ,0)->offsetPos(vec3(-1.5f, -0.5f, -1.5f)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
+            getParticle(0+i ,0)->offsetPos(vec3(-0.3f, -0.5f, -1.5f)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
             getParticle(0+i ,0)->makeUnmovable();
 
-            getParticle(0+i ,0)->offsetPos(vec3(-2,0.0,0.0)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
+            //getParticle(num_particles_width-1-i ,0)->offsetPos(vec3(1.5f, -0.5f, -1.5f)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
+            getParticle(num_particles_width-1-i ,0)->offsetPos(vec3(0.3f, -0.5f, -1.5f)); // moving the particle a bit towards the center, to make it hang more natural - because I like it ;)
             getParticle(num_particles_width-1-i ,0)->makeUnmovable();
 
         }
@@ -268,7 +278,6 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
     }
 
     // Give our vertices to OpenGL.
-
 
     //glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex), value_ptr(vertexData[0].position), GL_STREAM_DRAW);
     ab->setSubData(0, vertexData.size() * sizeof(Vertex), value_ptr(vertexData[0].position));
@@ -464,6 +473,20 @@ void Cloth::modelCollision(){
         if (l16 < rad16) // if the particle is inside the ball
         {
             (*particle).offsetPos(normalize(v16)*(rad16-l16)); // project the particle to the surface of the ball
+        }
+
+        vec3 v17 = (*particle).getPos()-(sphereOffset17);
+        float l17 = length(v17);
+        if (l17 < rad17) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v17)*(rad17-l17)); // project the particle to the surface of the ball
+        }
+
+        vec3 v18 = (*particle).getPos()-(sphereOffset18);
+        float l18 = length(v18);
+        if (l18 < rad18) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v18)*(rad18-l18)); // project the particle to the surface of the ball
         }
     }
 }
