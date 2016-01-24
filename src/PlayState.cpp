@@ -23,7 +23,6 @@
 #include "world/Cloth.hh"
 
 
-//#define TIME_STEPSIZE2 0.25f*0.25f
 // 1/64 Tickrate
 #define TIME_STEPSIZE2 0.0156f
 
@@ -61,7 +60,7 @@ Sphere *sphere15;
 Sphere *sphere16;
 
 
-vec3 clothOffset = vec3(0.0f, 0.0f, -3.0f);
+vec3 clothOffset = vec3(5.0f, 4.0f, -3.0f);
 bool triggerWind = false;
 bool triggerMesh = false;
 
@@ -232,11 +231,10 @@ void PlayState::init(CGame *game) {
 
 
     camera.setVerticalFieldOfView(70.0);
-    //camera.setPosition(vec3(-9.3f, 0.0f, 15.0f));
-    //camera.setPosition(vec3(0.0f, 0.0f, -12.0f));
     camera.setPosition(vec3(0.0f, 0.0f, 10.0f));
+    //camera.setPosition(vec3(10.0f, -5.0f, -6.0f));
     //camera.setTarget(lowPolyMan->getPosition() + vec3(0.0f, 3.0f, 6.0f), vec3(0.0f, 1.0f, 0.0f));
-    //camera.setTarget(vec3(0.0f, 0.0f, -10.0f), vec3(0.0f, 1.0f, 0.0f));
+    //camera.setTarget(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
     // debug()<<"Camera Position: \n"<<to_string(camera.getPosition())<<endl;
     // debug()<<"Camera View: \n"<<to_string(camera.getViewMatrix())<<endl;
@@ -310,8 +308,8 @@ void PlayState::draw(CGame *g, float *delta) {
     sphere16->render(sphereShader16, &viewProjectioMatrix);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    //clothShader->use();
-    //cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
+    clothShader->use();
+    cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
 
     // if(renderDebug) {
     //     debugShader->use();
@@ -329,10 +327,10 @@ void PlayState::update(CGame *g, float dt) {
     //glm::vec3 random = sphericalRand(0.5f);
     if (triggerWind) {
         //cloth->windForce((vec3(0.0f, 0.3f,-1.0f)+random)*dt); // generate some wind each frame
-        cloth->windForce(vec3(0.0f, 0.05f,-0.2f));
+        cloth->windForce(vec3(0.0f, 0.05f,0.2f));
     }
     cloth->timeStep(dt); // calculate the particle positions of the next frame
-    //cloth->modelCollision();
+    cloth->modelCollision();
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}

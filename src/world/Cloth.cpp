@@ -146,7 +146,7 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
             for(int y=0; y<num_particles_height; y++){
                 vec3 pos = offset + vec3((-width) * (x/(float)num_particles_width),
                         0,
-                        -height * (y/(float)num_particles_height));
+                        height * (y/(float)num_particles_height));
                 particles[y*num_particles_width+x]= Particle(pos); // insert particle in column x at y'th row
                 //@TODO wird das hier optimal gefüllt? Sollte eher x*num_height+y sein damit die bytes sequentiell und nicht mit sprüngen geschrieben werden.
             }
@@ -358,7 +358,6 @@ void Cloth::modelCollision(){
         float l1 = length(v1);
         if (l1 < rad1) // if the particle is inside the ball
         {
-            //debug() << "collision detected @ "<< &particle << endl;
             (*particle).offsetPos(normalize(v1)*(rad1-l1)); // project the particle to the surface of the ball
         }
 
@@ -366,7 +365,6 @@ void Cloth::modelCollision(){
         float l2 = length(v2);
         if (l2 < rad2) // if the particle is inside the ball
         {
-            //debug() << "collision detected @ "<< &particle << endl;
             (*particle).offsetPos(normalize(v2)*(rad2-l2)); // project the particle to the surface of the ball
         }
 
@@ -374,7 +372,6 @@ void Cloth::modelCollision(){
         float l3 = length(v3);
         if (l3 < rad3) // if the particle is inside the ball
         {
-            //debug() << "collision detected @ "<< &particle << endl;
             (*particle).offsetPos(normalize(v3)*(rad3-l3)); // project the particle to the surface of the ball
         }
 
@@ -382,7 +379,6 @@ void Cloth::modelCollision(){
         float l4 = length(v4);
         if (l4 < rad4) // if the particle is inside the ball
         {
-            //debug() << "collision detected @ "<< &particle << endl;
             (*particle).offsetPos(normalize(v4)*(rad4-l4)); // project the particle to the surface of the ball
         }
 
@@ -390,7 +386,6 @@ void Cloth::modelCollision(){
         float l5 = length(v5);
         if (l5 < rad5) // if the particle is inside the ball
         {
-            //debug() << "collision detected @ "<< &particle << endl;
             (*particle).offsetPos(normalize(v5)*(rad5-l5)); // project the particle to the surface of the ball
         }
 
@@ -398,8 +393,77 @@ void Cloth::modelCollision(){
         float l6 = length(v6);
         if (l6 < rad6) // if the particle is inside the ball
         {
-            //debug() << "collision detected @ "<< &particle << endl;
             (*particle).offsetPos(normalize(v6)*(rad6-l6)); // project the particle to the surface of the ball
+        }
+
+        vec3 v7 = (*particle).getPos()-(sphereOffset7);
+        float l7 = length(v7);
+        if (l7 < rad7) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v7)*(rad7-l7)); // project the particle to the surface of the ball
+        }
+
+        vec3 v8 = (*particle).getPos()-(sphereOffset8);
+        float l8 = length(v8);
+        if (l8 < rad8) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v8)*(rad8-l8)); // project the particle to the surface of the ball
+        }
+
+        vec3 v9 = (*particle).getPos()-(sphereOffset9);
+        float l9 = length(v9);
+        if (l9 < rad9) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v9)*(rad9-l9)); // project the particle to the surface of the ball
+        }
+
+        vec3 v10 = (*particle).getPos()-(sphereOffset10);
+        float l10 = length(v10);
+        if (l10 < rad10) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v10)*(rad10-l10)); // project the particle to the surface of the ball
+        }
+
+        vec3 v11 = (*particle).getPos()-(sphereOffset11);
+        float l11 = length(v11);
+        if (l11 < rad11) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v11)*(rad11-l11)); // project the particle to the surface of the ball
+        }
+
+        vec3 v12 = (*particle).getPos()-(sphereOffset12);
+        float l12 = length(v12);
+        if (l12 < rad12) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v12)*(rad12-l12)); // project the particle to the surface of the ball
+        }
+
+        vec3 v13 = (*particle).getPos()-(sphereOffset13);
+        float l13 = length(v13);
+        if (l13 < rad13) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v13)*(rad13-l13)); // project the particle to the surface of the ball
+        }
+
+        vec3 v14 = (*particle).getPos()-(sphereOffset14);
+        float l14 = length(v14);
+        if (l14 < rad14) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v14)*(rad14-l14)); // project the particle to the surface of the ball
+        }
+
+        vec3 v15 = (*particle).getPos()-(sphereOffset15);
+        float l15 = length(v15);
+        if (l15 < rad15) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v15)*(rad15-l15)); // project the particle to the surface of the ball
+        }
+
+        vec3 v16 = (*particle).getPos()-(sphereOffset16);
+        float l16 = length(v16);
+        if (l16 < rad16) // if the particle is inside the ball
+        {
+            (*particle).offsetPos(normalize(v16)*(rad16-l16)); // project the particle to the surface of the ball
         }
     }
 }
