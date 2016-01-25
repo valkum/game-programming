@@ -44,7 +44,7 @@ void Cloud::init() {
   vec3 lastPos = position;
   for (uint_t i = 0; i < amount; ++i) {
     CloudParticle &p = particles[firstUnusedParticle()];
-    respawnParticle(p, lastPos, 1.0f);
+    respawnParticle(p, lastPos, 1.0f, vec3(0), 1.0f, linearRand(10.0f, 15.0f));
     lastPos = p.Position;
     if (glm::distance(position, lastPos) > 3.0f || distance(position.y, lastPos.y) > 1.5f) lastPos = position;
   }
@@ -54,14 +54,14 @@ void Cloud::init() {
 void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, ACGL::OpenGL::SharedVertexArrayObject vao) {
   // Use additive blending to give it a 'glow' effect
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-  mat4 mvp = (*viewProjectionMatrix) * glm::scale(vec3(7.5f));
-  shader->setUniform("uMVP", mvp);
+  shader->setUniform("uMVP", (*viewProjectionMatrix));
 
   for (CloudParticle particle : particles)
   {
       if (particle.Life > 0.0f)
       {
           shader->setUniform("uOffset", particle.Position);
+          shader->setUniform("uScale", particle.Scale);
           shader->setUniform("uColor", particle.Color);
           shader->setTexture("uTexture", cloudTex, 3);
           
@@ -152,5 +152,6 @@ void Cloud::respawnParticle(CloudParticle &particle, vec3 pos, float randomOffse
     particle.Position = pos + random + offset;
     particle.Color = glm::vec4(rColor, rColor, rColor, alpha);
     particle.Life = life;
+    particle.Scale = glm::scale(vec3(particle.Life));
     particle.Velocity = velocity;
 }

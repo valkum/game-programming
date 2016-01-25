@@ -6,6 +6,7 @@ out vec2 vTexCoords;
 out vec4 vParticleColor;
 
 uniform mat4 uMVP;
+uniform mat4 uScale;
 uniform vec3 uOffset;
 uniform vec4 uColor;
 uniform vec3 uCameraRight_worldspace;
@@ -21,5 +22,5 @@ void main()
     + uCameraRight_worldspace * aPosition.x
     + uCameraUp_worldspace * aPosition.y;
 
-    gl_Position = uMVP * vec4(vertexPosition_worldspace, 1.0);
+    gl_Position = uMVP * uScale * vec4(vertexPosition_worldspace, 1.0);
 }
