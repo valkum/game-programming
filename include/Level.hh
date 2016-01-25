@@ -3,6 +3,7 @@
 
 #include "world/Object.hh"
 #include "world/Terrain.hh"
+#include "world/Clouds.hh"
 #include "world/SkyDome.hh"
 #include <ACGL/Scene/GenericCamera.hh>
 #include <json.hpp>
@@ -26,12 +27,15 @@ public:
   std::vector<Object *> getObjects() { return levelObjects; };
   SkyDome* getSkydome() { return skyDome; };
   Terrain* getTerrain() { return terrain; };
+  Clouds* getClouds() { return clouds; };
+  vec3 getWind() { return globalWind; };
 protected:
 private:
   std::string levelId;
   std::vector<Object*> levelObjects;
   //Cloth cloth;
-  //Clouds clouds;
+  Clouds* clouds;
+  vec3 globalWind;
   Entity* character;
   SkyDome* skyDome;
   ACGL::Scene::GenericCamera* camera;

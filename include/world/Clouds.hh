@@ -5,7 +5,7 @@
 
 class Clouds{
 public:
-  Clouds(uint_t amount, uint_t size);
+  Clouds(uint_t amount, uint_t size, int width, int length);
   ACGL::OpenGL::SharedVertexArrayObject getVao() { return vao; }
   ACGL::OpenGL::SharedArrayBuffer getAb() {return ab;}
   inline ACGL::OpenGL::SharedTexture2D getTexture() {

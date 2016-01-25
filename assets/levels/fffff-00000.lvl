@@ -35,6 +35,7 @@
     "a": 100.0,
     "b": 6.0
   },
+  "clouds": [20, 100],
   "skydome": {
     "texture": "Sky.png",
     "scale": 60.0
@@ -43,5 +44,6 @@
     "text" : "Wake up Mr. Freeman!",
     "textColor": [255,165,0]
   },
-  "mapSize": [32, 64]
+  "mapSize": [32, 64],
+  "globalWind": [1, 0, 1]
 }

@@ -13,7 +13,6 @@
 #include <iostream>
 #include <vector>
 #include "Model.hh"
-#include "world/Clouds.hh"
 
 //#define TIME_STEPSIZE2 0.25f*0.25f
 // 1/64 Tickrate
@@ -29,7 +28,6 @@ using namespace ACGL::Scene;
 class PlayState;
 PlayState PlayState::m_PlayState;
 
-Clouds *clouds;
 PositionGUI* positionGui;
 
 void PlayState::init(CGame *game) {
@@ -67,8 +65,6 @@ void PlayState::init(CGame *game) {
   positionGui = new PositionGUI(gui, "Position");
   positionGui->setPosition(ivec2(20, 20));
 
-  clouds = new Clouds(20, 100);
-
   debug() << "Geometry loaded" << endl;
 
   debug() << "Loading shaders stage" << endl;
@@ -82,7 +78,7 @@ void PlayState::init(CGame *game) {
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  cloudShader = ShaderProgramCreator("cloudParticle").attributeLocations(clouds->getVao()->getAttributeLocations()).create();
+  cloudShader = ShaderProgramCreator("cloudParticle").attributeLocations(level->getClouds()->getVao()->getAttributeLocations()).create();
 
   skydomeShader = ShaderProgramCreator("skyDome").attributeLocations(
   level->getSkydome()->getModel().getVAO()->getAttributeLocations()).create();
@@ -145,7 +141,7 @@ void PlayState::draw(CGame *g, float *delta) {
   cloudShader->use();
   cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
   cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
-  clouds->render(cloudShader, &viewProjectionMatrix);
+  level->getClouds()->render(cloudShader, &viewProjectionMatrix);
 
   if(renderDebug) {
     debugShader->use();
@@ -169,12 +165,11 @@ void PlayState::draw(CGame *g, float *delta) {
 
 void PlayState::update(CGame *g, float dt) {
 
-  vec3 globalWind = vec3(1,0,1);
-  clouds->update(dt, globalWind * 0.05f);
+  level->getClouds()->update(dt, level->getWind() * 0.05f);
 
   // cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
   // glm::vec3 random = sphericalRand(0.5f);
-  // cloth->windForce((globalWind*0.03f+random)*dt); // generate some wind each frame
+  // cloth->windForce((level->getWind()*0.03f+random)*dt); // generate some wind each frame
   // cloth->timeStep(dt); // calculate the particle positions of the next frame
 }
 

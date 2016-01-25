@@ -18,7 +18,7 @@ static GLfloat particle_quad[6*5] = {
       -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
   }; 
 
-Clouds::Clouds(uint_t amount, uint_t size) {
+Clouds::Clouds(uint_t amount, uint_t size, int width, int length) {
   ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
   ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
@@ -27,14 +27,12 @@ Clouds::Clouds(uint_t amount, uint_t size) {
   vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  // float dist = 3.0f;
+  float half = width/2.0f;
 	for (uint_t i = 0; i < amount; ++i)
 	{
-		float x = glm::linearRand(-16.0f, 16.0f);//(i*dist)-(amount*dist/2.0f);
-		float z = glm::linearRand(0.0f, 64.0f);
-		// clouds[i].setPosition(vec3(i*200.0f, 20.0f, i*200.0f));
+		float x = glm::linearRand(-(float)half, (float)half);//(i*dist)-(amount*dist/2.0f);
+		float z = glm::linearRand(0.0f, (float)length);
 		clouds.push_back(Cloud(size, vec3(x, 2.0f, z)));
-		// clouds.push_back(&newCloud);
 	}
 }
 
