@@ -44,9 +44,9 @@ void Cloud::init() {
   vec3 lastPos = position;
   for (uint_t i = 0; i < amount; ++i) {
     CloudParticle &p = particles[firstUnusedParticle()];
-    respawnParticle(p, lastPos, 1.0f, vec3(0), 1.0f, linearRand(10.0f, 15.0f));
+    respawnParticle(p, lastPos, .4f, vec3(0), 1.0f, 1.0f/*linearRand(10.0f, 15.0f)*/);
     lastPos = p.Position;
-    if (abs(glm::distance(position, lastPos)) > 3.0f || distance(position.y, lastPos.y) > 1.5f) lastPos = position;
+    if (abs(glm::distance(position, lastPos)) > 1.5f || distance(position.y, lastPos.y) > .3f) lastPos = position;
   }
   smooth();
 }

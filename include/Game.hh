@@ -2,10 +2,15 @@
 #define GAME_H
 #include <ACGL/OpenGL/GL.hh>
 #include <GLFW/glfw3.h>
+#include <string>
 
 #include <stack>
 #include <glm/vec2.hpp>
-
+struct StartSettings {
+    bool flagLevel;
+    std::string levelId;
+    bool flagVersion;
+  };
 class CGameState;
 
 class CGame {
@@ -41,6 +46,8 @@ public:
   void quit() {
     m_running = false;
   }
+
+  StartSettings cli_settings;
 
   GLFWwindow *g_window;
   glm::uvec2  g_windowSize;

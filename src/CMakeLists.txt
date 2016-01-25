@@ -3,12 +3,15 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
 if(NOT DEFINED ENV{TRAVIS})
-    set(CMAKE_CXX_FLAGS "$CMAKE_CXX_FLAGS -fsanitize=address")
-  endif()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+endif()
+
 set(C_FLAGS_COMMON "-Wall -Werror")
-set(CMAKE_CXX_FLAGS "-std=c++11 -g ${C_FLAGS_COMMON}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g ${C_FLAGS_COMMON}")
 set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
 set( CMAKE_VERBOSE_MAKEFILE 0 )
+
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 set(IDENTIFIER "de.rwth-aachen.game-programming.heimwerker")
 set(COPYRIGHT "All rights reserved. Rudi, Sebo, Kim")
@@ -22,9 +25,12 @@ set(SOURCE_FILES
     Helper.cpp
     TextureLoadStore.cpp
     Model.cpp
+    Level.cpp
     world/Entity.cpp
-    world/TestObject.cpp
-    world/Skybox.cpp
+    world/Object.cpp
+    world/SkyDome.cpp
+    world/Terrain.cpp
+    world/SkyScraper.cpp
     world/Cloud.cpp
     world/Clouds.cpp
     world/Cloth.cpp
@@ -33,6 +39,7 @@ set(SOURCE_FILES
     GUI/Gui.cpp
     GUI/Button.cpp
     GUI/PerfGraph.cpp
+    GUI/PositionGUI.cpp
 )
 
 FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
@@ -80,7 +87,7 @@ if(UNIX)
 	find_package(PkgConfig REQUIRED)
 	pkg_search_module(GLFW REQUIRED glfw3)
 	include_directories(${GLFW_INCLUDE_DIRS})
-  link_directories(${GLFW_LIBRARY_DIRS})
+    link_directories(${GLFW_LIBRARY_DIRS})
 
 	#find_package(GLM REQUIRED)
 	#include_directories(${GLM_INCLUDE_DIR})
@@ -119,14 +126,7 @@ TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${REQUIRED_LIBS})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   message(STATUS "Linking Assets: ${dir}/assets -> ${CMAKE_SOURCE_DIR}/assets")
   add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
-        POST_BUILD
-		IF(EXISTS "${dir}/assets" AND IS_DIRECTORY "${dir}/assets")
-			COMMAND rm -r ${dir}/assets && ln -s ../assets ${dir}/assets
-		ELSEIF(EXISTS "${dir}/assets")
-			COMMAND rm ${dir}/assets && ln -s ../assets ${dir}/assets
-		ELSE()
-			COMMAND echo "u dun goofed"
-		ENDIF()
-    )
-
+	  POST_BUILD
+      COMMAND ${CMAKE_SOURCE_DIR}/linkAssets.sh ${dir}
+  )
 endif()

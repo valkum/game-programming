@@ -3,10 +3,8 @@
 
 #include <ACGL/OpenGL/Data/GeometryDataLoadStore.hh>
 #include <ACGL/OpenGL/Data/TextureLoadStore.hh>
-#include <ACGL/Scene/GenericCamera.hh>
 #include "TextureLoadStore.hh"
 #include <ACGL/OpenGL/Objects.hh>
-#include <ACGL/Base/Settings.hh>
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
 #include <glm/gtc/random.hpp>
@@ -14,14 +12,8 @@
 
 #include <iostream>
 #include <vector>
-#include "Helper.hh"
 #include "Model.hh"
-#include "world/Skybox.hh"
-#include "world/Vec3.hh"
-#include "world/TestObject.hh"
 #include "world/Clouds.hh"
-#include "world/Cloth.hh"
-
 
 //#define TIME_STEPSIZE2 0.25f*0.25f
 // 1/64 Tickrate
@@ -34,77 +26,48 @@ using namespace ACGL::Base;
 using namespace ACGL::Utils;
 using namespace ACGL::Scene;
 
+class PlayState;
 PlayState PlayState::m_PlayState;
-GenericCamera camera;
 
-Skybox *skybox;
-// TestObject *cube;
 Clouds *clouds;
-Cloth *cloth;
-float ball_time = 0;
-float ball_radius = 2;
-vec3 ball_pos(7,-5,0);
-
-
-
-/*
-void reshape(int w, int h){
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION); 
-	glLoadIdentity();  
-	if (h==0)  
-		gluPerspective(80,(float)w,1.0,5000.0);
-	else
-		gluPerspective (80,( float )w /( float )h,1.0,5000.0 );
-	glMatrixMode(GL_MODELVIEW);  
-	glLoadIdentity(); 
-}
-*/
-
-PerfGraph *graph;
+PositionGUI* positionGui;
 
 void PlayState::init(CGame *game) {
   renderDebug = false;
+  m_game = game;
+  double* x = new double;
+  double* y = new double;
+  glfwGetCursorPos(game->g_window, x, y);
+  m_mousePos = vec2(*x, *y);
 
   glClearColor(0.0, 0.0, 0.0, 1.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+  //camera.setVerticalFieldOfView(95.0);
+  // camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
+  // camera.setStateFromString("ACGL_GenericCamera | 1 | (-0.152289,1.16336,2.27811) | ((-0.999868,-0.00162319,-0.0161718),(0,0.995,-0.0998699),(0.0162531,-0.0998567,-0.994869)) | PERSPECTIVE_PROJECTION | MONO | EYE_LEFT | 75 | 1.33333 | 0.064 | 0.1 | 5000 | 500 | (0,0)");
 
   gui = new Gui(vg, game->g_window);
-
-  graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
-  graph->setPosition(ivec2(400,400));
-  graph->setSize(ivec2(200,35));
-
-
-  // define where shaders and textures can be found:
-  Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
-  Settings::the()->setShaderPath("shaders/");
-  Settings::the()->setGeometryPath("geometry/");
-  Settings::the()->setTexturePath("textures/");
+  GUIObject* fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
+  fpsGraph->setPosition(ivec2(400,400));
+  fpsGraph->setSize(ivec2(200,35));
 
 
-  debug() << "Loading objects stage" << endl;
+  if(game->cli_settings.flagLevel) {
+    level = new Level(game->cli_settings.levelId);
+  }else {
+    level = new Level("fffff-00000");
+  }
+  //Level* level = new Level("00000-00001");
+  level->load();
 
-  // Texture
-  std::vector<std::string> paths = {
-    Settings::the()->getFullTexturePath() + "nuke_rt.png",
-    Settings::the()->getFullTexturePath() + "nuke_lf.png",
-    Settings::the()->getFullTexturePath() + "nuke_dn.png",
-    Settings::the()->getFullTexturePath() + "nuke_up.png",
-    Settings::the()->getFullTexturePath() + "nuke_bk.png",
-    Settings::the()->getFullTexturePath() + "nuke_ft.png",
-  };
-  skybox = new Skybox(Model("cube.obj", 500.0f), paths);
+  positionGui = new PositionGUI(gui, "Position");
+  positionGui->setPosition(ivec2(20, 20));
 
-  clouds = new Clouds(10, 250);
-
-  // cube = new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
-  // cube   = new TestObject(Model("aphroditegirl.obj", 100.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f));
-  cloth = new Cloth(10,20,24,24);
+  clouds = new Clouds(20, 100);
 
   debug() << "Geometry loaded" << endl;
 
@@ -114,109 +77,116 @@ void PlayState::init(CGame *game) {
   // construct VAO to give shader correct Attribute locations
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
-  ab->defineAttribute("aTexCoord", GL_FLOAT, 3);
   ab->defineAttribute("aNormal",   GL_FLOAT, 3);
 
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  // cubeShader = ShaderProgramCreator("cube").attributeLocations(vao->getAttributeLocations()).create();
-
-  clothShader = ShaderProgramCreator("cloth").attributeLocations(cloth->getVAO()->getAttributeLocations()).create();
-
-  skyboxShader = ShaderProgramCreator("skybox").attributeLocations(vao->getAttributeLocations()).create();
-
   cloudShader = ShaderProgramCreator("cloudParticle").attributeLocations(clouds->getVao()->getAttributeLocations()).create();
 
-  // debug_ab = SharedArrayBuffer(new ArrayBuffer());
-  // debug_ab->defineAttribute("aPosition", GL_FLOAT, 3);
-  // debug_ab->defineAttribute("aColor", GL_FLOAT, 3);
-  // debug_vao = SharedVertexArrayObject(new VertexArrayObject());
-  // debug_vao->attachAllAttributes(debug_ab);
-  // debug_vao->setMode(GL_LINES);
+  skydomeShader = ShaderProgramCreator("skyDome").attributeLocations(
+  level->getSkydome()->getModel().getVAO()->getAttributeLocations()).create();
 
-  // debugShader =
-  // ShaderProgramCreator("debug").attributeLocations(debug_vao->getAttributeLocations()).create();
+  lightningShader = ShaderProgramCreator("lightningShader").attributeLocations(
+    vao->getAttributeLocations()).create();
 
-
+  debugShader =
+  ShaderProgramCreator("debug").attributeLocations(vao->getAttributeLocations()).create();
   debug() << "Shaders loaded" << endl;
 
-
   debug() << "Set Textures Stage" << endl;
-  skyboxShader->use();
-  skyboxShader->setTexture("uTexture", skybox->getTexture(), 1);
 
+  skydomeShader->use();
+  skydomeShader->setTexture("uTexture", level->getSkydome()->getTexture(), 2);
 
-  // cubeShader->use();
-  // cubeShader->setTexture("uTexture", cube->getTexture(), 2);
-
-  // cloudShader->use();
-  // cloudShader->setTexture("", cloud->getTexture(), 3);
   debug() << "Textures set" << endl;
 
-
-  camera.setVerticalFieldOfView(90.0);
-  camera.setPosition(vec3(0.0f, 0.0f, 1.0f));
-
-  // debug()<<"Camera Position: \n"<<to_string(camera.getPosition())<<endl;
-  // debug()<<"Camera View: \n"<<to_string(camera.getViewMatrix())<<endl;
-
   openGLCriticalError();
+  glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void PlayState::draw(CGame *g, float *delta) {
-  skybox->setPosition(vec3(camera.getPosition().x, camera.getPosition().y, camera.getPosition().z));
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glm::mat4 viewMatrix = camera.getViewMatrix();
-  glm::mat4 viewProjectionMatrix = camera.getProjectionMatrix() *
-                                  viewMatrix;
+  // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  if(renderDebug) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);}
 
-  glm::vec3 cameraRight_worldspace = glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
-  glm::vec3 cameraUp_worldspace = glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
+  ACGL::Scene::GenericCamera* camera = level->getCamera();
+  glm::mat4 viewProjectionMatrix = camera->getProjectionMatrix() *
+                                  camera->getViewMatrix();
 
-  // drawing
+  level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
 
   glDepthFunc(GL_LEQUAL);
-  skyboxShader->use();
-  skybox->render(skyboxShader, &viewProjectionMatrix);
+  // Workarround needed somhow for nanovg, as nanovg calls glActiveTexture(...).
+  // Found no proper way for use with ACGL if this is nessecary with more than one texture.
+  // Saxum works without I think.
+  level->getSkydome()->getTexture()->bind(2);
+  skydomeShader->use();
+  level->getSkydome()->render(skydomeShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
-  // cubeShader->use();
-  // // cubeShader->setUniform( "uNormalMatrix", camera.getRotationMatrix3() );
-  // cubeShader->setUniform("uViewMatrix", camera.getViewMatrix());
-  // cube->render(cubeShader, &viewProjectionMatrix);
-
-  cloudShader->use();
-  cloudShader->setUniform("uCameraRight_worldspace", cameraRight_worldspace);
-  cloudShader->setUniform("uCameraUp_worldspace", cameraUp_worldspace);
-  clouds->render(cloudShader, &viewProjectionMatrix);
-
-  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  clothShader->use();
-  cloth->render(clothShader, &viewProjectionMatrix); // finally draw the cloth with smooth shading
-
-  // if(renderDebug) {
-  //     debugShader->use();
-  //     debugShader->setUniform("uViewProjectionMatrix", viewProjectionMatrix);
-  //     debug_vao->render();
-  // }
   openGLCriticalError();
 
+  lightningShader->use();
+  lightningShader->setUniform("uLight.direction", vec3(-1,1.5,1));
+  lightningShader->setUniform("uLight.color", vec3(0.75f, 0.75f, 0.75f));
+  lightningShader->setUniform("uLight.ambient", 0.1f);
+  lightningShader->setUniform("uLight.specular", 0.3f);
+  lightningShader->setUniform("uLight.diffuse", 0.8f);
+  lightningShader->setUniform("uViewMatrix", camera->getViewMatrix());
+  lightningShader->setUniform("camera", camera->getPosition());
+  level->getTerrain()->render(lightningShader, &viewProjectionMatrix);
+
+
+  for (auto object: level->getObjects()) {
+    object->render(lightningShader, &viewProjectionMatrix);
+  }
+
+  cloudShader->use();
+  cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
+  cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
+  clouds->render(cloudShader, &viewProjectionMatrix);
+
+  if(renderDebug) {
+    debugShader->use();
+    level->getTerrain()->render(debugShader, &viewProjectionMatrix);
+    for (auto object: level->getObjects()) {
+      object->render(debugShader, &viewProjectionMatrix);
+    }
+  }
+
+  //glFlush();
+  // bring backbuffer to foreground
+  // SDL_GL_SwapBuffers();
+  //SwapBuffers(g_HDC);
+
+  openGLCriticalError();
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   gui->drawAll();
+  glEnable(GL_DEPTH_TEST);
+
 }
 
 void PlayState::update(CGame *g, float dt) {
 
   vec3 globalWind = vec3(1,0,1);
-  clouds->update(dt, globalWind * 0.1f);
+  clouds->update(dt, globalWind * 0.05f);
 
-  cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
-  glm::vec3 random = sphericalRand(0.5f);
-  cloth->windForce((globalWind*0.03f+random)*dt); // generate some wind each frame
-  cloth->timeStep(dt); // calculate the particle positions of the next frame
+  // cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
+  // glm::vec3 random = sphericalRand(0.5f);
+  // cloth->windForce((globalWind*0.03f+random)*dt); // generate some wind each frame
+  // cloth->timeStep(dt); // calculate the particle positions of the next frame
 }
 
-void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
+void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
+  m_lastMousePos = m_mousePos;
+  m_mousePos = mousePos;
+
+  //Update FPS Camera for Debug:
+  vec2 mouseDelta = (m_lastMousePos - m_mousePos);
+  level->getCamera()->FPSstyleLookAround(-mouseDelta.x/m_game->g_windowSize.x, -mouseDelta.y/m_game->g_windowSize.y);
+  positionGui->setCameraDirection(level->getCamera()->getForwardDirection());
+}
 
 void PlayState::handleMouseButtonEvents(GLFWwindow *window,
                                         glm::vec2   mousePos,
@@ -235,68 +205,47 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
   // rendered!
   double timeElapsed = .05;
 
-  double speed = 5.0;        // magic value to scale the camera speed
+  double speed = 10.0;        // magic value to scale the camera speed
 
   if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
-    if (key == GLFW_KEY_Q) { // upper case!
-      camera.FPSstyleLookAround(-timeElapsed * speed, 0); // turn left
-    }
-
     if (key == GLFW_KEY_W) { // upper case!
-      camera.moveForward(timeElapsed * speed);
-    }
-
-    if (key == GLFW_KEY_E) { // upper case!
-      camera.FPSstyleLookAround(timeElapsed * speed, 0); // turn right
-    }
-
-    if (key == GLFW_KEY_I) { // upper case!
-      camera.FPSstyleLookAround(0, -timeElapsed * speed); // turn upwards
-    }
-
-    if (key == GLFW_KEY_A) { // upper case!
-      camera.moveLeft(timeElapsed * speed);
+      level->getCamera()->moveForward(timeElapsed * speed);
+      positionGui->setCameraPosition(level->getCamera()->getPosition());
     }
 
     if (key == GLFW_KEY_S) { // upper case!
-      camera.moveBack(timeElapsed * speed);
+      level->getCamera()->moveBack(timeElapsed * speed);
+      positionGui->setCameraPosition(level->getCamera()->getPosition());
+    }
+
+    if (key == GLFW_KEY_A) { // upper case!
+      level->getCamera()->moveLeft(timeElapsed * speed);
+      positionGui->setCameraPosition(level->getCamera()->getPosition());
     }
 
     if (key == GLFW_KEY_D) { // upper case!
-      camera.moveRight(timeElapsed * speed);
+      level->getCamera()->moveRight(timeElapsed * speed);
+      positionGui->setCameraPosition(level->getCamera()->getPosition());
     }
-
-    if (key == GLFW_KEY_J) { // upper case!
-      camera.FPSstyleLookAround(-timeElapsed * speed, 0); // turn left
+    if (key == GLFW_KEY_F) {
+      showFrames = !showFrames;
+      if(showFrames) positionGui->show(); else positionGui->hide(); 
     }
-
-    if (key == GLFW_KEY_K) { // upper case!
-      camera.FPSstyleLookAround(0, timeElapsed * speed); // turn downwards
-    }
-
-    if (key == GLFW_KEY_L) { // upper case!
-      camera.FPSstyleLookAround(timeElapsed * speed, 0); // turn right
+    if (key == GLFW_KEY_V) {
+      debug() << level->getCamera()->storeStateToString() << std::endl;
     }
 
     if (key == GLFW_KEY_P) {
-      for (int i = 0; i < 10; ++i)
-      {
-      debug() << graph->values[i] << endl;
-      }
+      renderDebug = !renderDebug;
     }
-
     if (key == GLFW_KEY_R) {
-      ShaderProgramCreator("cube").update(cubeShader);
-      ShaderProgramCreator("skybox").update(skyboxShader);
-      ShaderProgramCreator("cloth").update(clothShader);
-    }
-    
-    if (key == GLFW_KEY_SPACE) {
-      cloth->windForce((vec3(1.0f,-0.2f,0.3f)));
+      ShaderProgramCreator("lightningShader").update(lightningShader);
     }
   }
 }
 
+
+
 void PlayState::handleResizeEvents(GLFWwindow *window, glm::uvec2 windowSize) {
-  camera.resize(windowSize.x, windowSize.y);
+  level->getCamera()->resize(windowSize.x, windowSize.y);
 }

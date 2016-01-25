@@ -7,8 +7,6 @@
 #include <iostream>
 #include "Helper.hh"
 #include "GUI/Gui.hh"
-#include "GUI/Button.hh"
-#include "GUI/PerfGraph.hh"
 
 using namespace glm;
 using namespace std;

@@ -1,2 +1,3 @@
-#include "Button.hh"
-#include "PerfGraph.hh"
+#include "GUI/Button.hh"
+#include "GUI/PerfGraph.hh"
+#include "GUI/PositionGUI.hh"

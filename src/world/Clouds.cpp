@@ -27,13 +27,13 @@ Clouds::Clouds(uint_t amount, uint_t size) {
   vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
 
-  float dist = 3.0f;
+  // float dist = 3.0f;
 	for (uint_t i = 0; i < amount; ++i)
 	{
-		float x = glm::linearRand(0.0f, (float)amount*dist)-(amount*dist/2.0f);//(i*dist)-(amount*dist/2.0f);
-		float z = glm::linearRand(0.0f, (float)amount*dist)-(amount*dist/2.0f);
+		float x = glm::linearRand(-16.0f, 16.0f);//(i*dist)-(amount*dist/2.0f);
+		float z = glm::linearRand(0.0f, 64.0f);
 		// clouds[i].setPosition(vec3(i*200.0f, 20.0f, i*200.0f));
-		clouds.push_back(Cloud(size, vec3(x, 5.0f, z)));
+		clouds.push_back(Cloud(size, vec3(x, 2.0f, z)));
 		// clouds.push_back(&newCloud);
 	}
 }

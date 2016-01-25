@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include <getopt.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -20,31 +21,30 @@ using namespace ACGL::Utils;
 
 int main(int argc, char **argv)
 {
-  // @todo: add loadLevel and version maybe
+  int opt;
 
-  //int opt;
-  bool debug = false;
-  bool printVersion = false;
+  //Shut GetOpt error messages down (return '?'):
+  opterr = 0;
+  cli_settings.flagLevel = false;
+  cli_settings.flagVersion = false;
 
-  // Shut GetOpt error messages down (return '?'): 
-  //opterr = 0;
-
-  // Retrieve the options:
-  //while ( (opt = getopt(argc, argv, "dv")) != -1 ) {  // for each option...
-  //    switch ( opt ) {
-  //        case 'd':
-  //                debug = true;
-  //            break;
-  //        case 'v':
-  //                printVersion = true;
-  //            break;
-  //        case '?':  // unknown option...
-  //                cerr << "Unknown option: '" << char(optopt) << "'!" << endl;
-  //            break;
-  //    }
-  //}
-  if(!printVersion)
-    run(debug);
+  //Retrieve the options:
+  while ( (opt = getopt(argc, argv, "l:v")) != -1 ) {  // for each option...
+     switch ( opt ) {
+         case 'l':
+                 cli_settings.flagLevel = true;
+                 cli_settings.levelId = optarg;
+             break;
+         case 'v':
+                 cli_settings.flagVersion = true;
+             break;
+         case '?':  // unknown option...
+                 cerr << "Unknown option: '" << char(optopt) << "'!" << endl;
+             break;
+     }
+  }
+  if(!cli_settings.flagVersion)
+    run();
   else
     printf("Version: none");
 }
@@ -82,10 +82,12 @@ int createWindow() {
   setGLFWHintsForOpenGLVersion(ACGL_OPENGL_VERSION);
 
   // activate multisampling (second parameter is the number of samples):
-  // glfwWindowHint( GLFW_SAMPLES, 8 );
+  glfwWindowHint( GLFW_SAMPLES, 4 );
 
   // request an OpenGL debug context:
+  // @TODO: Only to this when the Debug define is defined.
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+
 
   /* Create a windowed mode window and its OpenGL context */
 
@@ -104,20 +106,23 @@ int createWindow() {
   return true;
 }
 
-int run(bool debug) {
+int run() {
   if (!createWindow()) {
     glfwTerminate();
     exit(-1);
   }
 
-  vector<std::string> tmp;
-  //glfwSetWindowTitle(g_window, "Window");
+  glfwSetWindowTitle(g_window, "Himmel Build: none");
+  glEnable(GL_MULTISAMPLE); 
   CGame *game = CGame::instance();
   game->init(g_window);
-  if(debug)
+  game->cli_settings = cli_settings;
+  if(cli_settings.flagLevel)
     game->changeState(PlayState::instance());
-  else  
+  else
     game->changeState(IntroState::instance());
+
+  glfwSwapInterval(0);
 
   // Ensure we can capture the escape key being pressed below
   // glfwSetInputMode( g_window, GLFW_STICKY_KEYS, 1 );

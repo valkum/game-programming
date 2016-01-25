@@ -1,15 +1,11 @@
 #include "GUI/PerfGraph.hh"
-#include <ACGL/OpenGL/GL.hh>
+
+#include "GUI/nanovg.hh"
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#ifdef NANOVG_GLEW
-#  include <GL/glew.h>
-#endif
-#include <GLFW/glfw3.h>
-#include "nanovg.h"
 
-#include <iconv.h>
 
 // timer query support
 #ifndef GL_ARB_timer_query
@@ -56,10 +52,8 @@ int PerfGraph::stopGPUTimer(GPUtimer* timer, float* times, int maxTimes)
 PerfGraph::PerfGraph(GUIObject *parent, int style, std::string name)
     : GUIObject(parent), mStyle(style), mCaption(name), mBackgroundColor(Color(0,0)), mForegroundColor(Color(100, 0, 0,180)), mTextColor(Color(0,0)){
 	    prevt = glfwGetTime();
-	    for (int i = 0; i < GRAPH_HISTORY_COUNT; ++i)
-	    {
-	    	values[i] = 0.0f;
-	    }
+	    head = 0;
+	    values = new float[graphHistoryCount]{};
     }
 	//memset(fps, 0, sizeof(PerfGraph));
     //initGPUTimer(gputimer);
@@ -75,7 +69,7 @@ PerfGraph::PerfGraph(GUIObject *parent, int style, std::string name)
 
 void PerfGraph::updateGraph(float frameTime)
 {
-	head = (head+1) % GRAPH_HISTORY_COUNT;
+	head = (head+1) % graphHistoryCount;
 	values[head] = frameTime;
 }
 
@@ -83,14 +77,15 @@ float PerfGraph::getGraphAverage()
 {
 	int i;
 	float avg = 0;
-	for (i = 0; i < GRAPH_HISTORY_COUNT; i++) {
+	for (i = 0; i < graphHistoryCount; i++) {
 		avg += values[i];
 	}
-	return avg / (float)GRAPH_HISTORY_COUNT;
+	return avg / (float)graphHistoryCount;
 }
 
 void PerfGraph::draw(NVGcontext* vg)
 {
+	GUIObject::draw(vg);
 	int i;
 	float avg;
 	char str[64];
@@ -106,29 +101,29 @@ void PerfGraph::draw(NVGcontext* vg)
 	nvgBeginPath(vg);
 	nvgMoveTo(vg, mPosition.x, mPosition.y+mSize.y);
 	if (mStyle == GRAPH_RENDER_FPS) {
-		for (i = 0; i < GRAPH_HISTORY_COUNT; i++) {
-			float v = 1.0f / (0.00001f + values[(head+i) % GRAPH_HISTORY_COUNT]);
+		for (i = 0; i < graphHistoryCount; i++) {
+			float v = 1.0f / (0.00001f + values[(head+i) % graphHistoryCount]);
 			float vx, vy;
 			if (v > 80.0f) v = 80.0f;
-			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * mSize.x;
+			vx = mPosition.x + ((float)i/(graphHistoryCount-1)) * mSize.x;
 			vy = mPosition.y +mSize.y - ((v / 80.0f) * mSize.y);
 			nvgLineTo(vg, vx, vy);
 		}
 	} else if (mStyle == GRAPH_RENDER_PERCENT) {
-		for (i = 0; i < GRAPH_HISTORY_COUNT; i++) {
-			float v = values[(head+i) % GRAPH_HISTORY_COUNT] * 1.0f;
+		for (i = 0; i < graphHistoryCount; i++) {
+			float v = values[(head+i) % graphHistoryCount] * 1.0f;
 			float vx, vy;
 			if (v > 100.0f) v = 100.0f;
-			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * mSize.x;
+			vx = mPosition.x + ((float)i/(graphHistoryCount-1)) * mSize.x;
 			vy = mPosition.y +mSize.y - ((v / 100.0f) * mSize.y);
 			nvgLineTo(vg, vx, vy);
 		}
 	} else {
-		for (i = 0; i < GRAPH_HISTORY_COUNT; i++) {
-			float v = values[(head+i) % GRAPH_HISTORY_COUNT] * 1000.0f;
+		for (i = 0; i < graphHistoryCount; i++) {
+			float v = values[(head+i) % graphHistoryCount] * 1000.0f;
 			float vx, vy;
 			if (v > 20.0f) v = 20.0f;
-			vx = mPosition.x + ((float)i/(GRAPH_HISTORY_COUNT-1)) * mSize.x;
+			vx = mPosition.x + ((float)i/(graphHistoryCount-1)) * mSize.x;
 			vy = mPosition.y +mSize.y - ((v / 20.0f) * mSize.y);
 			nvgLineTo(vg, vx, vy);
 		}
@@ -143,7 +138,7 @@ void PerfGraph::draw(NVGcontext* vg)
 		nvgFontSize(vg, 14.0f);
 		nvgTextAlign(vg, NVG_ALIGN_LEFT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,192));
-		nvgText(vg, mPosition.x+3,mPosition.y+1, mCaption.c_str(), NULL);
+		nvgText(vg, mPosition.x+3,mPosition.y+1, mCaption.c_str(), nullptr);
 
 
 	if (mStyle == GRAPH_RENDER_FPS) {
@@ -151,26 +146,26 @@ void PerfGraph::draw(NVGcontext* vg)
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,255));
 		sprintf(str, "%.2f FPS", 1.0f / avg);
-		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, nullptr);
 
 		nvgFontSize(vg, 15.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_BOTTOM);
 		nvgFillColor(vg, nvgRGBA(240,240,240,160));
 		sprintf(str, "%.2f ms", avg * 1000.0f);
-		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+mSize.y-1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+mSize.y-1, str, nullptr);
 	}
 	else if (mStyle == GRAPH_RENDER_PERCENT) {
 		nvgFontSize(vg, 18.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,255));
 		sprintf(str, "%.1f %%", avg * 1.0f);
-		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, nullptr);
 	} else {
 		nvgFontSize(vg, 18.0f);
 		nvgTextAlign(vg,NVG_ALIGN_RIGHT|NVG_ALIGN_TOP);
 		nvgFillColor(vg, nvgRGBA(240,240,240,255));
 		sprintf(str, "%.2f ms", avg * 1000.0f);
-		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, NULL);
+		nvgText(vg, mPosition.x+mSize.x-3,mPosition.y+1, str, nullptr);
 	}
 
   double t = glfwGetTime();

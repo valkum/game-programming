@@ -8,13 +8,22 @@
 # include <GLFW/glfw3.h>
 #endif
 
+
+#include "world/SkyDome.hh"
+#include "world/SkyScraper.hh"
+#include "world/Terrain.hh"
+#include <ACGL/Scene/GenericCamera.hh>
+
 #include <ACGL/OpenGL/Creator/VertexArrayObjectCreator.hh>
 
 using namespace ACGL::OpenGL;
+using namespace ACGL::Base;
+using namespace ACGL::Utils;
+using namespace ACGL::Scene;
+
 
 class PlayState : public CGameState {
 public:
-
   void init(CGame *game);
   void draw(CGame *game,
             float *delta);
@@ -46,14 +55,20 @@ protected:
   PlayState() {}
 
 private:
+  //int m_MouseState;
+  glm::vec2   m_mousePos, m_lastMousePos;
   static PlayState m_PlayState;
-  bool renderDebug;
-  SharedShaderProgram skyboxShader;
-  SharedShaderProgram cubeShader;
+  bool renderDebug, showFrames;
+  SharedShaderProgram skydomeShader;
+  SharedShaderProgram lightningShader;
   SharedShaderProgram cloudShader;
   SharedShaderProgram clothShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;
   SharedShaderProgram     debugShader;
+
+  Level* level;
+
+
 };
 #endif // ifndef PLAYSTATE_H
