@@ -12,7 +12,7 @@ public:
     return clouds[0].getTexture();
   }
   void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix);
-  void update(float dt);
+  void update(float dt, vec3 wind);
 protected:
 private:
   std::vector<Cloud> clouds;

@@ -207,11 +207,12 @@ void PlayState::draw(CGame *g, float *delta) {
 
 void PlayState::update(CGame *g, float dt) {
 
-  clouds->update(dt);
+  vec3 globalWind = vec3(1,0,1);
+  clouds->update(dt, globalWind * 0.1f);
 
   cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
   glm::vec3 random = sphericalRand(0.5f);
-  cloth->windForce((vec3(0.3f,0.3f,0.03f)+random)*dt); // generate some wind each frame
+  cloth->windForce((globalWind*0.03f+random)*dt); // generate some wind each frame
   cloth->timeStep(dt); // calculate the particle positions of the next frame
 }
 

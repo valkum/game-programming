@@ -45,9 +45,9 @@ void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewPro
 	}
 }
 
-void Clouds::update(float dt){
+void Clouds::update(float dt, vec3 wind){
 	for (auto&& cloud : clouds)
 	{
-		cloud.update(dt);
+		cloud.update(dt, wind);
 	}
 }

@@ -15,11 +15,11 @@ public:
     return this->cloudTex;
   }
   void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, ACGL::OpenGL::SharedVertexArrayObject vao);
-  void update(float dt);
+  void update(float dt, vec3 wind);
   void init();
   uint_t firstUnusedParticle();
   // void respawnParticle(CloudParticle &particle, glm::vec3 offset);
-  void respawnParticle(CloudParticle &particle, vec3 pos, float randomOffset = 0.0f, glm::vec3 offset = vec3(0.0f), float alpha = 1.0f, float life = 10.0f, vec3 velocity = vec3(1,0,1) * 0.1f);
+  void respawnParticle(CloudParticle &particle, vec3 pos, float randomOffset = 0.0f, glm::vec3 offset = vec3(0.0f), float alpha = 1.0f, float life = 10.0f, vec3 velocity = vec3(0));
   void spawn (uint_t nun);
   void smooth();
 protected:

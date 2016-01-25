@@ -113,13 +113,16 @@ void Cloud::smooth() {
   }
 }
 
-void Cloud::update(float dt) {
+void Cloud::update(float dt, vec3 wind) {
   // Update all particles
   for (uint_t i = 0; i < this->amount; ++i)
   {
       CloudParticle &p = this->particles[i];
       if (p.Life > 0.0f) // particle is alive, thus update
       {
+          p.Velocity = wind; //add global wind flow
+          //viscosity
+          //char & skyscraper collision detection
           p.Position += p.Velocity * dt;
       }
   }
