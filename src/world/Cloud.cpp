@@ -69,7 +69,7 @@ void Cloud::init() {
 
 void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix) {
   // Use additive blending to give it a 'glow' effect
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   //debug() << to_string((*viewMatrix) * vec4(particlePositions[0], 1.0f)) << std::endl;
   glm::mat4 modelMatrix = translate(vec3(0.f)) * scale<float>(vec3(1.f));
   shader->setUniform("uModelMatrix", modelMatrix);
@@ -90,7 +90,7 @@ void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatr
   // Rendert die Punkte im VAO.
   vao->render();
   // Don't forget to reset to default blending mode
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Cloud::spawn(uint_t num) {
