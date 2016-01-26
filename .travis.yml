@@ -9,7 +9,6 @@ matrix:
         apt:
           sources: ['george-edison55-precise-backports', 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
           packages:
-            - cmake
             - xorg-dev
             - libgl1-mesa-dev
             - pkg-config
