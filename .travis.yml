@@ -1,21 +1,26 @@
 language: cpp
-compiler: clang
 notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
 env:
   - PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$HOME/glfw3/lib/pkgconfig"
-os:
-  - linux
-  - osx
-addons:
-  apt:
-    sources: ['george-edison55-precise-backports', 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
-    packages:
-      - cmake
-      - xorg-dev
-      - libgl1-mesa-dev
-      - pkg-config
-      - clang-3.6
+matrix:
+  include:
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['george-edison55-precise-backports', 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
+          packages:
+            - cmake
+            - xorg-dev
+            - libgl1-mesa-dev
+            - pkg-config
+            - clang-3.6
+      env: PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$HOME/glfw3/lib/pkgconfig" COMPILER=clang-3.6
+    - os: osx
+      compiler: clang
+      env: COMPILER=clang
+
 cache:
   directories:
   - $HOME/glfw3
@@ -24,5 +29,6 @@ before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then bash travis_get_glfw3.sh; fi
 
 script:
-  - if [ $TRAVIS_OS_NAME == linux ]; then export CXX="clang++-3.6"; export C="clang-3.6"; export CXXFLAGS="-lstdc++"; ./build.sh; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then sh ./build.sh; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then export CXX=$COMPILER; export CXXFLAGS="-lstdc++"; fi
+  - CXX --version
+  - sh ./build.sh
