@@ -107,8 +107,9 @@ void PlayState::draw(CGame *g, float *delta) {
   if(renderDebug) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);}
 
   ACGL::Scene::GenericCamera* camera = level->getCamera();
-  glm::mat4 viewProjectionMatrix = camera->getProjectionMatrix() *
-                                  camera->getViewMatrix();
+  glm::mat4 viewMatrix = camera->getViewMatrix();
+  glm::mat4 projectionMatrix = camera->getProjectionMatrix();
+  glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 
   level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
 
@@ -118,7 +119,7 @@ void PlayState::draw(CGame *g, float *delta) {
   // Saxum works without I think.
   level->getSkydome()->getTexture()->bind(2);
   skydomeShader->use();
-  level->getSkydome()->render(skydomeShader, &viewProjectionMatrix);
+  //level->getSkydome()->render(skydomeShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
   openGLCriticalError();
@@ -139,9 +140,9 @@ void PlayState::draw(CGame *g, float *delta) {
   }
 
   cloudShader->use();
-  cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
-  cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
-  level->getClouds()->render(cloudShader, &viewProjectionMatrix);
+  // cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
+  // cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
+  level->getClouds()->render(cloudShader, &viewMatrix, &projectionMatrix);
 
   if(renderDebug) {
     debugShader->use();

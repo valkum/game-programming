@@ -4,6 +4,7 @@
 #include "world/Entity.hh"
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Types.hh>
+#include <vector>
 #include "world/CloudParticle.hh"
 
 
@@ -14,7 +15,7 @@ public:
   inline ACGL::OpenGL::SharedTexture2D getTexture() {
     return this->cloudTex;
   }
-  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, ACGL::OpenGL::SharedVertexArrayObject vao);
+  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix);
   void update(float dt, vec3 wind);
   void init();
   uint_t firstUnusedParticle();
@@ -28,6 +29,14 @@ private:
   // Stores the index of the last particle used (for quick access to next dead particle)
   uint_t lastUsedParticle = 0;
   std::vector<CloudParticle> particles;
+  // Hier sind die Position der Particles gespeichert zum einfachen senden an die Grafikkarte. 
+  // Sozusagen kopie des ArrayBuffers. Ein Eintrag = ein Vertex.
+  // Falls mehr als die Position pro Particle Nötig ist (ggf. Größe oder farbe.) muss das hier angepasst werden.
+  std::vector<glm::vec3> particlePositions;
+
+  ACGL::OpenGL::SharedVertexArrayObject vao;
+  ACGL::OpenGL::SharedArrayBuffer ab;
+
   ACGL::OpenGL::SharedTexture2D cloudTex;
 };
 

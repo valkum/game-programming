@@ -8,23 +8,24 @@ using namespace ACGL::Utils;
 using namespace std;
 
 // CloudParticle: aPosition and aColor in one vector.
-static GLfloat particle_quad[6*5] = {
-      -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
-      0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
-      -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
+// static GLfloat particle_quad[6*5] = {
+//       -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
+//       0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
+//       -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
 
-      0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-      0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
-      -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
-  }; 
+//       0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+//       0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
+//       -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
+//   }; 
 
 Clouds::Clouds(uint_t amount, uint_t size, int width, int length) {
+  // Wird nurnoch für den Shaderinit in PlayState::init() benutzt.
   ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
-  ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
-  ab->setDataElements(6, particle_quad);
+  // ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
 
   vao = SharedVertexArrayObject(new VertexArrayObject());
+  vao->setMode(GL_POINTS);
   vao->attachAllAttributes(ab);
 
   float half = width/2.0f;
@@ -36,10 +37,10 @@ Clouds::Clouds(uint_t amount, uint_t size, int width, int length) {
 	}
 }
 
-void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
+void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix) {
 	for (Cloud cloud : clouds)
 	{
-		cloud.render(shader, viewProjectionMatrix, vao);
+		cloud.render(shader, viewMatrix, projectionMatrix);
 	}
 }
 
