@@ -5,6 +5,7 @@
 #include "world/Terrain.hh"
 #include "world/SkyDome.hh"
 #include <ACGL/Scene/GenericCamera.hh>
+#include <memory>
 #include <json.hpp>
 #include <glm/glm.hpp>
 
