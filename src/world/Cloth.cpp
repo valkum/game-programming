@@ -491,7 +491,7 @@ void Cloth::modelCollision(){
     }
   }
 }
-void  moveAnchorPoints(vec3 v){
+void  Cloth::moveAnchorPoints(vec3 v){
   for(int i=0;i<3; i++){
     getParticle(0+i ,0)->makeMovable();
     getParticle(0+i ,0)->offsetPos(v);
