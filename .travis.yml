@@ -26,6 +26,6 @@ before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then bash travis_get_glfw3.sh; fi
 
 script:
-  - if [ $TRAVIS_OS_NAME == linux ]; then export CXX=$COMPILER; export CXXFLAGS="-stdlib=stdc++"; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then export CXX=$COMPILER; fi
   - ${CXX} --version
   - sh ./build.sh
