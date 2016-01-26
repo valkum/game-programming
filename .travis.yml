@@ -1,8 +1,6 @@
 language: cpp
 notifications:
   slack: gamepros:8J6TWKw3BdVJkXqRQ8hPNa7r
-env:
-  - PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$HOME/glfw3/lib/pkgconfig"
 matrix:
   include:
     - os: linux
@@ -30,5 +28,5 @@ before_install:
 
 script:
   - if [ $TRAVIS_OS_NAME == linux ]; then export CXX=$COMPILER; export CXXFLAGS="-lstdc++"; fi
-  - CXX --version
+  - ${CXX} --version
   - sh ./build.sh
