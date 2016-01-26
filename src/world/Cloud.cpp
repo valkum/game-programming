@@ -7,6 +7,7 @@
 #include <glm/gtc/random.hpp>
 #include <glm/gtc/noise.hpp>
 #include <math.h>
+#include <algorithm>
 
 using namespace ACGL::OpenGL;
 using namespace ACGL::Utils;
@@ -26,7 +27,22 @@ Cloud::Cloud(uint_t amount, vec3 pos) : Entity(pos, vec3(0.f)), amount(amount) {
 void Cloud::init() {
   for (uint_t i = 0; i < amount; ++i) {
     particles.push_back(CloudParticle());
+    // Fülle initial die lokale Kopie des ArrayBuffers mit max anzahl an particle Position, damit
+    // auf der GPU genug speicher allokiert wird.
+    particlePositions.push_back(particles[i].Position);
   }
+
+  ab = SharedArrayBuffer(new ArrayBuffer());
+  ab->defineAttribute("aPosition", GL_FLOAT, 3);
+  // ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
+  ab->setDataElements(particlePositions.size(), value_ptr(particlePositions[0]), GL_DYNAMIC_DRAW);
+
+  vao = SharedVertexArrayObject(new VertexArrayObject());
+  vao->setMode(GL_POINTS);
+  vao->attachAllAttributes(ab);
+
+  std::cout << ab->getSize() << std::endl;
+
 
   // spawn(25);
   // for (float i = 0.0f; i < 15.0f; i+=0.5f)
@@ -51,23 +67,28 @@ void Cloud::init() {
   smooth();
 }
 
-void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, ACGL::OpenGL::SharedVertexArrayObject vao) {
+void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix) {
   // Use additive blending to give it a 'glow' effect
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-  shader->setUniform("uMVP", (*viewProjectionMatrix));
+  //debug() << to_string((*viewMatrix) * vec4(particlePositions[0], 1.0f)) << std::endl;
+  glm::mat4 modelMatrix = translate(vec3(0.f)) * scale<float>(vec3(1.f));
+  shader->setUniform("uModelMatrix", modelMatrix);
+  shader->setUniform("uViewMatrix", (*viewMatrix));
+  shader->setUniform("uProjectionMatrix", (*projectionMatrix));
+  shader->setUniform("uViewProjectionMatrix", (*projectionMatrix) * (*viewMatrix));
+  shader->setUniform("uModelViewMatrix", (*viewMatrix) * modelMatrix);
+  shader->setUniform("uMVP", (*projectionMatrix) * (*viewMatrix) * modelMatrix);
+  shader->setUniform("uSize", vec2(0.5, 0.5));
 
-  for (CloudParticle particle : particles)
-  {
-      if (particle.Life > 0.0f)
-      {
-          shader->setUniform("uOffset", particle.Position);
-          shader->setUniform("uScale", particle.Scale);
-          shader->setUniform("uColor", particle.Color);
-          shader->setTexture("uTexture", cloudTex, 3);
-          
-          vao->render();
-      }
-  }
+
+  // Setze die Textur für den gerade ausgewählten shader. Nur einmal nötig. Pro Shader->use, bzw texture change.
+  shader->setTexture("uTexture", cloudTex, 4);
+
+
+  //debug() << glm::to_string( (modelMatrix) * vec4(particlePositions[0], 1.0f)) << std::endl;
+  // glPointSize(10.f);
+  // Rendert die Punkte im VAO.
+  vao->render();
   // Don't forget to reset to default blending mode
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -115,6 +136,7 @@ void Cloud::smooth() {
 
 void Cloud::update(float dt, vec3 wind) {
   // Update all particles
+  particlePositions.clear();
   for (uint_t i = 0; i < this->amount; ++i)
   {
       CloudParticle &p = this->particles[i];
@@ -124,8 +146,16 @@ void Cloud::update(float dt, vec3 wind) {
           //viscosity
           //char & skyscraper collision detection
           p.Position += p.Velocity * dt;
+          particlePositions.push_back(p.Position);
+
       }
   }
+  // Sendet die aktuellen Positionen der Particle an die Graka. Da diese sich nur beim update ändern,
+  // findet das update der particlePositions auch dort statt.
+  // @TODO: Ggf muss hier mapRange verwendet werden, damit auf der Graka auch alte points geflusht werden.
+
+  ab->setSubData(0, particlePositions.size() * sizeof(particlePositions[0]), value_ptr(particlePositions[0]));
+
 }
 
 uint_t Cloud::firstUnusedParticle() {

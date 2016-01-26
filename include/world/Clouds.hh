@@ -11,7 +11,7 @@ public:
   inline ACGL::OpenGL::SharedTexture2D getTexture() {
     return clouds[0].getTexture();
   }
-  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix);
+  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix);
   void update(float dt, vec3 wind);
 protected:
 private:

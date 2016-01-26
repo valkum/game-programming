@@ -33,9 +33,9 @@ void Level::load(){
     skyDome = new SkyDome(Model("SkyDome.obj", levelJson["skydome"]["scale"]), levelJson["skydome"]["texture"]);
     terrain = new Terrain(levelJson["mapSize"].at(0), levelJson["mapSize"].at(1));
 
-    for (auto object : levelJson["objects"]) {
-      levelObjects.push_back(new Object(Model(object["model"], object["scale"]), parseVec3(object["position"]), parseVec3(object["rotation"])));
-    }
+    // for (auto object : levelJson["objects"]) {
+    //   levelObjects.push_back(new Object(Model(object["model"], object["scale"]), parseVec3(object["position"]), parseVec3(object["rotation"])));
+    // }
 
     clouds = new Clouds(levelJson["clouds"].at(0), levelJson["clouds"].at(1), levelJson["mapSize"].at(0), levelJson["mapSize"].at(1));
     globalWind = parseVec3(levelJson["globalWind"]);
