@@ -387,11 +387,13 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
         }
 
         if (key == GLFW_KEY_A) { // upper case!
-            camera.moveLeft(timeElapsed * speed);
+            //camera.moveLeft(timeElapsed * speed);
+            cloth->moveAnchorPoints(vec3(-0.1f, 0.0f,0.0f));
         }
 
         if (key == GLFW_KEY_D) { // upper case!
-            camera.moveRight(timeElapsed * speed);
+            //camera.moveRight(timeElapsed * speed);
+            cloth->moveAnchorPoints(vec3(0.1f, 0.0f,0.0f));
         }
 
         if (key == GLFW_KEY_K) { // upper case!

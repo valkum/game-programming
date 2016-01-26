@@ -18,14 +18,35 @@
 using namespace glm;
 
 struct Vertex {
-            vec3 position;
-            vec3 uv;
-            vec3 normal;
-        };
+  vec3 position;
+  vec3 uv;
+  vec3 normal;
+};
 
 class Cloth : public Entity {
-	public:
-	Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 position, vec3 offset);
+  private:
+    int num_particles_width;
+    int num_particles_height;
+
+    ACGL::OpenGL::SharedVertexArrayObject vao;
+    ACGL::OpenGL::SharedArrayBuffer ab;
+
+    std::vector<Particle> particles;
+    std::vector<Constraint> constraints;
+
+    Particle* getParticle(int x, int y);
+    void makeConstraint(Particle *p1, Particle *p2);
+
+    void insertTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 uv, std::vector<Vertex> &vertexData);
+
+    vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
+
+    void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 direction);
+
+    void drawTriangle(Particle *p1, Particle *p2, Particle *p3);
+    
+  public:
+    Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 position, vec3 offset);
 
     vec3 getSphereOffset0();
     vec3 getSphereOffset1();
@@ -67,40 +88,21 @@ class Cloth : public Entity {
     float getSphereRadius17();
     float getSphereRadius18();
 
-	void render(ACGL::OpenGL::SharedShaderProgram shader,
-    mat4                             *viewProjectionMatrix);
+    void render(ACGL::OpenGL::SharedShaderProgram shader,
+        mat4                             *viewProjectionMatrix);
 
-	void timeStep(float dt);
+    void timeStep(float dt);
 
-	void addForce(const vec3 direction);
+    void addForce(const vec3 direction);
 
-	void windForce(const vec3 direction);
+    void windForce(const vec3 direction);
 
-	void modelCollision();
+    void modelCollision();
 
-	void doFrame();
-  ACGL::OpenGL::SharedVertexArrayObject getVAO() { return vao; }
+    void moveAnchorPoints(vec3 v);
 
-private:
-	int num_particles_width;
-	int num_particles_height;
-
-  ACGL::OpenGL::SharedVertexArrayObject vao;
-  ACGL::OpenGL::SharedArrayBuffer ab;
-
-	std::vector<Particle> particles;
-	std::vector<Constraint> constraints;
-
-	Particle* getParticle(int x, int y);
-	void makeConstraint(Particle *p1, Particle *p2);
-
-	void insertTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 uv, std::vector<Vertex> &vertexData);
-
-	vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
-
-	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 direction);
-
-	void drawTriangle(Particle *p1, Particle *p2, Particle *p3);
+    void doFrame();
+    ACGL::OpenGL::SharedVertexArrayObject getVAO() { return vao; }
 };
 
 #endif

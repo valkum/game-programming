@@ -76,6 +76,4 @@ class Particle {
 			accumulated_normal = vec3(0,0,0);
 		}
 };
-
-
 #endif
