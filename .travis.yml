@@ -8,14 +8,14 @@ os:
   - linux
   - osx
 addons:
-  sources:
-    - george-edison55-precise-backports
+  sources: ['george-edison55-precise-backports','ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.6']
   apt:
     packages:
       - cmake
       - xorg-dev
       - libgl1-mesa-dev
       - pkg-config
+      - clang-3.6
 cache:
   directories:
   - $HOME/glfw3
@@ -23,4 +23,4 @@ before_install:
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update; brew install glfw3; brew install llvm37; brew link --force llvm37; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then bash travis_get_glfw3.sh; fi
 
-script: ./build.sh
+script: CXX = clang-3.6 ./build.sh

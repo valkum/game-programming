@@ -13,6 +13,10 @@ endif()
 if(NOT DEFINED ENV{TRAVIS})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 endif()
+if(DEFINED ENV{TRAVIS})
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lstdc++")
+
+endif()
 
 set(C_FLAGS_COMMON "-Wall -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g ${C_FLAGS_COMMON}")
