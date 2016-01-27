@@ -30,10 +30,15 @@ Clouds::Clouds(uint_t amount, uint_t size, int width, int length) {
   float half = width/2.0f;
 	for (uint_t i = 0; i < amount; ++i)
 	{
-		float x = glm::linearRand(-(float)half, (float)half);//(i*dist)-(amount*dist/2.0f);
-		float z = glm::linearRand(0.0f, (float)length);
-		clouds.push_back(Cloud(size, vec3(x, 2.0f, z)));
+		spawn(size, -half, (float)width, 0.0f, (float)length);
 	}
+}
+
+void Clouds::spawn(uint_t size, float x, float width, float z, float length, float y, float height) {
+		x = glm::linearRand(x, x+width);
+		y = glm::linearRand(y, y+height);
+		z = glm::linearRand(z, z+length);
+		clouds.push_back(Cloud(size, vec3(x, y, z)));
 }
 
 void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {

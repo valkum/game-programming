@@ -18,6 +18,7 @@ private:
   std::vector<Cloud> clouds;
   ACGL::OpenGL::SharedVertexArrayObject vao;
   ACGL::OpenGL::SharedArrayBuffer ab;
+  void spawn(uint_t size = 100, float x = 0.0f, float width = 0.0f, float z = 0.0f, float length = 0.0f, float y = 2.0f, float height = 0.0f);
 };
 
 #endif // CLOUD_HH
