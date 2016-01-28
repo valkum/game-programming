@@ -2,6 +2,7 @@
 #ifndef CLOUD_PARTICLE_HH
 #define CLOUD_PARTICLE_HH
 
+#include <ACGL/OpenGL/Objects.hh>
 
 struct CloudParticle {
     glm::vec3 Position, Velocity;
