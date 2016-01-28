@@ -141,7 +141,7 @@ void PlayState::draw(CGame *g, float *delta) {
   cloudShader->use();
   cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
   cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
-  level->getClouds()->render(cloudShader, &viewProjectionMatrix);
+  level->getClouds()->render(cloudShader, &viewProjectionMatrix, camera->getPosition());
 
   if(renderDebug) {
     debugShader->use();

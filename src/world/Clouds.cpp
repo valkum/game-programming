@@ -145,23 +145,31 @@ void Clouds::update(float dt, vec3 wind){
 	}
 }
 
-void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix) {
+void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, glm::vec3 camPos) {
   // Use additive blending to give it a 'glow' effect
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   shader->setUniform("uMVP", (*viewProjectionMatrix));
-  //todo sort for depth-test
+  debug() << "render:" << endl;
 
+  //sort into new collection using distance to camera for depth-test
+  std::map<float, CloudParticle*> depthSort;
   for (CloudParticle particle : particles)
   {
-      if (particle.Life > 0.0f)
-      {
-          shader->setUniform("uOffset", particle.Position);
-          shader->setUniform("uScale", particle.Scale);
-          shader->setUniform("uColor", particle.Color);
-          shader->setTexture("uTexture", cloudTex, 3);
-          
-          vao->render();
-      }
+  	if (particle.Life > 0.0f)
+    {
+	  	depthSort.insert(std::pair<float, CloudParticle*>(glm::distance(camPos,particle.Position),&particle));
+	  }
+  }
+
+  // traverse in reverse order
+  for (auto rit = depthSort.rbegin(); rit != depthSort.rend(); rit++)
+  {
+  	// debug() << to_string(rit->first) << endl;
+    shader->setUniform("uOffset", rit->second->Position);
+    shader->setUniform("uScale", rit->second->Scale);
+    shader->setUniform("uColor", rit->second->Color);
+    shader->setTexture("uTexture", cloudTex, 3);
+    vao->render();
   }
   // Don't forget to reset to default blending mode
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

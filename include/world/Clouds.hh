@@ -16,7 +16,7 @@ public:
     return this->cloudTex;
   }
   void update(float dt, vec3 wind);
-  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix);
+  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, glm::vec3 camPos);
 protected:
 private:
   ACGL::OpenGL::SharedVertexArrayObject vao;
