@@ -16,6 +16,7 @@ set(SOURCE_FILES
     TextureLoadStore.cpp
     Model.cpp
     Level.cpp
+    LoadingScreen.cpp
     world/Entity.cpp
     world/Object.cpp
     world/SkyDome.cpp

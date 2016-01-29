@@ -3,7 +3,7 @@
 
 #include <ACGL/OpenGL/Data/GeometryDataLoadStore.hh>
 #include <ACGL/OpenGL/Data/TextureLoadStore.hh>
-#include "TextureLoadStore.hh"
+#include "LoadingScreen.hh"
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
@@ -25,6 +25,8 @@ PlayState PlayState::m_PlayState;
 PositionGUI* positionGui;
 
 void PlayState::init(CGame *game) {
+  LoadingScreen* loadingScreen = new LoadingScreen();
+  loadingScreen->render(0.2);
   renderDebug = false;
   m_game = game;
   double* x = new double;
@@ -32,11 +34,12 @@ void PlayState::init(CGame *game) {
   glfwGetCursorPos(game->g_window, x, y);
   m_mousePos = vec2(*x, *y);
 
-  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
   //camera.setVerticalFieldOfView(95.0);
   // camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
@@ -46,7 +49,7 @@ void PlayState::init(CGame *game) {
   GUIObject* fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
   fpsGraph->setPosition(ivec2(400,400));
   fpsGraph->setSize(ivec2(200,35));
-
+  loadingScreen->render(0.3);
 
   if(game->cli_settings.flagLevel) {
     level = new Level(game->cli_settings.levelId);
@@ -55,6 +58,7 @@ void PlayState::init(CGame *game) {
   }
   //Level* level = new Level("00000-00001");
   level->load();
+  loadingScreen->render(0.5);
 
   positionGui = new PositionGUI(gui, "Position");
   positionGui->setPosition(ivec2(20, 20));
@@ -62,7 +66,6 @@ void PlayState::init(CGame *game) {
 
   debug() << "Loading shaders stage" << endl;
 
-  // cout<<Settings::the()->getFullShaderPath()<<endl;
   // construct VAO to give shader correct Attribute locations
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
@@ -72,7 +75,7 @@ void PlayState::init(CGame *game) {
   vao->attachAllAttributes(ab);
 
   skydomeShader = ShaderProgramCreator("skyDome").attributeLocations(
-  level->getSkydome()->getModel().getVAO()->getAttributeLocations()).create();
+    level->getSkydome()->getModel().getVAO()->getAttributeLocations()).create();
 
   lightningShader = ShaderProgramCreator("lightningShader").attributeLocations(
     vao->getAttributeLocations()).create();
@@ -86,15 +89,21 @@ void PlayState::init(CGame *game) {
   skydomeShader->use();
   skydomeShader->setTexture("uTexture", level->getSkydome()->getTexture(), 2);
   debug() << "Textures set" << endl;
-
+  loadingScreen->render(0.9);
   openGLCriticalError();
   glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  loadingScreen->render(1);
+
+  delete loadingScreen;
 }
 
 void PlayState::draw(CGame *g, float *delta) {
-  // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  if(renderDebug) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);}
+  // @TODO: render white fade in if glfwGetTme() < levelStartTime + 1
+
+  if(renderDebug) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
 
   ACGL::Scene::GenericCamera* camera = level->getCamera();
   glm::mat4 viewProjectionMatrix = camera->getProjectionMatrix() *
