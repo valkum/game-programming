@@ -36,7 +36,7 @@ LoadingScreen::LoadingScreen() {
   progressVAO->attachAllAttributes(progressAB);
   progressVAO->setMode(GL_TRIANGLE_STRIP);
 
-  shader = ACGL::OpenGL::ShaderProgramCreator("loadingScreen").attributeLocations(backgroundVAO->getAttributeLocations()).create();
+  shader = ACGL::OpenGL::ShaderProgramCreator("loadingScreen").attributeLocations(progressVAO->getAttributeLocations()).create();
 }
 
 std::vector<glm::vec3> LoadingScreen::getProgressbarVertices(float value) {
