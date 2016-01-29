@@ -161,12 +161,24 @@ void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewPro
   }
 
   // traverse in reverse order
-  for (auto rit = depthSort.rbegin(); rit != depthSort.rend(); rit++)
+  auto rit = depthSort.rbegin();
+  // render farthest particle firs up to certain distance
+  for (; rit->first > 3.0f && rit != depthSort.rend(); rit++)
   {
   	// debug() << to_string(rit->first) << endl;
     shader->setUniform("uOffset", rit->second->Position);
     shader->setUniform("uScale", rit->second->Scale);
     shader->setUniform("uColor", rit->second->Color);
+    shader->setTexture("uTexture", cloudTex, 3);
+    vao->render();
+  }
+  // apply alpha to counter view obstruction
+  for (; rit != depthSort.rend(); rit++)
+  {
+    // debug() << to_string(rit->first) << endl;
+    shader->setUniform("uOffset", rit->second->Position);
+    shader->setUniform("uScale", rit->second->Scale);
+    shader->setUniform("uColor", rit->second->Color*((rit->first/3.4f)+0.1f));
     shader->setTexture("uTexture", cloudTex, 3);
     vao->render();
   }
