@@ -132,7 +132,7 @@ void Clouds::smooth() {
 void Clouds::update(float dt, vec3 wind){
 	//sort() //include life?
 	//die()
-  for (CloudParticle particle : particles)
+  for (CloudParticle& particle : particles)
   {
     if (particle.Life > 0.0f)
     {
@@ -149,11 +149,10 @@ void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewPro
   // Use additive blending to give it a 'glow' effect
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   shader->setUniform("uMVP", (*viewProjectionMatrix));
-  debug() << "render:" << endl;
 
   //sort into new collection using distance to camera for depth-test
   std::map<float, CloudParticle*> depthSort;
-  for (CloudParticle particle : particles)
+  for (CloudParticle& particle : particles)
   {
   	if (particle.Life > 0.0f)
     {
