@@ -55,7 +55,7 @@ void Clouds::spawnCloud(uint_t size, float x, float width, float z, float length
 		vec3 lastPos = position;
   	for (uint_t i = 0; i < size; ++i) {
     	CloudParticle &p = particles[firstUnusedParticle()];
-   		respawnParticle(p, lastPos, .5f, vec3(0), 1.0f, 1.0f/*linearRand(10.0f, 15.0f)*/);
+   		respawnParticle(p, lastPos, 0.0f, vec3(linearRand(0.0f, 1.0f), linearRand(0.0f, 0.4f), linearRand(0.0f, 1.0f)), 1.0f, 1.0f/*linearRand(10.0f, 15.0f)*/);
    		lastPos = p.Position;
    		if (abs(glm::distance(position, lastPos)) > 3.0f || distance(position.y, lastPos.y) > .4f) lastPos = position;
   	}
@@ -117,14 +117,14 @@ void Clouds::smooth() {
           }
           float density = neighbors / 10.0f;
           // debug() << "before: " << p.Life << endl;
-          if (density < 0.1f) { // Life in range 0.5 to 1.0
-              density = 0.1f;
-          } else if (p.Life > 1.0f) {
+          if (density < 0.25f) { // Life in range 0.5 to 1.0
+              density = 0.25f;
+          } else if (density > 1.0f) {
               density = 1.0f;
           }
           // debug() << "after: " << p.Life << endl;
           // p.Color.a -= tanh(p.Life);
-          p.Color.a *= 0.25f * density;
+          p.Color.a *= density;
       }
   }
 }
