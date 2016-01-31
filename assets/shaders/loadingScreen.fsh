@@ -1,8 +1,9 @@
 #version 330
-
-in vec3 vColor;
+in float opacity;
 out vec4 oColor;
 
+uniform vec3 uColor;
+
 void main () {
-  oColor = vec4(vColor, 1.0);
+  oColor = vec4(uColor, opacity);
 }

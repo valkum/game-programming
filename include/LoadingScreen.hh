@@ -9,6 +9,7 @@ class LoadingScreen {
 public:
   LoadingScreen();
   void render(float value);
+  ACGL::OpenGL::SharedShaderProgram getShader() {return shader; };
 private:
   std::vector<glm::vec3> getProgressbarVertices(float value);
   ACGL::OpenGL::SharedVertexArrayObject backgroundVAO;

@@ -5,7 +5,7 @@
     {
       "model": "SkyScraper.obj",
       "scale": 0.5,
-      "position": [0.0,0.0,3.0],
+      "position": [0.0,0.0,10.0],
       "rotation": [0.0,0.0,0.0]
     },
     {
