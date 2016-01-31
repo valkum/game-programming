@@ -50,7 +50,9 @@ private:
   bool renderDebug;
   SharedShaderProgram skyboxShader;
   //SharedShaderProgram cubeShader;
-  SharedShaderProgram lowPolyManShader;
+  //SharedShaderProgram lowPolyManShader;
+  //SharedShaderProgram clothShader;
+  SharedShaderProgram characterShader;
   SharedShaderProgram sphereShader0;
   SharedShaderProgram sphereShader1;
   SharedShaderProgram sphereShader2;
@@ -70,7 +72,6 @@ private:
   SharedShaderProgram sphereShader16;
   SharedShaderProgram sphereShader17;
   SharedShaderProgram sphereShader18;
-  SharedShaderProgram clothShader;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;
   SharedShaderProgram     debugShader;

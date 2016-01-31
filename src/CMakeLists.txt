@@ -23,6 +23,7 @@ set(SOURCE_FILES
     world/TestObject.cpp
     world/Skybox.cpp
     world/Cloth.cpp
+    world/Character.cpp
     GUI/common.cpp
     GUI/GUIObject.cpp
     GUI/Gui.cpp

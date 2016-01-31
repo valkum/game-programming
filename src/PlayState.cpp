@@ -18,9 +18,9 @@
 #include "Model.hh"
 #include "Sphere.hh"
 #include "world/Skybox.hh"
-#include "world/Vec3.hh"
 #include "world/TestObject.hh"
 #include "world/Cloth.hh"
+#include "world/Character.hh"
 
 
 // 1/64 Tickrate
@@ -39,8 +39,9 @@ GenericCamera camera;
 
 Skybox *skybox;
 //TestObject *cube;
-TestObject *lowPolyMan;
-Cloth *cloth;
+//TestObject *lowPolyMan;
+//Cloth *cloth;
+Character *character;
 Sphere *sphere0;
 Sphere *sphere1;
 Sphere *sphere2;
@@ -62,7 +63,6 @@ Sphere *sphere17;
 Sphere *sphere18;
 
 
-vec3 clothOffset = vec3(4.0f, 4.0f, -3.0f);
 bool triggerWind = false;
 bool triggerMesh = false;
 
@@ -108,31 +108,33 @@ void PlayState::init(CGame *game) {
     // cube   =
     //   new TestObject(Model("cube.obj", 1.0f), vec3(0.0f, 0.0f, -1.0f),
     //                  vec3(0.0f, 0.0f, 0.0f));
-    lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(0.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
+    //lowPolyMan = new TestObject(Model("low_poly_man.obj", 1.0f), vec3(0.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
 
 
     //cloth = new Cloth(10,20,24,24, lowPolyMan->getPosition(), clothOffset);
-    cloth = new Cloth(8,15,24,24, lowPolyMan->getPosition(), clothOffset);
+    //cloth = new Cloth(8,15,24,24, lowPolyMan->getPosition(), clothOffset);
 
-    sphere0  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius0(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset0());
-    sphere1  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius1(),  vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset1());
-    sphere2  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius2(),  vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset2());
-    sphere3  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius3(),  vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset3());
-    sphere4  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius4(),  vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset4());
-    sphere5  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius5(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset5());
-    sphere6  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius6(),  vec3(1.0f, 1.0f, 1.0f), cloth->getSphereOffset6());
-    sphere7  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius7(),  vec3(1.0f, 1.0f, 1.0f), cloth->getSphereOffset7());
-    sphere8  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius8(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset8());
-    sphere9  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius9(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset9());
-    sphere10 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius10(), vec3(0.0f, 1.0f, 1.0f), cloth->getSphereOffset10());
-    sphere11 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius11(), vec3(0.0f, 1.0f, 1.0f), cloth->getSphereOffset11());
-    sphere12 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius12(), vec3(0.0f, 1.0f, 1.0f), cloth->getSphereOffset12());
-    sphere13 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius13(), vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset13());
-    sphere14 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius14(), vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset14());
-    sphere15 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius15(), vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset15());
-    sphere16 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius16(), vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset16());
-    sphere17 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius17(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset17());
-    sphere18 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius18(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset18());
+    //sphere0  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius0(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset0());
+    //sphere1  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius1(),  vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset1());
+    //sphere2  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius2(),  vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset2());
+    //sphere3  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius3(),  vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset3());
+    //sphere4  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius4(),  vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset4());
+    //sphere5  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius5(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset5());
+    //sphere6  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius6(),  vec3(1.0f, 1.0f, 1.0f), cloth->getSphereOffset6());
+    //sphere7  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius7(),  vec3(1.0f, 1.0f, 1.0f), cloth->getSphereOffset7());
+    //sphere8  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius8(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset8());
+    //sphere9  = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius9(),  vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset9());
+    //sphere10 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius10(), vec3(0.0f, 1.0f, 1.0f), cloth->getSphereOffset10());
+    //sphere11 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius11(), vec3(0.0f, 1.0f, 1.0f), cloth->getSphereOffset11());
+    //sphere12 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius12(), vec3(0.0f, 1.0f, 1.0f), cloth->getSphereOffset12());
+    //sphere13 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius13(), vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset13());
+    //sphere14 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius14(), vec3(1.0f, 0.0f, 0.0f), cloth->getSphereOffset14());
+    //sphere15 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius15(), vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset15());
+    //sphere16 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius16(), vec3(0.0f, 0.0f, 1.0f), cloth->getSphereOffset16());
+    //sphere17 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius17(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset17());
+    //sphere18 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius18(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset18());
+    
+    character = new Character(Model("low_poly_man.obj", 1.0f), vec3(0.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
 
     debug() << "Geometry loaded" << endl;
 
@@ -150,11 +152,13 @@ void PlayState::init(CGame *game) {
 
 
 
-    lowPolyManShader = ShaderProgramCreator("low_poly_man").attributeLocations(
-            lowPolyMan->getVAO()->getAttributeLocations()).create();
+    //lowPolyManShader = ShaderProgramCreator("low_poly_man").attributeLocations(
+    //        lowPolyMan->getVAO()->getAttributeLocations()).create();
 
-    clothShader = ShaderProgramCreator("cloth").attributeLocations(
-            cloth->getVAO()->getAttributeLocations()).create();
+    characterShader = ShaderProgramCreator("low_poly_man").attributeLocations(
+            character->getVAO()->getAttributeLocations()).create();
+    //clothShader = ShaderProgramCreator("cloth").attributeLocations(
+    //        cloth->getVAO()->getAttributeLocations()).create();
 
     sphereShader0 = ShaderProgramCreator("cloth").attributeLocations(
             sphere0->getVAO()->getAttributeLocations()).create();
@@ -270,15 +274,19 @@ void PlayState::draw(CGame *g, float *delta) {
 
 
     // drawing
-    lowPolyManShader->use();
-    lowPolyManShader->setUniform("uViewMatrix", camera.getViewMatrix());
+    //lowPolyManShader->use();
+    //lowPolyManShader->setUniform("uViewMatrix", camera.getViewMatrix());
+    characterShader->use();
+    characterShader->setUniform("uViewMatrix", camera.getViewMatrix());
 
     if (triggerMesh) {
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
+      //lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
+      character->render(characterShader, &viewProjectioMatrix);
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     } else {
-        lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
+        //lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
+        character->render(characterShader, &viewProjectioMatrix);
     }
 
 
@@ -323,8 +331,8 @@ void PlayState::draw(CGame *g, float *delta) {
     sphere18->render(sphereShader18, &viewProjectioMatrix);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    clothShader->use();
-    cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
+    //clothShader->use();
+    //cloth->render(clothShader, &viewProjectioMatrix); // finally draw the cloth with smooth shading
 
     // if(renderDebug) {
     //     debugShader->use();
@@ -338,14 +346,14 @@ void PlayState::draw(CGame *g, float *delta) {
 }
 
 void PlayState::update(CGame *g, float dt) {
-    cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
+    character->getCloth()->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
     //glm::vec3 random = sphericalRand(0.5f);
     if (triggerWind) {
-        //cloth->windForce((vec3(0.0f, 0.3f,-1.0f)+random)*dt); // generate some wind each frame
-        cloth->windForce(vec3(0.0f, 0.05f,0.2f));
+        //character->getCloth()->windForce((vec3(0.0f, 0.3f,-1.0f)+random)*dt); // generate some wind each frame
+        character->getCloth()->windForce(vec3(0.0f, 0.05f,0.2f));
     }
-    cloth->timeStep(dt); // calculate the particle positions of the next frame
-    cloth->modelCollision();
+    character->getCloth()->timeStep(dt); // calculate the particle positions of the next frame
+    character->getCloth()->modelCollision();
 }
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {}
@@ -388,12 +396,12 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
         if (key == GLFW_KEY_A) { // upper case!
             //camera.moveLeft(timeElapsed * speed);
-            cloth->moveAnchorPoints(vec3(-0.1f, 0.0f,0.0f));
+            //cloth->moveAnchorPoints(vec3(-0.1f, 0.0f,0.0f));
         }
 
         if (key == GLFW_KEY_D) { // upper case!
             //camera.moveRight(timeElapsed * speed);
-            cloth->moveAnchorPoints(vec3(0.1f, 0.0f,0.0f));
+            //cloth->moveAnchorPoints(vec3(0.1f, 0.0f,0.0f));
         }
 
         if (key == GLFW_KEY_K) { // upper case!
@@ -406,26 +414,26 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
         if (key == GLFW_KEY_DOWN) { // upper case!
             camera.setPosition(vec3(0.0f, 5.0f, -5.0f));
-            camera.setTarget(lowPolyMan->getPosition()+vec3(0.0f, 5.0f, 15.0f), vec3(0.0f, 1.0f, 0.0f));
         }
+            //camera.setTarget(lowPolyMan->getPosition()+vec3(0.0f, 5.0f, 15.0f), vec3(0.0f, 1.0f, 0.0f));
         if (key == GLFW_KEY_UP) {
             camera.setPosition(vec3(0.0f, 0.0f, 10.0f));
-            camera.setTarget(lowPolyMan->getPosition(), vec3(0.0f, 1.0f, 0.0f));
+            //camera.setTarget(lowPolyMan->getPosition(), vec3(0.0f, 1.0f, 0.0f));
         }
         if (key == GLFW_KEY_RIGHT) {
             camera.setPosition(vec3(6.0f, 5.0f, -5.0f));
-            camera.setTarget(cloth->getPosition(), vec3(0.0f, 1.0f, 0.0f));
+            //camera.setTarget(cloth->getPosition(), vec3(0.0f, 1.0f, 0.0f));
         }
         if (key == GLFW_KEY_LEFT) {
             camera.setPosition(vec3(-6.0f, 5.0f, -5.0f));
-            camera.setTarget(cloth->getPosition(), vec3(0.0f, 1.0f, 0.0f));
+            //camera.setTarget(cloth->getPosition(), vec3(0.0f, 1.0f, 0.0f));
         }
 
         if (key == GLFW_KEY_P) {
             for (int i = 0; i < 10; ++i)
             {
                 //debug() << graph->values[i] << endl;
-                debug() << to_string(cloth->getPosition()) << endl;
+                //debug() << to_string(cloth->getPosition()) << endl;
             }
         }
 
@@ -447,27 +455,27 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
         }
         if (key == GLFW_KEY_KP_7) {
           sphere1->setPosition(sphere1->getPosition() + vec3(0.1f,0.0f,0.0f));
-          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_4) {
           sphere1->setPosition(sphere1->getPosition() - vec3(0.1f,0.0f,0.0f));
-          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_8) {
           sphere1->setPosition(sphere1->getPosition() + vec3(0.0f,0.1f,0.0f));
-          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_5) {
           sphere1->setPosition(sphere1->getPosition() - vec3(0.0f,0.1f,0.0f));
-          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_9) {
           sphere1->setPosition(sphere1->getPosition() + vec3(0.0f,0.0f,0.1f));
-          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
         if (key == GLFW_KEY_KP_6) {
           sphere1->setPosition(sphere1->getPosition() - vec3(0.0f,0.0f,0.1f));
-          debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
         }
     }
 }
