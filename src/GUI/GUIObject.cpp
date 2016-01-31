@@ -93,9 +93,8 @@ void GUIObject::removeChild(const GUIObject *child) {
 
 void GUIObject::draw(NVGcontext *ctx) {
 
-    if (mChildren.empty())
+    if (mChildren.empty() || mRender == false)
         return;
-
     nvgTranslate(ctx, mPosition.x, mPosition.y);
     for (auto child : mChildren)
         child->draw(ctx);

@@ -13,7 +13,6 @@ public:
   inline float getScale() {
     return scale;
   }
-
   void setScale(float scale);
   void render();
 

@@ -38,23 +38,17 @@ Character::Character() {}
 Character::~Character() {}
 
 
-void Character::draw(mat4 viewMatrix) {
-    lowPolyManShader->use();
-    lowPolyManShader->setUniform("uViewMatrix", viewMatrix);
-    clothShader->use();
-    clothShader->setUniform("uViewMatrix", viewMatrix);
-}
 
-void Character::render(mat4 *viewProjectioMatrix) {
+void Character::render(mat4 *viewProjectionMatrix) {
   mat4 modelMatrix = translate(getPosition()) * getRotation() *
                      scale<float>(vec3(model.getScale()));
 
   lowPolyManShader->setUniform("uModelMatrix", modelMatrix);
 
-  mat4 mvp = (*viewProjectioMatrix) * modelMatrix;
+  mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
   lowPolyManShader->setUniform("uMVP", mvp);
   model.render();
-  cloth->render(clothShader, viewProjectioMatrix);
+  cloth->render(clothShader, viewProjectionMatrix);
 }
 
 void Character::setCharacterPosition(vec3 position){

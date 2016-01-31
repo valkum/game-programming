@@ -10,6 +10,17 @@ MinSizeRel."
        FORCE )
 endif()
 
+if(NOT DEFINED ENV{TRAVIS})
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+endif()
+
+set(C_FLAGS_COMMON "-Wall -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g ${C_FLAGS_COMMON}")
+set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
+
+set(CMAKE_VERBOSE_MAKEFILE OFF)
+
+
 # ACGL setup
 SET(ACGL_OPENGL_SUPPORT CORE_33)
 ADD_DEFINITIONS(-DACGL_OPENGL_VERSION_33)
@@ -28,6 +39,8 @@ set(EXECUTABLE_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
 #add_subdirectory(lib)
 include_directories(lib/nanovg/src)
 add_subdirectory(lib/nanovg)
+include_directories(lib/json/src)
+
 add_subdirectory(src)
 
 # install(FILES assets DESTINATION assets)

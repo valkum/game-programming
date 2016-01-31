@@ -1,8 +1,6 @@
 #version 330 core
 in vec3 aPosition;
 
-layout (location = 0) in vec3 position; // The position variable has attribute position 0
-  
 out vec4 vertexColor;
 
 uniform mat4 uMVP;

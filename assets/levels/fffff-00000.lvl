@@ -1,0 +1,47 @@
+{
+  "name": "Debug Level",
+  "uuid": "fffff-00000",
+  "objects": [
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.5,
+      "position": [0.0,0.0,3.0],
+      "rotation": [0.0,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.45,
+      "position": [5.0,0.0,5.0],
+      "rotation": [0.0,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.55,
+      "position": [-5.0,0.0,10.0],
+      "rotation": [0.0,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.5,
+      "position": [4.0,0.0,20.0],
+      "rotation": [0.0,0.0,0.0]
+    }
+  ],
+  "camera": {
+    "position": [-0.152289, 1.16336, 2.27811],
+    "rotation": [[-1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[0.0, 0.0, -1.0]]
+  },
+  "terrain": {
+    "a": 100.0,
+    "b": 6.0
+  },
+  "skydome": {
+    "texture": "Sky.png",
+    "scale": 60.0
+  },
+  "loadingScreen": {
+    "text" : "Wake up Mr. Freeman!",
+    "textColor": [255,165,0]
+  },
+  "mapSize": [32, 64]
+}
