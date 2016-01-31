@@ -155,8 +155,6 @@ void PlayState::init(CGame *game) {
     //lowPolyManShader = ShaderProgramCreator("low_poly_man").attributeLocations(
     //        lowPolyMan->getVAO()->getAttributeLocations()).create();
 
-    characterShader = ShaderProgramCreator("low_poly_man").attributeLocations(
-            character->getVAO()->getAttributeLocations()).create();
     //clothShader = ShaderProgramCreator("cloth").attributeLocations(
     //        cloth->getVAO()->getAttributeLocations()).create();
 
@@ -276,17 +274,18 @@ void PlayState::draw(CGame *g, float *delta) {
     // drawing
     //lowPolyManShader->use();
     //lowPolyManShader->setUniform("uViewMatrix", camera.getViewMatrix());
-    characterShader->use();
-    characterShader->setUniform("uViewMatrix", camera.getViewMatrix());
+    //characterShader->use();
+    //characterShader->setUniform("uViewMatrix", camera.getViewMatrix());
+    character->draw(camera.getViewMatrix());
 
     if (triggerMesh) {
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       //lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
-      character->render(characterShader, &viewProjectioMatrix);
+      character->render(&viewProjectioMatrix);
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     } else {
         //lowPolyMan->render(lowPolyManShader, &viewProjectioMatrix);
-        character->render(characterShader, &viewProjectioMatrix);
+        character->render(&viewProjectioMatrix);
     }
 
 
@@ -395,12 +394,12 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
         }
 
         if (key == GLFW_KEY_A) { // upper case!
-            //camera.moveLeft(timeElapsed * speed);
+            camera.moveLeft(timeElapsed * speed);
             //cloth->moveAnchorPoints(vec3(-0.1f, 0.0f,0.0f));
         }
 
         if (key == GLFW_KEY_D) { // upper case!
-            //camera.moveRight(timeElapsed * speed);
+            camera.moveRight(timeElapsed * speed);
             //cloth->moveAnchorPoints(vec3(0.1f, 0.0f,0.0f));
         }
 

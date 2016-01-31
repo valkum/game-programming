@@ -17,9 +17,7 @@ public:
             vec3  rotation);
   Character();
   ~Character();
-  void render(
-    SharedShaderProgram shader,
-    mat4 *viewProjectioMatrix);
+  void render(mat4 *viewProjectioMatrix);
 
   SharedVertexArrayObject getVAO() {
     return model.getVAO(); 
@@ -39,9 +37,12 @@ public:
 
   void setCharacterPosition(vec3 position);
 
+  void draw(mat4 viewMatrix);
+
 private:
   Model model;
-  ACGL::OpenGL::SharedShaderProgram clothShader;
+  SharedShaderProgram clothShader;
+  SharedShaderProgram lowPolyManShader;
   Cloth *cloth;
   vec3 clothOffset = vec3(4.0f, 4.0f, -3.0f);
   vec3 windDirection;
