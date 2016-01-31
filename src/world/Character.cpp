@@ -1,8 +1,13 @@
 #include "world/Character.hh"
 
+#include <ACGL/OpenGL/Creator/ShaderProgramCreator.hh>
+#include <ACGL/OpenGL/Data/GeometryDataLoadStore.hh>
 #include <ACGL/Utils/Log.hh>
+#include <ACGL/Base/Settings.hh>
+#include "Helper.hh"
 
 using namespace ACGL::Utils;
+using namespace ACGL::Base;
 using namespace std;
 
 class Character;
@@ -10,8 +15,18 @@ class Character;
 Character::Character(vec3 position, vec3 rotation) : Entity(
     position,
     rotation) {
-  this->model = model;
+
+  Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
+  Settings::the()->setShaderPath("shaders/");
+  Settings::the()->setGeometryPath("geometry/");
+
+  //setup lowpolyman object
+  this->model = Model("low_poly_man.obj", 1.0f);
+
+  //setup cloth
   cloth = new Cloth(8,15,24,24, position, clothOffset);
+  clothShader = ShaderProgramCreator("cloth").attributeLocations(
+          cloth->getVAO()->getAttributeLocations()).create();
 }
 
 Character::Character() {}
@@ -29,11 +44,10 @@ void Character::render(ACGL::OpenGL::SharedShaderProgram shader,
   mat4 mvp = (*viewProjectioMatrix) * modelMatrix;
   shader->setUniform("uMVP", mvp);
   model.render();
-  cloth.render();
+  cloth->render(clothShader, viewProjectioMatrix);
 }
 
 void Character::setCharacterPosition(vec3 position){
   this->setPosition(position);
-  cloth->setPosition(position);
-  model->setPosition(position + clothOffset);
+  cloth->setPosition(position + clothOffset);
 }

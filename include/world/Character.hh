@@ -5,20 +5,23 @@
 #include "Cloth.hh"
 #include <ACGL/OpenGL/Managers.hh>
 #include <ACGL/OpenGL/Objects.hh>
+#include <ACGL/OpenGL/Creator/VertexArrayObjectCreator.hh>
+#include <ACGL/OpenGL/Creator/ShaderProgramCreator.hh>
+
+using namespace ACGL::OpenGL;
 
 class Character : public Entity {
 public:
 
-  Character(Model model,
-             vec3  position,
-             vec3  rotation);
+  Character(vec3  position,
+            vec3  rotation);
   Character();
   ~Character();
   void render(
-    ACGL::OpenGL::SharedShaderProgram shader,
+    SharedShaderProgram shader,
     mat4 *viewProjectioMatrix);
 
-  ACGL::OpenGL::SharedVertexArrayObject getVAO() {
+  SharedVertexArrayObject getVAO() {
     return model.getVAO(); 
   }
 
@@ -30,7 +33,7 @@ public:
     windDirection = windUpdate;
   }
   
-  Cloth getCloth(){
+  Cloth * getCloth(){
     return cloth;
   }
 
@@ -38,6 +41,7 @@ public:
 
 private:
   Model model;
+  ACGL::OpenGL::SharedShaderProgram clothShader;
   Cloth *cloth;
   vec3 clothOffset = vec3(4.0f, 4.0f, -3.0f);
   vec3 windDirection;

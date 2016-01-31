@@ -16,7 +16,7 @@
 #include <vector>
 #include "Helper.hh"
 #include "Model.hh"
-#include "Sphere.hh"
+//#include "Sphere.hh"
 #include "world/Skybox.hh"
 #include "world/TestObject.hh"
 #include "world/Cloth.hh"
@@ -42,25 +42,25 @@ Skybox *skybox;
 //TestObject *lowPolyMan;
 //Cloth *cloth;
 Character *character;
-Sphere *sphere0;
-Sphere *sphere1;
-Sphere *sphere2;
-Sphere *sphere3;
-Sphere *sphere4;
-Sphere *sphere5;
-Sphere *sphere6;
-Sphere *sphere7;
-Sphere *sphere8;
-Sphere *sphere9;
-Sphere *sphere10;
-Sphere *sphere11;
-Sphere *sphere12;
-Sphere *sphere13;
-Sphere *sphere14;
-Sphere *sphere15;
-Sphere *sphere16;
-Sphere *sphere17;
-Sphere *sphere18;
+//Sphere *sphere0;
+//Sphere *sphere1;
+//Sphere *sphere2;
+//Sphere *sphere3;
+//Sphere *sphere4;
+//Sphere *sphere5;
+//Sphere *sphere6;
+//Sphere *sphere7;
+//Sphere *sphere8;
+//Sphere *sphere9;
+//Sphere *sphere10;
+//Sphere *sphere11;
+//Sphere *sphere12;
+//Sphere *sphere13;
+//Sphere *sphere14;
+//Sphere *sphere15;
+//Sphere *sphere16;
+//Sphere *sphere17;
+//Sphere *sphere18;
 
 
 bool triggerWind = false;
@@ -134,7 +134,7 @@ void PlayState::init(CGame *game) {
     //sphere17 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius17(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset17());
     //sphere18 = new Sphere(lowPolyMan->getPosition(), cloth->getSphereRadius18(), vec3(0.0f, 1.0f, 0.0f), cloth->getSphereOffset18());
     
-    character = new Character(Model("low_poly_man.obj", 1.0f), vec3(0.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
+    character = new Character(vec3(0.0f, -3.5f, -7.0f), vec3(0.0f, 0.0f, 0.0f));
 
     debug() << "Geometry loaded" << endl;
 
@@ -160,62 +160,62 @@ void PlayState::init(CGame *game) {
     //clothShader = ShaderProgramCreator("cloth").attributeLocations(
     //        cloth->getVAO()->getAttributeLocations()).create();
 
-    sphereShader0 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere0->getVAO()->getAttributeLocations()).create();
+    //sphereShader0 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere0->getVAO()->getAttributeLocations()).create();
 
-    sphereShader1 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere1->getVAO()->getAttributeLocations()).create();
+    //sphereShader1 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere1->getVAO()->getAttributeLocations()).create();
 
-    sphereShader2 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere2->getVAO()->getAttributeLocations()).create();
+    //sphereShader2 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere2->getVAO()->getAttributeLocations()).create();
 
-    sphereShader3 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere3->getVAO()->getAttributeLocations()).create();
+    //sphereShader3 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere3->getVAO()->getAttributeLocations()).create();
 
-    sphereShader4 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere4->getVAO()->getAttributeLocations()).create();
+    //sphereShader4 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere4->getVAO()->getAttributeLocations()).create();
 
-    sphereShader5 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere5->getVAO()->getAttributeLocations()).create();
+    //sphereShader5 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere5->getVAO()->getAttributeLocations()).create();
 
-    sphereShader6 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere6->getVAO()->getAttributeLocations()).create();
+    //sphereShader6 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere6->getVAO()->getAttributeLocations()).create();
 
-    sphereShader7 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere7->getVAO()->getAttributeLocations()).create();
+    //sphereShader7 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere7->getVAO()->getAttributeLocations()).create();
 
-    sphereShader8 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere8->getVAO()->getAttributeLocations()).create();
+    //sphereShader8 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere8->getVAO()->getAttributeLocations()).create();
 
-    sphereShader9 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere9->getVAO()->getAttributeLocations()).create();
+    //sphereShader9 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere9->getVAO()->getAttributeLocations()).create();
 
-    sphereShader10 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere10->getVAO()->getAttributeLocations()).create();
+    //sphereShader10 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere10->getVAO()->getAttributeLocations()).create();
 
-    sphereShader11 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere11->getVAO()->getAttributeLocations()).create();
+    //sphereShader11 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere11->getVAO()->getAttributeLocations()).create();
 
-    sphereShader12 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere12->getVAO()->getAttributeLocations()).create();
+    //sphereShader12 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere12->getVAO()->getAttributeLocations()).create();
 
-    sphereShader13 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere13->getVAO()->getAttributeLocations()).create();
+    //sphereShader13 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere13->getVAO()->getAttributeLocations()).create();
 
-    sphereShader14 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere14->getVAO()->getAttributeLocations()).create();
+    //sphereShader14 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere14->getVAO()->getAttributeLocations()).create();
 
-    sphereShader15 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere15->getVAO()->getAttributeLocations()).create();
+    //sphereShader15 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere15->getVAO()->getAttributeLocations()).create();
 
-    sphereShader16 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere16->getVAO()->getAttributeLocations()).create();
+    //sphereShader16 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere16->getVAO()->getAttributeLocations()).create();
 
-    sphereShader17 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere17->getVAO()->getAttributeLocations()).create();
+    //sphereShader17 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere17->getVAO()->getAttributeLocations()).create();
 
-    sphereShader18 = ShaderProgramCreator("cloth").attributeLocations(
-            sphere18->getVAO()->getAttributeLocations()).create();
+    //sphereShader18 = ShaderProgramCreator("cloth").attributeLocations(
+    //        sphere18->getVAO()->getAttributeLocations()).create();
 
     skyboxShader = ShaderProgramCreator("skybox").attributeLocations(
             vao->getAttributeLocations()).create();
@@ -291,44 +291,44 @@ void PlayState::draw(CGame *g, float *delta) {
 
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    sphereShader0->use();
-    sphere0->render(sphereShader0, &viewProjectioMatrix);
-    sphereShader1->use();
-    sphere1->render(sphereShader1, &viewProjectioMatrix);
-    sphereShader2->use();
-    sphere2->render(sphereShader2, &viewProjectioMatrix);
-    sphereShader3->use();
-    sphere3->render(sphereShader3, &viewProjectioMatrix);
-    sphereShader4->use();
-    sphere4->render(sphereShader4, &viewProjectioMatrix);
-    sphereShader5->use();
-    sphere5->render(sphereShader5, &viewProjectioMatrix);
-    sphereShader6->use();
-    sphere6->render(sphereShader6, &viewProjectioMatrix);
-    sphereShader7->use();
-    sphere7->render(sphereShader7, &viewProjectioMatrix);
-    sphereShader8->use();
-    sphere8->render(sphereShader8, &viewProjectioMatrix);
-    sphereShader9->use();
-    sphere9->render(sphereShader9, &viewProjectioMatrix);
-    sphereShader10->use();
-    sphere10->render(sphereShader10, &viewProjectioMatrix);
-    sphereShader11->use();
-    sphere11->render(sphereShader11, &viewProjectioMatrix);
-    sphereShader12->use();
-    sphere12->render(sphereShader12, &viewProjectioMatrix);
-    sphereShader13->use();
-    sphere13->render(sphereShader13, &viewProjectioMatrix);
-    sphereShader14->use();
-    sphere14->render(sphereShader14, &viewProjectioMatrix);
-    sphereShader15->use();
-    sphere15->render(sphereShader15, &viewProjectioMatrix);
-    sphereShader16->use();
-    sphere16->render(sphereShader16, &viewProjectioMatrix);
-    sphereShader17->use();
-    sphere17->render(sphereShader17, &viewProjectioMatrix);
-    sphereShader18->use();
-    sphere18->render(sphereShader18, &viewProjectioMatrix);
+    //sphereShader0->use();
+    //sphere0->render(sphereShader0, &viewProjectioMatrix);
+    //sphereShader1->use();
+    //sphere1->render(sphereShader1, &viewProjectioMatrix);
+    //sphereShader2->use();
+    //sphere2->render(sphereShader2, &viewProjectioMatrix);
+    //sphereShader3->use();
+    //sphere3->render(sphereShader3, &viewProjectioMatrix);
+    //sphereShader4->use();
+    //sphere4->render(sphereShader4, &viewProjectioMatrix);
+    //sphereShader5->use();
+    //sphere5->render(sphereShader5, &viewProjectioMatrix);
+    //sphereShader6->use();
+    //sphere6->render(sphereShader6, &viewProjectioMatrix);
+    //sphereShader7->use();
+    //sphere7->render(sphereShader7, &viewProjectioMatrix);
+    //sphereShader8->use();
+    //sphere8->render(sphereShader8, &viewProjectioMatrix);
+    //sphereShader9->use();
+    //sphere9->render(sphereShader9, &viewProjectioMatrix);
+    //sphereShader10->use();
+    //sphere10->render(sphereShader10, &viewProjectioMatrix);
+    //sphereShader11->use();
+    //sphere11->render(sphereShader11, &viewProjectioMatrix);
+    //sphereShader12->use();
+    //sphere12->render(sphereShader12, &viewProjectioMatrix);
+    //sphereShader13->use();
+    //sphere13->render(sphereShader13, &viewProjectioMatrix);
+    //sphereShader14->use();
+    //sphere14->render(sphereShader14, &viewProjectioMatrix);
+    //sphereShader15->use();
+    //sphere15->render(sphereShader15, &viewProjectioMatrix);
+    //sphereShader16->use();
+    //sphere16->render(sphereShader16, &viewProjectioMatrix);
+    //sphereShader17->use();
+    //sphere17->render(sphereShader17, &viewProjectioMatrix);
+    //sphereShader18->use();
+    //sphere18->render(sphereShader18, &viewProjectioMatrix);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     //clothShader->use();
@@ -439,7 +439,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
         if (key == GLFW_KEY_R) {
             //ShaderProgramCreator("cube").update(cubeShader);
-            ShaderProgramCreator("low_poly_man").update(lowPolyManShader);
+            //ShaderProgramCreator("low_poly_man").update(lowPolyManShader);
             ShaderProgramCreator("skybox").update(skyboxShader);
             ShaderProgramCreator("cloth").update(skyboxShader);
         }
@@ -453,30 +453,30 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
             //cloth->windForce((vec3(0.0f,0.5f,-1.5f)));
             triggerMesh = !triggerMesh;
         }
-        if (key == GLFW_KEY_KP_7) {
-          sphere1->setPosition(sphere1->getPosition() + vec3(0.1f,0.0f,0.0f));
-          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
-        }
-        if (key == GLFW_KEY_KP_4) {
-          sphere1->setPosition(sphere1->getPosition() - vec3(0.1f,0.0f,0.0f));
-          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
-        }
-        if (key == GLFW_KEY_KP_8) {
-          sphere1->setPosition(sphere1->getPosition() + vec3(0.0f,0.1f,0.0f));
-          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
-        }
-        if (key == GLFW_KEY_KP_5) {
-          sphere1->setPosition(sphere1->getPosition() - vec3(0.0f,0.1f,0.0f));
-          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
-        }
-        if (key == GLFW_KEY_KP_9) {
-          sphere1->setPosition(sphere1->getPosition() + vec3(0.0f,0.0f,0.1f));
-          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
-        }
-        if (key == GLFW_KEY_KP_6) {
-          sphere1->setPosition(sphere1->getPosition() - vec3(0.0f,0.0f,0.1f));
-          //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
-        }
+        //if (key == GLFW_KEY_KP_7) {
+        //  sphere1->setPosition(sphere1->getPosition() + vec3(0.1f,0.0f,0.0f));
+        //  //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+        //}
+        //if (key == GLFW_KEY_KP_4) {
+        //  sphere1->setPosition(sphere1->getPosition() - vec3(0.1f,0.0f,0.0f));
+        //  //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+        //}
+        //if (key == GLFW_KEY_KP_8) {
+        //  sphere1->setPosition(sphere1->getPosition() + vec3(0.0f,0.1f,0.0f));
+        //  //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+        //}
+        //if (key == GLFW_KEY_KP_5) {
+        //  sphere1->setPosition(sphere1->getPosition() - vec3(0.0f,0.1f,0.0f));
+        //  //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+        //}
+        //if (key == GLFW_KEY_KP_9) {
+        //  sphere1->setPosition(sphere1->getPosition() + vec3(0.0f,0.0f,0.1f));
+        //  //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+        //}
+        //if (key == GLFW_KEY_KP_6) {
+        //  sphere1->setPosition(sphere1->getPosition() - vec3(0.0f,0.0f,0.1f));
+        //  //debug() << to_string(sphere1->getPosition() - lowPolyMan->getPosition()) << endl;
+        //}
     }
 }
 
