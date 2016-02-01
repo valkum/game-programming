@@ -19,7 +19,7 @@ static GLfloat particle_quad[6*5] = {
       -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
   }; 
 
-Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : particleAmount(amount*cloudSize) {
+Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudSize(cloudSize), particleAmount(amount*cloudSize), levelWidth(width), levelLength(length) {
   ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
   ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
@@ -38,7 +38,7 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : partic
   half = -(width/2.0f);
 	for (uint_t i = 0; i < amount; ++i)
 	{
-		spawnCloud(cloudSize, half, (float)width, 0.0f, (float)length);
+		spawnCloud(cloudSize, half, (float)width, 0.0f, (float)viewDistance);
 	}
 }
 
@@ -137,8 +137,24 @@ void Clouds::smooth() {
   }
 }
 
-void Clouds::update(float dt, vec3 wind){
-	//sort() //include life?
+void Clouds::update(float dt, vec3 camPos, vec3 wind){
+  while(deadParticleAmount > cloudSize) {
+    debug()<<"spawning, free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
+    spawnCloud(cloudSize, half, (float)levelWidth, camPos.z+(float)viewDistance, 0.0f);
+    deadParticleAmount -= cloudSize;
+  }
+
+  // for (CloudParticle& particle : particles)
+  // {
+  //   if (particle.Position.z < (camPos.z - 5) && particle.Life > 0.0f)
+  //   { //kill particles in back
+  //     particle.Life = 0.0f;
+  //     deadParticleAmount++;
+  //     debug()<<"free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
+  //   } else { //put particles in front into grid
+
+  //   }
+  // }
 	//die()
   for (CloudParticle& particle : particles)
   {
@@ -146,6 +162,8 @@ void Clouds::update(float dt, vec3 wind){
     {
 			particle.Velocity *= 0.8f; //decay flow from last tick
 			//collision (char & environment)
+      float dist = distance(particle.Position, camPos+vec3(0,0,2));
+      if(dist < 1.0f) particle.Velocity += vec3(0,0,0.1f/dist);
 			//viscosity
 			//update pos
 			particle.Position += (particle.Velocity + wind) * dt; //includes wind, however wind wont get saved in flow
@@ -162,7 +180,7 @@ void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewPro
   std::map<float, CloudParticle*> depthSort;
   for (CloudParticle& particle : particles)
   {
-  	if (particle.Life > 0.0f)
+  	if (particle.Life > 0.0f && particle.Position.z < (camPos.z+viewDistance))
     {
 	  	depthSort.insert(std::pair<float, CloudParticle*>(glm::distance(camPos,particle.Position),&particle));
 	  }
