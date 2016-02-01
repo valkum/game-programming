@@ -9,6 +9,6 @@ uniform sampler2D uTexture;
 void main()
 { 
     vec4 color = texture(uTexture, vTexCoords);
+    //TODO: implement soft particles (ie whenn colliding with opaque vertices)
     oColor = color * vParticleColor;
-    //oColor = vec4(1.0f, 1.0f, 1.0f, 1.0f) * vParticleColor;
 }  

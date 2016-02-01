@@ -35,24 +35,32 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : partic
     particles.push_back(CloudParticle());
   }
 
-  float half = width/2.0f;
+  half = -(width/2.0f);
 	for (uint_t i = 0; i < amount; ++i)
 	{
-		spawnCloud(cloudSize, -half, (float)width, 0.0f, (float)length);
+		spawnCloud(cloudSize, half, (float)width, 0.0f, (float)length);
 	}
 }
 
+//spawns one cloud of $size particles placed randomly inside a box defined by (x,y,z) and (x+width,y+height,z+length)
 void Clouds::spawnCloud(uint_t size, float x, float width, float z, float length, float y, float height) {
 		//determine cloud center
 		//todo: adjust with global wind vector and flying speed, so the cloud is at the position when char arrives
 		x = glm::linearRand(x, x+width);
 		y = glm::linearRand(y, y+height);
 		z = glm::linearRand(z, z+length);
-		// clouds.push_back(Cloud(size, vec3(x, y, z)));
+    debug()<<"spawning cloud at "<<x<<" "<<y<<" "<<z<<endl;
 
 		//spawn particles around center
 		vec3 position = vec3(x, y, z);
 		vec3 lastPos = position;
+
+    /* DEBUG: print map of particle usage
+    for (uint_t j = 0; j < particleAmount/cloudSize; ++j) { uint_t count = 0;
+    for (uint_t i = 0; i < cloudSize; ++i) {debug() << particles[(j*cloudSize)+i].Life; count += particles[(j*cloudSize)+i].Life;}
+    debug()<<" "<<count<<endl;
+    }*/
+
   	for (uint_t i = 0; i < size; ++i) {
     	CloudParticle &p = particles[firstUnusedParticle()];
    		respawnParticle(p, lastPos, 0.0f, vec3(linearRand(0.0f, 1.0f), linearRand(0.0f, 0.4f), linearRand(0.0f, 1.0f)), 1.0f, 1.0f/*linearRand(10.0f, 15.0f)*/);
@@ -78,7 +86,7 @@ uint_t Clouds::firstUnusedParticle() {
         }
     }
     // All particles are taken, override the first one (note that if it repeatedly hits this case, more particles should be reserved)
-    debug()<<"All particles used"<<std::endl;
+    debug()<<"All particles used: " << deadParticleAmount << "/" << cloudSize <<std::endl;
     lastUsedParticle = 0;
     return 0;
 }
@@ -136,11 +144,11 @@ void Clouds::update(float dt, vec3 wind){
   {
     if (particle.Life > 0.0f)
     {
-			particle.Velocity = wind; //add global wind flow
+			particle.Velocity *= 0.8f; //decay flow from last tick
 			//collision (char & environment)
 			//viscosity
 			//update pos
-			particle.Position += particle.Velocity * dt;
+			particle.Position += (particle.Velocity + wind) * dt; //includes wind, however wind wont get saved in flow
 		}
 	}
 }
@@ -159,6 +167,8 @@ void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewPro
 	  	depthSort.insert(std::pair<float, CloudParticle*>(glm::distance(camPos,particle.Position),&particle));
 	  }
   }
+
+  if (depthSort.size() > 0) { //assert non-null
 
   // traverse in reverse order
   auto rit = depthSort.rbegin();
@@ -182,6 +192,7 @@ void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewPro
     shader->setTexture("uTexture", cloudTex, 3);
     vao->render();
   }
+}
   // Don't forget to reset to default blending mode
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
