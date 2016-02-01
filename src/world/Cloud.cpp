@@ -73,9 +73,6 @@ void Cloud::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatr
   //debug() << to_string((*viewMatrix) * vec4(particlePositions[0], 1.0f)) << std::endl;
   glm::mat4 modelMatrix = translate(vec3(0.f)) * scale<float>(vec3(1.f));
   shader->setUniform("uModelMatrix", modelMatrix);
-  shader->setUniform("uViewMatrix", (*viewMatrix));
-  shader->setUniform("uProjectionMatrix", (*projectionMatrix));
-  shader->setUniform("uViewProjectionMatrix", (*projectionMatrix) * (*viewMatrix));
   shader->setUniform("uModelViewMatrix", (*viewMatrix) * modelMatrix);
   shader->setUniform("uMVP", (*projectionMatrix) * (*viewMatrix) * modelMatrix);
   shader->setUniform("uSize", vec2(0.5, 0.5));

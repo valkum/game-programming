@@ -1,9 +1,9 @@
 #version 330
 //#pragma ACGLimport "classicnoise2d.glsl"
 //#pragma ACGLimport "noise2d.glsl"
-#pragma ACGLimport "noise3d.glsl"
+//#pragma ACGLimport "noise3d.glsl"
+// in vec2 vPosition;
 in vec2 vTexCoords;
-in vec2 vPosition;
 
 out vec4 oColor;
 
