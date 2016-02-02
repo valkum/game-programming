@@ -107,8 +107,9 @@ void PlayState::draw(CGame *g, float *delta) {
   if(renderDebug) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);}
 
   ACGL::Scene::GenericCamera* camera = level->getCamera();
-  glm::mat4 viewProjectionMatrix = camera->getProjectionMatrix() *
-                                  camera->getViewMatrix();
+  glm::mat4 viewMatrix = camera->getViewMatrix();
+  glm::mat4 projectionMatrix = camera->getProjectionMatrix();
+  glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 
   level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
 
@@ -139,9 +140,14 @@ void PlayState::draw(CGame *g, float *delta) {
   }
 
   cloudShader->use();
-  cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
-  cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
-  level->getClouds()->render(cloudShader, &viewProjectionMatrix, camera->getPosition());
+  cloudShader->setUniform("uTime", *delta);
+  cloudShader->setUniform("uViewMatrix", (viewMatrix));
+  cloudShader->setUniform("uProjectionMatrix", (projectionMatrix));
+  cloudShader->setUniform("uViewProjectionMatrix", (projectionMatrix) * (viewMatrix));
+  // cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
+  // cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
+  level->getClouds()->render(cloudShader, &viewMatrix, &projectionMatrix);
+  //level->getClouds()->render(cloudShader, &viewProjectionMatrix, camera->getPosition());
 
   if(renderDebug) {
     debugShader->use();
@@ -160,6 +166,7 @@ void PlayState::draw(CGame *g, float *delta) {
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   gui->drawAll();
   glEnable(GL_DEPTH_TEST);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 }
 

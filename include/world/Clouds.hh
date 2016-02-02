@@ -2,10 +2,16 @@
 #define CLOUDS_HH
 
 #include "world/CloudParticle.hh"
-#include "world/Cloud.hh"
+#include "world/Entity.hh"
 
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Types.hh>
+#include <vector>
+
+struct Data{
+  vec3 pos;
+  vec4 rgba;
+};
 
 class Clouds{
 public:
@@ -15,8 +21,10 @@ public:
   inline ACGL::OpenGL::SharedTexture2D getTexture() {
     return this->cloudTex;
   }
+
   void update(float dt, vec3 camPos, vec3 wind);
-  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, glm::vec3 camPos);
+  // void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, glm::vec3 camPos);
+  void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix);
 protected:
 private:
   ACGL::OpenGL::SharedVertexArrayObject vao;
@@ -30,6 +38,10 @@ private:
   int viewDistance = 100;
   uint_t lastUsedParticle = 0;
   std::vector<CloudParticle> particles;
+  /* Hier sind die Position der Particles gespeichert zum einfachen senden an die Grafikkarte. 
+  / Sozusagen kopie des ArrayBuffers. Ein Eintrag = ein Vertex.
+  / Falls mehr als die Position pro Particle Nötig ist (ggf. Größe oder farbe.) muss das hier angepasst werden. */
+  std::vector<Data> particleData;
   uint_t deadParticleAmount = 0;
   void spawnCloud(uint_t size = 100, float x = 0.0f, float width = 0.0f, float z = 0.0f, float length = 0.0f, float y = 2.0f, float height = 0.0f);
   uint_t firstUnusedParticle();

@@ -31,7 +31,6 @@ set(SOURCE_FILES
     world/SkyDome.cpp
     world/Terrain.cpp
     world/SkyScraper.cpp
-    world/Cloud.cpp
     world/Clouds.cpp
     world/Cloth.cpp
     GUI/common.cpp

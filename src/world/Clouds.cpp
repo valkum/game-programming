@@ -3,37 +3,47 @@
 #include <glm/gtc/random.hpp>
 #include <ACGL/OpenGL/Creator/Texture2DCreator.hh>
 #include <ACGL/OpenGL/Managers.hh>
+#include <algorithm>
 
 using namespace ACGL::OpenGL;
 using namespace ACGL::Utils;
 using namespace std;
 
 // CloudParticle: aPosition and aColor in one vector.
-static GLfloat particle_quad[6*5] = {
-      -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
-      0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
-      -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
+// static GLfloat particle_quad[6*5] = {
+//       -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
+//       0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
+//       -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
 
-      0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-      0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
-      -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
-  }; 
+//       0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+//       0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
+//       -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
+//   }; 
 
 Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudSize(cloudSize), particleAmount(amount*cloudSize), levelWidth(width), levelLength(length) {
-  ab = SharedArrayBuffer(new ArrayBuffer());
-  ab->defineAttribute("aPosition", GL_FLOAT, 3);
-  ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
-  ab->setDataElements(6, particle_quad);
-
-  vao = SharedVertexArrayObject(new VertexArrayObject());
-  vao->attachAllAttributes(ab);
-
-  cloudTex = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("cloud_particle.png"));
-
-  //alloc particles
+  //alloc particles & GRAM
+  particleData.reserve(particleAmount);
   for (uint_t i = 0; i < this->particleAmount; ++i) {
     particles.push_back(CloudParticle());
+    // Fülle initial die lokale Kopie des ArrayBuffers mit max anzahl an particle Position, damit
+    // auf der GPU genug speicher allokiert wird.
+    Data data = {particles.back().Position, vec4(1.0f)};
+    particleData.push_back(data);
   }
+
+  // Wird nurnoch für den Shaderinit in PlayState::init() benutzt.
+  ab = SharedArrayBuffer(new ArrayBuffer());
+  ab->defineAttribute("aPosition", GL_FLOAT, 3);
+  // ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
+  ab->setDataElements(particleData.max_size(), particleData.data(), GL_DYNAMIC_DRAW);
+
+  vao = SharedVertexArrayObject(new VertexArrayObject());
+  vao->setMode(GL_POINTS);
+  vao->attachAllAttributes(ab);
+
+  std::cout << ab->getSize() << std::endl;
+
+  cloudTex = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("cloud_particle.png"));
 
   half = -(width/2.0f);
 	for (uint_t i = 0; i < amount; ++i)
@@ -41,6 +51,7 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudS
 		spawnCloud(cloudSize, half, (float)width, 0.0f, (float)viewDistance);
 	}
 }
+
 
 //spawns one cloud of $size particles placed randomly inside a box defined by (x,y,z) and (x+width,y+height,z+length)
 void Clouds::spawnCloud(uint_t size, float x, float width, float z, float length, float y, float height) {
@@ -138,6 +149,8 @@ void Clouds::smooth() {
 }
 
 void Clouds::update(float dt, vec3 camPos, vec3 wind){
+  particleData.clear();
+
   while(deadParticleAmount > cloudSize) {
     debug()<<"spawning, free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
     spawnCloud(cloudSize, half, (float)levelWidth, camPos.z+(float)viewDistance, 0.0f);
@@ -169,48 +182,54 @@ void Clouds::update(float dt, vec3 camPos, vec3 wind){
 			particle.Position += (particle.Velocity + wind) * dt; //includes wind, however wind wont get saved in flow
 		}
 	}
-}
-
-void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, glm::vec3 camPos) {
-  // Use additive blending to give it a 'glow' effect
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-  shader->setUniform("uMVP", (*viewProjectionMatrix));
 
   //sort into new collection using distance to camera for depth-test
   std::map<float, CloudParticle*> depthSort;
   for (CloudParticle& particle : particles)
   {
-  	if (particle.Life > 0.0f && particle.Position.z < (camPos.z+viewDistance))
+    if (particle.Life > 0.0f && particle.Position.z < (camPos.z+viewDistance))
     {
-	  	depthSort.insert(std::pair<float, CloudParticle*>(glm::distance(camPos,particle.Position),&particle));
-	  }
+      depthSort.insert(std::pair<float, CloudParticle*>(glm::distance(camPos,particle.Position),&particle));
+    }
   }
 
   if (depthSort.size() > 0) { //assert non-null
+    // traverse in reverse order
+    auto rit = depthSort.rbegin();
+    // render farthest particle firs up to certain distance
+    for (; rit->first > 3.0f && rit != depthSort.rend(); rit++)
+    {
+      Data data = {rit->second->Position, vec4(1)};
+      particleData.push_back(data);
+    }
+    // apply alpha to counter view obstruction
+    for (; rit != depthSort.rend(); rit++)
+    {
+      Data data = {rit->second->Position, rit->second->Color*((rit->first/3.4f)+0.1f)};
+      particleData.push_back(data);
+    }
+  }
 
-  // traverse in reverse order
-  auto rit = depthSort.rbegin();
-  // render farthest particle firs up to certain distance
-  for (; rit->first > 3.0f && rit != depthSort.rend(); rit++)
-  {
-  	// debug() << to_string(rit->first) << endl;
-    shader->setUniform("uOffset", rit->second->Position);
-    shader->setUniform("uScale", rit->second->Scale);
-    shader->setUniform("uColor", rit->second->Color);
-    shader->setTexture("uTexture", cloudTex, 3);
-    vao->render();
-  }
-  // apply alpha to counter view obstruction
-  for (; rit != depthSort.rend(); rit++)
-  {
-    // debug() << to_string(rit->first) << endl;
-    shader->setUniform("uOffset", rit->second->Position);
-    shader->setUniform("uScale", rit->second->Scale);
-    shader->setUniform("uColor", rit->second->Color*((rit->first/3.4f)+0.1f));
-    shader->setTexture("uTexture", cloudTex, 3);
-    vao->render();
-  }
+  // Sendet die aktuellen Positionen der Particle an die Graka. Da diese sich nur beim update ändern,
+  // findet das update der particleData auch dort statt.
+  // @TODO: Ggf muss hier mapRange verwendet werden, damit auf der Graka auch alte points geflusht werden.
+  ab->setSubData(0, particleData.size() * sizeof(particleData[0]), particleData.data());
 }
+
+void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix) {
+  // Use additive blending to give it a 'glow' effect
+  // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  // shader->setUniform("uMVP", (*viewProjectionMatrix));
+
+  glm::mat4 modelMatrix = translate(vec3(0.f)) * scale<float>(vec3(1.f));
+  shader->setUniform("uModelMatrix", modelMatrix);
+  shader->setUniform("uModelViewMatrix", (*viewMatrix) * modelMatrix);
+  shader->setUniform("uMVP", (*projectionMatrix) * (*viewMatrix) * modelMatrix);
+  shader->setUniform("uSize", vec2(0.5, 0.5));
+
+
+  // Setze die Textur für den gerade ausgewählten shader. Nur einmal nötig. Pro Shader->use, bzw texture change.
+  shader->setTexture("uTexture", cloudTex, 4);
   // Don't forget to reset to default blending mode
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
