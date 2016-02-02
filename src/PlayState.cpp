@@ -3,12 +3,11 @@
 
 #include <ACGL/OpenGL/Data/GeometryDataLoadStore.hh>
 #include <ACGL/OpenGL/Data/TextureLoadStore.hh>
-#include "TextureLoadStore.hh"
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
 #include <glm/gtc/random.hpp>
-
+#include <glm/gtc/constants.hpp>
 
 #include <iostream>
 #include <vector>
@@ -31,6 +30,8 @@ PlayState PlayState::m_PlayState;
 PositionGUI* positionGui;
 
 void PlayState::init(CGame *game) {
+  loadingScreen = new LoadingScreen();
+  loadingScreen->render(0.2);
   renderDebug = false;
   m_game = game;
   double* x = new double;
@@ -38,11 +39,12 @@ void PlayState::init(CGame *game) {
   glfwGetCursorPos(game->g_window, x, y);
   m_mousePos = vec2(*x, *y);
 
-  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
   //camera.setVerticalFieldOfView(95.0);
   // camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
@@ -52,7 +54,7 @@ void PlayState::init(CGame *game) {
   GUIObject* fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
   fpsGraph->setPosition(ivec2(400,400));
   fpsGraph->setSize(ivec2(200,35));
-
+  loadingScreen->render(0.3);
 
   if(game->cli_settings.flagLevel) {
     level = new Level(game->cli_settings.levelId);
@@ -61,15 +63,31 @@ void PlayState::init(CGame *game) {
   }
   //Level* level = new Level("00000-00001");
   level->load();
+  loadingScreen->render(0.5);
 
   positionGui = new PositionGUI(gui, "Position");
   positionGui->setPosition(ivec2(20, 20));
 
   debug() << "Geometry loaded" << endl;
 
-  debug() << "Loading shaders stage" << endl;
+  float quadVertices[] = {
+    -1.f, -1.f, 0.f,
+    -1.f, 1.f, 0.f,
+    1.f, -1.f, 0.f,
+    1.f, 1.f, 0.f
+  };
 
-  // cout<<Settings::the()->getFullShaderPath()<<endl;
+  ACGL::OpenGL::SharedArrayBuffer fullQuadAB = ACGL::OpenGL::SharedArrayBuffer(new ACGL::OpenGL::ArrayBuffer());
+  fullQuadAB->defineAttribute("aPosition", GL_FLOAT, 3);
+  fullQuadAB->setDataElements(4, quadVertices);
+
+  blendVAO = ACGL::OpenGL::SharedVertexArrayObject(new ACGL::OpenGL::VertexArrayObject());
+  blendVAO->attachAllAttributes(fullQuadAB);
+  blendVAO->setMode(GL_TRIANGLE_STRIP);
+
+  loadingScreen->render(0.7);
+
+
   // construct VAO to give shader correct Attribute locations
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
@@ -81,30 +99,39 @@ void PlayState::init(CGame *game) {
   cloudShader = ShaderProgramCreator("cloudParticle").attributeLocations(level->getClouds()->getVao()->getAttributeLocations()).create();
 
   skydomeShader = ShaderProgramCreator("skyDome").attributeLocations(
-  level->getSkydome()->getModel().getVAO()->getAttributeLocations()).create();
+    level->getSkydome()->getModel().getVAO()->getAttributeLocations()).create();
 
   lightningShader = ShaderProgramCreator("lightningShader").attributeLocations(
     vao->getAttributeLocations()).create();
 
   debugShader =
   ShaderProgramCreator("debug").attributeLocations(vao->getAttributeLocations()).create();
-  debug() << "Shaders loaded" << endl;
-
-  debug() << "Set Textures Stage" << endl;
+  loadingScreen->render(0.8);
 
   skydomeShader->use();
   skydomeShader->setTexture("uTexture", level->getSkydome()->getTexture(), 2);
 
-  debug() << "Textures set" << endl;
-
+  loadingScreen->render(0.9);
   openGLCriticalError();
   glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  loadingScreen->render(1);
+  lastTime = glfwGetTime();
+}
+float cubicOut(float t) {
+  float f = t - 1.0;
+  return f * f * f + 1.0;
 }
 
 void PlayState::draw(CGame *g, float *delta) {
-  // std::cout<<"Draw IntroState at time: "<<*delta<<std::endl;
+  timeSinceStart += glfwGetTime() - lastTime;
+  lastTime = glfwGetTime();
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  if(renderDebug) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);}
+  // @TODO: render white fade in if glfwGetTme() < levelStartTime + 1
+
+  if(renderDebug) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
 
   ACGL::Scene::GenericCamera* camera = level->getCamera();
   glm::mat4 viewMatrix = camera->getViewMatrix();
@@ -166,6 +193,17 @@ void PlayState::draw(CGame *g, float *delta) {
   openGLCriticalError();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   gui->drawAll();
+  
+
+
+  if(timeSinceStart <= 3.0f) {
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    SharedShaderProgram loadingShader= loadingScreen->getShader();
+    loadingShader->use();
+    loadingShader->setUniform("uTime", timeSinceStart);
+    loadingShader->setUniform("uColor", vec3(0.99f,.99f,.99f));
+    blendVAO->render();
+  }
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

@@ -70,8 +70,9 @@ void CGame::changeState(CGameState *_game) {
   _game->init(this);
 }
 
-void CGame::draw(float *extrapolation) {
-  states.top()->draw(this, extrapolation);
+
+void CGame::draw(float* delta) {
+  states.top()->draw(this, delta);
 }
 
 void CGame::update(float dt) {

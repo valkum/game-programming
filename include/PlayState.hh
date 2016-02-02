@@ -12,6 +12,7 @@
 #include "world/SkyDome.hh"
 #include "world/SkyScraper.hh"
 #include "world/Terrain.hh"
+#include "LoadingScreen.hh"
 #include <ACGL/Scene/GenericCamera.hh>
 
 #include <ACGL/OpenGL/Creator/VertexArrayObjectCreator.hh>
@@ -63,11 +64,14 @@ private:
   SharedShaderProgram lightningShader;
   SharedShaderProgram cloudShader;
   SharedShaderProgram clothShader;
+  SharedVertexArrayObject blendVAO;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;
   SharedShaderProgram     debugShader;
-
   Level* level;
+  LoadingScreen*  loadingScreen;
+  float timeSinceStart = 0.f;
+  float lastTime;
 
 
 };
