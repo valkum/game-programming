@@ -20,7 +20,7 @@ using namespace std;
 //       -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
 //   }; 
 
-Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudSize(cloudSize), particleAmount(amount*cloudSize), levelWidth(width) {
+Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudSize(cloudSize), particleAmount(amount*cloudSize), levelWidth(width), levelLength(length) {
   //alloc particles & GRAM
   particleData.reserve(particleAmount);
   for (uint_t i = 0; i < this->particleAmount; ++i) {
@@ -48,8 +48,13 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudS
   half = -(width/2.0f);
 	for (uint_t i = 0; i < amount; ++i)
 	{
-		spawnCloud(cloudSize, half, (float)width, 0.0f, (float)viewDistance);
+		spawnCloud(cloudSize, half, (float)width, 0.0f, std::min((float)viewDistance, (float)length));
 	}
+
+  //alloc sort grid
+  max_x = floor(levelWidth/(2*viscRange));
+  max_z = floor(levelLength/(2*viscRange));
+  grid = new vector<CloudParticle*>[(max_x+1)*(max_z+1)];
 }
 
 
@@ -149,26 +154,40 @@ void Clouds::smooth() {
 }
 
 void Clouds::update(float dt, vec3 camPos, vec3 wind){
+  //clear VRAM buffer
   particleData.clear();
+  //clear grid
+  for (uint_t i = 0; i < (max_x+1)*(max_z+1); i++) {
+    grid[i].clear();
+  }
 
-  while(deadParticleAmount > cloudSize) {
+  //respawn dead clouds
+  while(deadParticleAmount > cloudSize && camPos.z+(float)viewDistance < levelLength) {
     debug()<<"spawning, free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
     spawnCloud(cloudSize, half, (float)levelWidth, camPos.z+(float)viewDistance, 0.0f);
     deadParticleAmount -= cloudSize;
   }
 
-  // for (CloudParticle& particle : particles)
-  // {
-  //   if (particle.Position.z < (camPos.z - 5) && particle.Life > 0.0f)
-  //   { //kill particles in back
-  //     particle.Life = 0.0f;
-  //     deadParticleAmount++;
-  //     debug()<<"free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
-  //   } else { //put particles in front into grid
+  // debug()<<"allocated "<<max_x*max_z<<endl;
 
-  //   }
-  // }
-	//die()
+  for (CloudParticle& particle : particles)
+  {
+    if (particle.Position.z < (camPos.z - 5) && particle.Life > 0.0f)
+    { //kill particles in back of camera
+      // particle.Life = 0.0f;
+      // deadParticleAmount++;
+      // debug()<<"free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
+    } else { //put particles in front into grid
+      uint_t x = std::max(std::min(((uint_t)floor(floor(particle.Position.x+half)/(2*viscRange))),max_x),(uint_t)0); //assign x grid coord in [0, levelWidth]
+      uint_t z = std::max(std::min(((uint_t)floor(floor(particle.Position.z)/(2*viscRange))),max_z),(uint_t)0); //assign z grid coord in [0, levelLength]
+      // debug()<<"x->x/max_x "<<particle.Position.x<<"->"<<x<<"/"<<max_x<<endl;
+      // debug()<<"x->z/max_z "<<particle.Position.z<<"->"<<z<<"/"<<max_z<<endl;
+      // debug()<<"addr "<<x+(max_x*z)<<endl;
+      grid[x+(max_x*z)].push_back(&particle);
+    }
+  }
+  // delete[] grid;
+
   for (CloudParticle& particle : particles)
   {
     if (particle.Life > 0.0f)
