@@ -107,6 +107,53 @@ void Cloth::makeConstraint(Particle *p1, Particle *p2) {
   constraints.push_back(Constraint(p1,p2));
 }
 
+void Cloth::scaleCollisionModel(float scalar){
+  //Head
+  sphereOffset0 = scalar * sphereOffset0;
+  rad0  = scalar * rad0;  
+  //Shoulder
+  sphereOffset1 = scalar * sphereOffset1;
+  sphereOffset2 = scalar * sphereOffset2;
+  sphereOffset3 = scalar * sphereOffset3;
+  sphereOffset4 = scalar * sphereOffset4;
+  rad1  = scalar * rad1;  
+  rad2  = scalar * rad2;  
+  rad3  = scalar * rad3;  
+  rad4  = scalar * rad4;  
+  //upper Torso
+  sphereOffset5 = scalar * sphereOffset5;
+  sphereOffset6 = scalar * sphereOffset6;
+  sphereOffset7 = scalar * sphereOffset7;
+  sphereOffset8 = scalar * sphereOffset8;
+  sphereOffset9 = scalar * sphereOffset9;
+  rad5  = scalar * rad5;  
+  rad6  = scalar * rad6;  
+  rad7  = scalar * rad7;  
+  rad8  = scalar * rad8;  
+  rad9  = scalar * rad9;  
+  //lower Torso
+  sphereOffset10 = scalar * sphereOffset10;
+  sphereOffset11 = scalar * sphereOffset11;
+  sphereOffset12 = scalar * sphereOffset12;
+  rad10 = scalar * rad10;  
+  rad11 = scalar * rad11;  
+  rad12 = scalar * rad12;  
+  //Ass
+  sphereOffset13 = scalar * sphereOffset13;
+  sphereOffset14 = scalar * sphereOffset14;
+  sphereOffset15 = scalar * sphereOffset15;
+  sphereOffset16 = scalar * sphereOffset16;
+  rad13 = scalar * rad13;  
+  rad14 = scalar * rad14;  
+  rad15 = scalar * rad15;  
+  rad16 = scalar * rad16;  
+  //Legs
+  sphereOffset17 = scalar * sphereOffset17;
+  sphereOffset18 = scalar * sphereOffset18;
+  rad17 = scalar * rad17;  
+  rad18 = scalar * rad18;  
+}
+
 
 
 /* A private method used by drawShaded() and addWindForcesForTriangle() to retrieve the
@@ -140,7 +187,7 @@ void Cloth::addWindForcesForTriangle(Particle *p1,Particle *p2,Particle *p3, con
 
 
 /* This is a important constructor for the entire system of particles and constraints*/
-Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 modelPosition, vec3 offset) :
+Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 modelPosition, vec3 offset, float scalar) :
   Entity(
       //vec3(0.0f,0.0f,-5.0f),
       modelPosition, //+ vec3(5.0f, 0.0f, 5.0f),
@@ -202,6 +249,9 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
 
     }
 
+    //scale the collision model spheres and radiuses
+    //scaleCollisionModel(scalar); 
+
     //Create ACGL::ArrayBuffer
     std::vector<Vertex> vertexData;
     for(int x = 0; x<num_particles_width-1; x++){
@@ -240,7 +290,7 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
    (x,y+1) *--* (x+1,y+1)
 
 */
-void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectionMatrix){
+void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectionMatrix, float scalar){
   // reset normals (which where written to last frame)
   std::vector<Particle>::iterator particle;
   for(particle = particles.begin(); particle != particles.end(); particle++){
@@ -286,7 +336,7 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
 
 
   mat4 modelMatrix = translate(getPosition()) * getRotation() *
-    scale<float>(vec3(0.4f));
+    scale<float>(vec3(scalar * 0.4f));
   shader->setUniform("uModelMatrix", modelMatrix);
 
   mat4 mvp = (*viewProjectionMatrix) * modelMatrix;

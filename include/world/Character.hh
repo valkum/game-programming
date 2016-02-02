@@ -14,7 +14,8 @@ class Character : public Entity {
 public:
 
   Character(vec3  position,
-            vec3  rotation);
+            vec3  rotation,
+            float scalar);
   Character();
   ~Character();
   void render(mat4 *viewProjectioMatrix);
@@ -44,6 +45,8 @@ private:
   SharedShaderProgram clothShader;
   SharedShaderProgram lowPolyManShader;
   Cloth *cloth;
+  float scalar;
   vec3 clothOffset = vec3(4.0f, 4.0f, -3.0f);
+  vec3 rotation = vec3(0.0f, 0.0f, 0.0f);
   vec3 windDirection;
 };

@@ -37,6 +37,8 @@ class Cloth : public Entity {
     Particle* getParticle(int x, int y);
     void makeConstraint(Particle *p1, Particle *p2);
 
+    void scaleCollisionModel(float scalar);
+
     void insertTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 uv, std::vector<Vertex> &vertexData);
 
     vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
@@ -46,7 +48,7 @@ class Cloth : public Entity {
     void drawTriangle(Particle *p1, Particle *p2, Particle *p3);
     
   public:
-    Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 position, vec3 offset);
+    Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 position, vec3 offset, float scalar);
 
     vec3 getSphereOffset0();
     vec3 getSphereOffset1();
@@ -88,8 +90,7 @@ class Cloth : public Entity {
     float getSphereRadius17();
     float getSphereRadius18();
 
-    void render(ACGL::OpenGL::SharedShaderProgram shader,
-        mat4                             *viewProjectionMatrix);
+    void render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectionMatrix, float scalar);
 
     void timeStep(float dt);
 

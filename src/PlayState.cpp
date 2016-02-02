@@ -35,6 +35,8 @@ Character *character;
 bool triggerWind = false;
 bool triggerMesh = false;
 
+vec3 testRoatation = vec3(0.0f,0.0f,0.0f);
+
 PositionGUI* positionGui;
 
 
@@ -77,7 +79,8 @@ void PlayState::init(CGame *game) {
   positionGui = new PositionGUI(gui, "Position");
   positionGui->setPosition(ivec2(20, 20));
     
-  character = new Character(vec3(0.0f, 4.0f, -30.0f), vec3(0.0f, 0.0f, 0.0f));
+  //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
+  character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), 0.5f);
 
   // construct VAO to give shader correct Attribute locations
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
@@ -189,8 +192,8 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
 
 void PlayState::update(CGame *g, float dt) {
-    character->getCloth()->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
-        character->getCloth()->windForce(vec3(0.0f, 0.05f,0.2f));
+    character->getCloth()->addForce(vec3(0.0f,-9.81f,0.0f)*dt); // add gravity each frame, pointing down
+    //character->getCloth()->windForce(vec3(0.0f, 0.05f,0.2f));
     character->getCloth()->timeStep(dt); // calculate the particle positions of the next frame
     character->getCloth()->modelCollision();
 }
@@ -238,6 +241,22 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
     if (key == GLFW_KEY_P) {
       renderDebug = !renderDebug;
+    }
+    if (key == GLFW_KEY_RIGHT) {
+      testRoatation = testRoatation + vec3(0.0f, 0.2f, 0.0f);
+      character->setRotation(testRoatation);
+    }
+    if (key == GLFW_KEY_LEFT) {
+      testRoatation = testRoatation + vec3(0.0f, -0.2f, 0.0f);
+      character->setRotation(testRoatation);
+    }
+    if (key == GLFW_KEY_UP) {
+      testRoatation = testRoatation + vec3(0.0f, 0.0f, 0.2f);
+      character->setRotation(testRoatation);
+    }
+    if (key == GLFW_KEY_DOWN) {
+      testRoatation = testRoatation + vec3(0.0f, 0.0f, -0.2f);
+      character->setRotation(testRoatation);
     }
     if (key == GLFW_KEY_R) {
 
