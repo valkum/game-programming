@@ -52,8 +52,8 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudS
 	}
 
   //alloc sort grid
-  max_x = floor(levelWidth/(2*viscRange));
-  max_z = floor(levelLength/(2*viscRange));
+  max_x = floor(levelWidth/(2*viscRange))-1;
+  max_z = floor(levelLength/(2*viscRange))-1;
   grid = new vector<CloudParticle*>[(max_x+1)*(max_z+1)];
 }
 
@@ -81,7 +81,7 @@ void Clouds::spawnCloud(uint_t size, float x, float width, float z, float length
     	CloudParticle &p = particles[firstUnusedParticle()];
    		respawnParticle(p, lastPos, 0.0f, vec3(linearRand(0.0f, 1.0f), linearRand(0.0f, 0.4f), linearRand(0.0f, 1.0f)), 1.0f, 1.0f/*linearRand(10.0f, 15.0f)*/);
    		lastPos = p.Position;
-   		if (abs(glm::distance(position, lastPos)) > 3.0f || distance(position.y, lastPos.y) > .4f) lastPos = position;
+   		if (abs(glm::distance(position, lastPos)) > 2.0f || distance(position.y, lastPos.y) > .4f) lastPos = position;
   	}
   	smooth();
 }
@@ -169,6 +169,8 @@ void Clouds::update(float dt, vec3 camPos, vec3 wind){
   }
 
   // debug()<<"allocated "<<max_x*max_z<<endl;
+  uint_t x;
+  uint_t z;
 
   for (CloudParticle& particle : particles)
   {
@@ -177,28 +179,110 @@ void Clouds::update(float dt, vec3 camPos, vec3 wind){
       // particle.Life = 0.0f;
       // deadParticleAmount++;
       // debug()<<"free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
-    } else { //put particles in front into grid
-      uint_t x = std::max(std::min(((uint_t)floor(floor(particle.Position.x+half)/(2*viscRange))),max_x),(uint_t)0); //assign x grid coord in [0, levelWidth]
-      uint_t z = std::max(std::min(((uint_t)floor(floor(particle.Position.z)/(2*viscRange))),max_z),(uint_t)0); //assign z grid coord in [0, levelLength]
+    } else if (particle.Life > 0.0f) { //put particles in front into grid
+      x = std::max(std::min(((uint_t)floor(floor(particle.Position.x+half)/(2*viscRange))),max_x),(uint_t)0); //assign x grid coord in [0, levelWidth]
+      z = std::max(std::min(((uint_t)floor(floor(particle.Position.z)/(2*viscRange))),max_z),(uint_t)0); //assign z grid coord in [0, levelLength]
       // debug()<<"x->x/max_x "<<particle.Position.x<<"->"<<x<<"/"<<max_x<<endl;
       // debug()<<"x->z/max_z "<<particle.Position.z<<"->"<<z<<"/"<<max_z<<endl;
       // debug()<<"addr "<<x+(max_x*z)<<endl;
       grid[x+(max_x*z)].push_back(&particle);
     }
   }
-  // delete[] grid;
 
   for (CloudParticle& particle : particles)
   {
     if (particle.Life > 0.0f)
     {
+      //calculate grid position
+      x = std::max(std::min(((uint_t)floor(floor(particle.Position.x+half)/(2*viscRange))),max_x),(uint_t)0); //assign x grid coord in [0, levelWidth]
+      z = std::max(std::min(((uint_t)floor(floor(particle.Position.z)/(2*viscRange))),max_z),(uint_t)0); //assign z grid coord in [0, levelLength]
+
 			particle.Velocity *= 0.8f; //decay flow from last tick
-			//collision (char & environment)
+			
+      //char collision:
       float dist = distance(particle.Position, camPos+vec3(0,0,2));
       if(dist < 1.0f) particle.Velocity += vec3(0,0,0.1f/dist);
-			//viscosity
-			//update pos
-			particle.Position += (particle.Velocity + wind) * dt; //includes wind, however wind wont get saved in flow
+      
+      //environment collision
+			
+      //viscosity
+      /* relevant cells
+      x+max_x-1 x+max_x x+max_x+1
+      x-1 x x x+1
+      x-max_x-1 x-max_x x-max_x+1
+
+      foreach (exclusing self) in grid calculate distance
+      if distance<viscRange insert std::pair(viscRange-distance, ptr) into vector<pair>
+      sum directions and -distances
+      weight???
+      apply???
+      */
+      //calculate cells to check
+      gridIDs.clear();
+      debug()<<"pos "<<to_string(particle.Position)<<endl;
+      debug()<<"x/z "<<x<<"/"<<z<<endl;
+      // if (x > 0) //left 3
+      // {
+      //   if (z < max_z) //check front
+      //   {
+      //     gridIDs.push_back(x-1+(max_x*(z+1))); //front left
+      //   }
+      //   gridIDs.push_back(x-1+(max_x*z)); //left
+      //   if (z > 0) //check back
+      //   {
+      //     gridIDs.push_back(x-1+(max_x*(z-1))); //back left
+      //   }
+      // }
+      // if (z < max_z) //check front
+      // {
+      //   gridIDs.push_back(x+(max_x*(z+1))); //front
+      // }
+      gridIDs.push_back(x+(max_x*z)); //self
+      // if (z > 0) //check back
+      // {
+      //   gridIDs.push_back(x+(max_x*(z-1))); //front
+      // }
+      // if (x < max_x) //right 3
+      // {
+      //   if (z < max_z) //check front
+      //   {
+      //     gridIDs.push_back(x+1+(max_x*(z+1))); //front right
+      //   }
+      //   gridIDs.push_back(x+1+(max_x*z)); //right
+      //   if (z > 0) //check back
+      //   {
+      //     gridIDs.push_back(x+1+(max_x*(z-1))); //back right
+      //   }
+      // }
+
+      //calculate neighborhood flow
+      vec3 sumVel = vec3(0);
+      float sumDist = 0;
+			for (int gridID : gridIDs) //HIER schon nur mit dem debugzeug krass langsam
+      {
+        debug()<<"ID "<<gridID<<endl;
+        debug()<<"size "<<grid[gridID].size()<<endl;
+        // for (CloudParticle* neighbor : grid[gridID])
+        // {
+        //   if (&particle != neighbor)
+        //   {
+        //     dist = distance(particle.Position, neighbor->Position);
+        //     if (dist < viscRange)
+        //     {
+        //       sumVel += neighbor->Velocity;
+        //       sumDist += dist;
+        //     }
+        //   }
+        // }
+      }
+      if(sumVel.x>0){
+        debug()<<to_string(sumVel)<<endl;
+        debug()<<sumDist<<endl;
+      }
+      // particle.Velocity = (particle.Velocity + sumVel/sumDist)/2.0f;
+
+      //update pos
+			particle.Position += (particle.Velocity + wind) * dt; //update position on velocity including wind without saving wind
 		}
 	}
 
@@ -213,19 +297,20 @@ void Clouds::update(float dt, vec3 camPos, vec3 wind){
   }
 
   if (depthSort.size() > 0) { //assert non-null
-    // render farthest particle firs up to certain distance
-    for (auto rit = depthSort.rbegin(); rit != depthSort.rend(); rit++)
+    // render farthest particle first up to certain distance
+    auto rit = depthSort.rbegin();
+    for (; rit->first>3.0f && rit != depthSort.rend(); rit++)
     {
       Data data = {rit->second->Position, vec4(1)};
       particleData.push_back(data);
     }
-    // rit = depthSort.rbegin();
-    // apply alpha to counter view obstruction
-    // for (; rit != depthSort.rend(); rit++)
-    // {
-    //   Data data = {rit->second->Position, rit->second->Color*((rit->first/3.4f)+0.1f)};
-    //   particleData.push_back(data);
-    // }
+    //apply alpha to counter view obstruction
+    for (; rit != depthSort.rend(); rit++)
+    {
+      rit->second->Color.a = (rit->first/3.4f)+0.1f;
+      Data data = {rit->second->Position, rit->second->Color};
+      particleData.push_back(data);
+    }
   }
 
   // Sendet die aktuellen Positionen der Particle an die Graka. Da diese sich nur beim update ändern,

@@ -35,7 +35,7 @@
     "a": 100.0,
     "b": 6.0
   },
-  "clouds": [20, 75],
+  "clouds": [20, 100],
   "skydome": {
     "texture": "Sky.png",
     "scale": 60.0

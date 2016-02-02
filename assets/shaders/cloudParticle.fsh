@@ -15,7 +15,8 @@ void main()
 { 
     vec4 color = texture(uTexture, vTexCoords);
     //TODO: implement soft particles (ie whenn colliding with opaque vertices)
-    oColor = color * gRGBA;
+    color.a *= gRGBA.a;
+    oColor = color;
 
     // vec4 color = vec4(cnoise(vPosition+17.0), cnoise(vPosition), cnoise(vPosition+24.0), 1.0);
     //oColor = color;

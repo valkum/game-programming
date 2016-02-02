@@ -43,10 +43,11 @@ private:
   / Falls mehr als die Position pro Particle Nötig ist (ggf. Größe oder farbe.) muss das hier angepasst werden. */
   std::vector<Data> particleData;
   uint_t deadParticleAmount = 0;
-  uint_t viscRange = 1; //define range influential for viscosity
+  uint_t viscRange = 4; //define range influential for viscosity
   uint_t max_x;
   uint_t max_z;
   std::vector<CloudParticle*> *grid;
+  std::vector<uint_t> gridIDs;
   void spawnCloud(uint_t size = 100, float x = 0.0f, float width = 0.0f, float z = 0.0f, float length = 0.0f, float y = 2.0f, float height = 0.0f);
   uint_t firstUnusedParticle();
   void respawnParticle(CloudParticle &particle, vec3 pos, float randomOffset = 0.0f, glm::vec3 offset = vec3(0.0f), float alpha = 1.0f, float life = 10.0f, vec3 velocity = vec3(0));
