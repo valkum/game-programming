@@ -34,7 +34,7 @@ private:
   uint_t particleAmount;
   int levelWidth = 0;
   float half = 0;
-  int levelLength = 0;
+  //int levelLength = 0;
   int viewDistance = 100;
   uint_t lastUsedParticle = 0;
   std::vector<CloudParticle> particles;

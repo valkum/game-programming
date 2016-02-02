@@ -20,7 +20,7 @@ using namespace std;
 //       -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 
 //   }; 
 
-Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudSize(cloudSize), particleAmount(amount*cloudSize), levelWidth(width), levelLength(length) {
+Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudSize(cloudSize), particleAmount(amount*cloudSize), levelWidth(width) {
   //alloc particles & GRAM
   particleData.reserve(particleAmount);
   for (uint_t i = 0; i < this->particleAmount; ++i) {
@@ -34,8 +34,8 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudS
   // Wird nurnoch für den Shaderinit in PlayState::init() benutzt.
   ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
-  // ab->defineAttribute("aTexCoord", GL_FLOAT, 2);
-  ab->setDataElements(particleData.max_size(), particleData.data(), GL_DYNAMIC_DRAW);
+  ab->defineAttribute("aRGBA", GL_FLOAT, 4);
+  ab->setDataElements(particleData.capacity(), particleData.data(), GL_DYNAMIC_DRAW);
 
   vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->setMode(GL_POINTS);
@@ -184,7 +184,7 @@ void Clouds::update(float dt, vec3 camPos, vec3 wind){
 	}
 
   //sort into new collection using distance to camera for depth-test
-  std::map<float, CloudParticle*> depthSort;
+  std::multimap<float, CloudParticle*> depthSort;
   for (CloudParticle& particle : particles)
   {
     if (particle.Life > 0.0f && particle.Position.z < (camPos.z+viewDistance))
@@ -194,26 +194,25 @@ void Clouds::update(float dt, vec3 camPos, vec3 wind){
   }
 
   if (depthSort.size() > 0) { //assert non-null
-    // traverse in reverse order
-    auto rit = depthSort.rbegin();
     // render farthest particle firs up to certain distance
-    for (; rit->first > 3.0f && rit != depthSort.rend(); rit++)
+    for (auto rit = depthSort.rbegin(); rit != depthSort.rend(); rit++)
     {
       Data data = {rit->second->Position, vec4(1)};
       particleData.push_back(data);
     }
+    // rit = depthSort.rbegin();
     // apply alpha to counter view obstruction
-    for (; rit != depthSort.rend(); rit++)
-    {
-      Data data = {rit->second->Position, rit->second->Color*((rit->first/3.4f)+0.1f)};
-      particleData.push_back(data);
-    }
+    // for (; rit != depthSort.rend(); rit++)
+    // {
+    //   Data data = {rit->second->Position, rit->second->Color*((rit->first/3.4f)+0.1f)};
+    //   particleData.push_back(data);
+    // }
   }
 
   // Sendet die aktuellen Positionen der Particle an die Graka. Da diese sich nur beim update ändern,
   // findet das update der particleData auch dort statt.
   // @TODO: Ggf muss hier mapRange verwendet werden, damit auf der Graka auch alte points geflusht werden.
-  ab->setSubData(0, particleData.size() * sizeof(particleData[0]), particleData.data());
+  ab->setSubData(0, particleData.capacity() * sizeof(particleData[0]), particleData.data());
 }
 
 void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix) {
@@ -230,6 +229,7 @@ void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMat
 
   // Setze die Textur für den gerade ausgewählten shader. Nur einmal nötig. Pro Shader->use, bzw texture change.
   shader->setTexture("uTexture", cloudTex, 4);
+  vao->render();
   // Don't forget to reset to default blending mode
   // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
