@@ -154,7 +154,7 @@ void Clouds::smooth() {
   }
 }
 
-void Clouds::update(float dt, vec3 camPos, vec3 wind){
+void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 wind){
   //clear VRAM buffer
   particleData.clear();
   //clear grid
@@ -309,7 +309,7 @@ void Clouds::update(float dt, vec3 camPos, vec3 wind){
   {
     if (particle.Life > 0.0f && particle.Position.z < (camPos.z+viewDistance))
     {
-      depthSort.insert(std::pair<float, CloudParticle*>(glm::distance(camPos,particle.Position),&particle));
+      depthSort.insert(std::pair<float, CloudParticle*>((viewProjectionMatrix*vec4(particle.Position,1)).z,&particle));
     }
   }
 
@@ -324,7 +324,7 @@ void Clouds::update(float dt, vec3 camPos, vec3 wind){
     //apply alpha to counter view obstruction
     for (; rit != depthSort.rend(); rit++)
     {
-      rit->second->Color.a = (rit->first/3.4f)+0.1f;
+      rit->second->Color.a = (glm::distance(camPos,rit->second->Position)/3.4f)+0.1f;
       Data data = {rit->second->Position, rit->second->Color};
       particleData.push_back(data);
     }

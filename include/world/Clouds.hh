@@ -22,7 +22,7 @@ public:
     return this->cloudTex;
   }
 
-  void update(float dt, vec3 camPos, vec3 wind);
+  void update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 wind);
   // void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewProjectionMatrix, glm::vec3 camPos);
   void render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix);
 protected:

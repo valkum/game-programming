@@ -211,7 +211,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
 void PlayState::update(CGame *g, float dt) {
 
-  level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getWind() * 0.05f);
+  level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getCamera()->getProjectionMatrix() * level->getCamera()->getViewMatrix(), level->getWind() * 0.05f);
 
   // cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
   // glm::vec3 random = sphericalRand(0.5f);
