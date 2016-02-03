@@ -65,7 +65,8 @@ void Character::rotateZ(float angle){
   //this->setRotation(vec3(0.0f,0.0f,angle));
   //cloth->setRotation(vec3(0.0f,0.0f,angle));
   this->angle = angle;
-  gravity = glm::rotateZ(gravity, -(this->angle));
+  //gravity = glm::rotateZ(gravity, -(this->angle));
+  gravity = glm::rotateZ(vec3(0.0f, -9.0f, 0.0f), -(this->angle));
   int degree = (int (angle * 180 / M_PI) % 360);
   debug() << "supposed angle: " << -degree << "\t rotated gravity: " << glm::to_string(gravity) << "\t length: " << glm::fastLength(gravity) << endl;
 
