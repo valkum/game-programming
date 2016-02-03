@@ -153,7 +153,7 @@ void PlayState::draw(CGame *g, float *delta) {
   for (auto object: level->getObjects()) {
     object->render(lightningShader, &viewProjectionMatrix);
   }
-
+  character->render(lightningShader, &viewProjectionMatrix);
 
   if(renderDebug) {
     debugShader->use();
@@ -161,21 +161,15 @@ void PlayState::draw(CGame *g, float *delta) {
     for (auto object: level->getObjects()) {
       object->render(debugShader, &viewProjectionMatrix);
     }
+    character->render(lightningShader, &viewProjectionMatrix);
   }
 
-
-  if (triggerMesh) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    character->render(&viewProjectionMatrix);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  } else {
-    character->render(&viewProjectionMatrix);
-  }
 
   openGLCriticalError();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   gui->drawAll();
   glEnable(GL_DEPTH_TEST);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 }
 

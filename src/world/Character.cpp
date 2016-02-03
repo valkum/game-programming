@@ -31,11 +31,11 @@ Character::Character(vec3 position, vec3 rotation, float scalar) : Entity(
   cloth = new Cloth(8,15,24,24, position, clothOffset, this->scalar);
   cloth->setRotation(rotation);
 
-  clothShader = ShaderProgramCreator("cloth").attributeLocations(
-      cloth->getVAO()->getAttributeLocations()).create();
+  // clothShader = ShaderProgramCreator("cloth").attributeLocations(
+  //     cloth->getVAO()->getAttributeLocations()).create();
 
-  lowPolyManShader = ShaderProgramCreator("low_poly_man").attributeLocations(
-      model.getVAO()->getAttributeLocations()).create();
+  // lowPolyManShader = ShaderProgramCreator("low_poly_man").attributeLocations(
+  //     model.getVAO()->getAttributeLocations()).create();
 }
 
 Character::Character() {}
@@ -44,15 +44,16 @@ Character::~Character() {}
 
 
 
-void Character::render(mat4 *viewProjectionMatrix) {
+void Character::render(SharedShaderProgram shader, mat4 *viewProjectionMatrix) {
   mat4 modelMatrix = translate(getPosition()) * getRotation() *
                      scale<float>(vec3(model.getScale()));
-  lowPolyManShader->use();
-  lowPolyManShader->setUniform("uModelMatrix", modelMatrix);
+
+  shader->setUniform("uModelMatrix", modelMatrix);
 
   mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
-  lowPolyManShader->setUniform("uMVP", mvp);
+  shader->setUniform("uMVP", mvp);
   model.render();
+
   cloth->render(clothShader, viewProjectionMatrix, this->scalar);
 }
 
