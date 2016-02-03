@@ -80,7 +80,7 @@ void PlayState::init(CGame *game) {
   positionGui->setPosition(ivec2(20, 20));
     
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
-  character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), 0.5f);
+  character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), 0.3f);
 
   // construct VAO to give shader correct Attribute locations
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
