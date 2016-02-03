@@ -47,7 +47,7 @@ Character::~Character() {}
 void Character::render(mat4 *viewProjectionMatrix) {
   mat4 modelMatrix = translate(getPosition()) * getRotation() *
                      scale<float>(vec3(model.getScale()));
-
+  lowPolyManShader->use();
   lowPolyManShader->setUniform("uModelMatrix", modelMatrix);
 
   mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
