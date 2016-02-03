@@ -24,13 +24,13 @@ public:
     return model.getVAO(); 
   }
 
-  vec3 getWindDirection(){
-    return windDirection;
-  }
+  //inline vec3 getWindDirection(){
+  //  return windDirection;
+  //}
 
-  void setWindDirection(vec3 windUpdate){
-    windDirection = windUpdate;
-  }
+  //inline void setWindDirection(vec3 windUpdate){
+  //  windDirection = windUpdate;
+  //}
   
   Cloth * getCloth(){
     return cloth;
@@ -40,13 +40,18 @@ public:
 
   void draw(mat4 viewMatrix);
 
+  void rotateZ(float angle);
+
+  void update(float dt);
+
 private:
   Model model;
   SharedShaderProgram clothShader;
   SharedShaderProgram lowPolyManShader;
   Cloth *cloth;
   float scalar;
+  float angle = 0.0f;
   vec3 clothOffset = vec3(4.0f, 4.0f, -3.0f);
   vec3 rotation = vec3(0.0f, 0.0f, 0.0f);
-  vec3 windDirection;
+  vec3 gravity = vec3(0.0f, -9.81f, 0.0f);
 };

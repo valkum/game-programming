@@ -35,7 +35,7 @@ Character *character;
 bool triggerWind = false;
 bool triggerMesh = false;
 
-vec3 testRoatation = vec3(0.0f,0.0f,0.0f);
+float testRotationAngle = 0;
 
 PositionGUI* positionGui;
 
@@ -192,10 +192,7 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
 
 void PlayState::update(CGame *g, float dt) {
-    character->getCloth()->addForce(vec3(0.0f,-9.81f,0.0f)*dt); // add gravity each frame, pointing down
-    //character->getCloth()->windForce(vec3(0.0f, 0.05f,0.2f));
-    character->getCloth()->timeStep(dt); // calculate the particle positions of the next frame
-    character->getCloth()->modelCollision();
+  character->update(dt);
 }
 
 void PlayState::handleKeyEvents(GLFWwindow *window,
@@ -242,21 +239,17 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     if (key == GLFW_KEY_P) {
       renderDebug = !renderDebug;
     }
-    if (key == GLFW_KEY_RIGHT) {
-      testRoatation = testRoatation + vec3(0.0f, 0.2f, 0.0f);
-      character->setRotation(testRoatation);
-    }
-    if (key == GLFW_KEY_LEFT) {
-      testRoatation = testRoatation + vec3(0.0f, -0.2f, 0.0f);
-      character->setRotation(testRoatation);
-    }
     if (key == GLFW_KEY_UP) {
-      testRoatation = testRoatation + vec3(0.0f, 0.0f, 0.2f);
-      character->setRotation(testRoatation);
+      //testRoatation = testRoatation + vec3(0.0f, 0.0f, 0.2f);
+      testRotationAngle += 5.0f;
+      float radian = testRotationAngle * M_PI / 180;
+      character->rotateZ(radian);
     }
     if (key == GLFW_KEY_DOWN) {
-      testRoatation = testRoatation + vec3(0.0f, 0.0f, -0.2f);
-      character->setRotation(testRoatation);
+      //testRoatation = testRoatation + vec3(0.0f, 0.0f, -0.2f);
+      testRotationAngle -= 5.0f;
+      float radian = testRotationAngle * M_PI / 180;
+      character->rotateZ(radian);
     }
     if (key == GLFW_KEY_R) {
 

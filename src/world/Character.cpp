@@ -12,6 +12,7 @@ using namespace std;
 
 class Character;
 
+
 Character::Character(vec3 position, vec3 rotation, float scalar) : Entity(
     position,
     rotation) {
@@ -61,8 +62,21 @@ void Character::setCharacterPosition(vec3 position){
 }
 
 void Character::rotateZ(float angle){
+  //this->setRotation(vec3(0.0f,0.0f,angle));
+  //cloth->setRotation(vec3(0.0f,0.0f,angle));
+  this->angle = angle;
+  gravity = glm::rotateZ(gravity, -(this->angle));
+  int degree = (int (angle * 180 / M_PI) % 360);
+  debug() << "supposed angle: " << -degree << "\t rotated gravity: " << glm::to_string(gravity) << "\t length: " << glm::fastLength(gravity) << endl;
+
+  vec3 rotationAxis(0.0f, 0.0f, 1.0f);
+  this->setRotation(glm::rotate(angle, rotationAxis));
+  cloth->setRotation(glm::rotate(angle, rotationAxis));
 }
 
-void Character::update(){
-
+void Character::update(float dt){
+  cloth->addForce(gravity); // add gravity each frame, pointing down
+  //cloth->windForce(vec3(0.0f, 0.05f,0.2f));
+  cloth->timeStep(dt); // calculate the particle positions of the next frame
+  cloth->modelCollision();
 }
