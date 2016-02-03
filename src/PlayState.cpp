@@ -80,7 +80,7 @@ void PlayState::init(CGame *game) {
   positionGui->setPosition(ivec2(20, 20));
     
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
-  character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), 0.3f);
+  character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, M_PI, 0.0f), 0.3f);
 
   // construct VAO to give shader correct Attribute locations
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
@@ -193,6 +193,7 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
 void PlayState::update(CGame *g, float dt) {
   character->update(dt);
+  level->getCamera()->setPosition(character->getPosition() + vec3(0.0f, 0.5f, -5.0f));
 }
 
 void PlayState::handleKeyEvents(GLFWwindow *window,
@@ -220,13 +221,15 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_A) { // upper case!
-      level->getCamera()->moveLeft(timeElapsed * speed);
-      positionGui->setCameraPosition(level->getCamera()->getPosition());
+      //level->getCamera()->moveLeft(timeElapsed * speed);
+      //positionGui->setCameraPosition(level->getCamera()->getPosition());
+      character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
     }
 
     if (key == GLFW_KEY_D) { // upper case!
-      level->getCamera()->moveRight(timeElapsed * speed);
-      positionGui->setCameraPosition(level->getCamera()->getPosition());
+      //level->getCamera()->moveRight(timeElapsed * speed);
+      //positionGui->setCameraPosition(level->getCamera()->getPosition());
+      character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;

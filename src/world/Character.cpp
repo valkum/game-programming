@@ -58,21 +58,22 @@ void Character::render(mat4 *viewProjectionMatrix) {
 
 void Character::setCharacterPosition(vec3 position){
   this->setPosition(position);
-  cloth->setPosition(position + clothOffset);
+  cloth->setPosition(position);
 }
 
 void Character::rotateZ(float angle){
   //this->setRotation(vec3(0.0f,0.0f,angle));
   //cloth->setRotation(vec3(0.0f,0.0f,angle));
   this->angle = angle;
-  //gravity = glm::rotateZ(gravity, -(this->angle));
   gravity = glm::rotateZ(vec3(0.0f, -9.0f, 0.0f), -(this->angle));
-  int degree = (int (angle * 180 / M_PI) % 360);
-  debug() << "supposed angle: " << -degree << "\t rotated gravity: " << glm::to_string(gravity) << "\t length: " << glm::fastLength(gravity) << endl;
+  //int degree = (int (angle * 180 / M_PI) % 360);
+  //debug() << "supposed angle: " << -degree << "\t rotated gravity: " << glm::to_string(gravity) << "\t length: " << glm::fastLength(gravity) << endl;
 
-  vec3 rotationAxis(0.0f, 0.0f, 1.0f);
-  this->setRotation(glm::rotate(angle, rotationAxis));
-  cloth->setRotation(glm::rotate(angle, rotationAxis));
+  //vec3 rotationAxis(0.0f, 0.0f, 1.0f);
+  //this->setRotation(glm::rotate(angle, rotationAxis));
+  this->setRotation(vec3(0.0f, M_PI, angle));
+  //cloth->setRotation(glm::rotate(angle, rotationAxis));
+  cloth->setRotation(vec3(0.0f, M_PI, angle));
 }
 
 void Character::update(float dt){
