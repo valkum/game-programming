@@ -54,7 +54,7 @@ void Character::render(SharedShaderProgram shader, mat4 *viewProjectionMatrix) {
   shader->setUniform("uMVP", mvp);
   model.render();
 
-  cloth->render(clothShader, viewProjectionMatrix, this->scalar);
+  cloth->render(shader, viewProjectionMatrix, this->scalar);
 }
 
 void Character::setCharacterPosition(vec3 position){
