@@ -19,7 +19,6 @@ using namespace glm;
 
 struct Vertex {
   vec3 position;
-  vec3 uv;
   vec3 normal;
 };
 

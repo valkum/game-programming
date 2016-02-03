@@ -271,7 +271,6 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
     }
     ab = SharedArrayBuffer(new ArrayBuffer());
     ab->defineAttribute("aPosition", GL_FLOAT, 3);
-    ab->defineAttribute("aColor", GL_FLOAT, 3);
     ab->defineAttribute("aNormal", GL_FLOAT, 3);
     ab->setDataElements(vertexData.size(), value_ptr(vertexData[0].position), GL_DYNAMIC_DRAW);
 
@@ -352,11 +351,11 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
 
 /* A private method used by drawShaded(), that draws a single triangle p1,p2,p3 with a color*/
 void Cloth::insertTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 uv, std::vector<Vertex> &vertexData) {
-  Vertex v = {p1->getPos(), uv, p1->getNormal()};
+  Vertex v = {p1->getPos(), p1->getNormal()};
   vertexData.push_back(v);
-  v = {p2->getPos(), uv, p2->getNormal()};
+  v = {p2->getPos(), p2->getNormal()};
   vertexData.push_back(v);
-  v = {p3->getPos(), uv, p3->getNormal()};
+  v = {p3->getPos(), p3->getNormal()};
   vertexData.push_back(v);
 }
 

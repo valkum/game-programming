@@ -18,7 +18,7 @@ public:
             float scalar);
   Character();
   ~Character();
-  void render(mat4 *viewProjectioMatrix);
+  void render(SharedShaderProgram shader, mat4 *viewProjectioMatrix);
 
   SharedVertexArrayObject getVAO() {
     return model.getVAO(); 
