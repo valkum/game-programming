@@ -84,7 +84,7 @@ void PlayState::init(CGame *game) {
   positionGui->setPosition(ivec2(20, 20));
     
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
-  character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, M_PI, 0.0f), 0.3f);
+  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.3f);
 
   // construct VAO to give shader correct Attribute locations
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
@@ -259,9 +259,6 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       showFrames = !showFrames;
       if(showFrames) positionGui->show(); else positionGui->hide(); 
     }
-    if (key == GLFW_KEY_V) {
-      debug() << level->getCamera()->storeStateToString() << std::endl;
-    }
 
     if (key == GLFW_KEY_P) {
       renderDebug = !renderDebug;
@@ -277,10 +274,6 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       testRotationAngle -= 5.0f;
       float radian = testRotationAngle * M_PI / 180;
       character->rotateZ(radian);
-    }
-    if (key == GLFW_KEY_R) {
-
-      ShaderProgramCreator("lightningShader").update(lightningShader);
     }
   }else if(action == GLFW_RELEASE) {
     if (key == GLFW_KEY_A) { 
