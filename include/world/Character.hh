@@ -1,6 +1,7 @@
 #pragma once
 
 #include "world/Entity.hh"
+#include "world/IScaleable.hh"
 #include "Model.hh"
 #include "Cloth.hh"
 #include <ACGL/OpenGL/Managers.hh>
@@ -10,7 +11,7 @@
 
 using namespace ACGL::OpenGL;
 
-class Character : public Entity {
+class Character : public Entity, public IScaleable {
 public:
 
   Character(vec3  position,
@@ -31,6 +32,9 @@ public:
   //inline void setWindDirection(vec3 windUpdate){
   //  windDirection = windUpdate;
   //}
+
+  float getScale() {return scale;};
+  void setScale(float scale) {this->scale=scale;};
   
   Cloth * getCloth(){
     return cloth;
@@ -44,12 +48,12 @@ public:
 
   void update(float dt);
 
+
 private:
   Model model;
   SharedShaderProgram clothShader;
   SharedShaderProgram lowPolyManShader;
   Cloth *cloth;
-  float scalar;
   float angle = 0.0f;
   vec3 clothOffset = vec3(4.0f, 4.0f, -3.0f);
   vec3 rotation = vec3(0.0f, 0.0f, 0.0f);

@@ -13,23 +13,18 @@ using namespace std;
 class Character;
 
 
-Character::Character(vec3 position, vec3 rotation, float scalar) : Entity(
-    position,
-    rotation) {
-
+Character::Character(vec3 position, vec3 rotation, float scale) : Entity(position,rotation), 
+    model(Model("low_poly_man.obj", scale)), 
+    rotation(rotation) {
+    setScale(scale);
   Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
   Settings::the()->setShaderPath("shaders/");
   Settings::the()->setGeometryPath("geometry/");
 
-  //setup lowpolyman object
-  this->rotation = rotation;
-  this->scalar = scalar;
-  this->model = Model("low_poly_man.obj", this->scalar);
 
   //setup cloth
   //cloth = new Cloth(8,15,24,24, position, scalar * clothOffset, this->scalar);
-  cloth = new Cloth(8,15,24,24, position, clothOffset, this->scalar);
-  cloth->setRotation(rotation);
+  cloth = new Cloth(8,15,24,24, clothOffset, this);
 
   // clothShader = ShaderProgramCreator("cloth").attributeLocations(
   //     cloth->getVAO()->getAttributeLocations()).create();
@@ -46,7 +41,7 @@ Character::~Character() {}
 
 void Character::render(SharedShaderProgram shader, mat4 *viewProjectionMatrix) {
   mat4 modelMatrix = translate(getPosition()) * getRotation() *
-                     scale<float>(vec3(model.getScale()));
+                     glm::scale<float>(vec3(model.getScale()));
 
   shader->setUniform("uModelMatrix", modelMatrix);
 
@@ -54,12 +49,11 @@ void Character::render(SharedShaderProgram shader, mat4 *viewProjectionMatrix) {
   shader->setUniform("uMVP", mvp);
   model.render();
 
-  cloth->render(shader, viewProjectionMatrix, this->scalar);
+  cloth->render(shader, viewProjectionMatrix);
 }
 
 void Character::setCharacterPosition(vec3 position){
-  this->setPosition(position);
-  cloth->setPosition(position);
+  setPosition(position);
 }
 
 void Character::rotateZ(float angle){
@@ -72,9 +66,8 @@ void Character::rotateZ(float angle){
 
   //vec3 rotationAxis(0.0f, 0.0f, 1.0f);
   //this->setRotation(glm::rotate(angle, rotationAxis));
-  this->setRotation(vec3(0.0f, M_PI, angle));
+  setRotation(vec3(0.0f, M_PI, angle));
   //cloth->setRotation(glm::rotate(angle, rotationAxis));
-  cloth->setRotation(vec3(0.0f, M_PI, angle));
 }
 
 void Character::update(float dt){
