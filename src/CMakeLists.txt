@@ -71,16 +71,16 @@ ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if(UNIX)
 	find_package(OpenGL REQUIRED)
-
-	find_package(PkgConfig REQUIRED)
-	pkg_search_module(GLFW REQUIRED glfw3)
-	include_directories(${GLFW_INCLUDE_DIRS})
-    link_directories(${GLFW_LIBRARY_DIRS})
-
+    if(DEFINED ENV{TRAVIS})
+    	find_package(PkgConfig REQUIRED)
+    	pkg_search_module(GLFW REQUIRED glfw3)
+    	include_directories(${GLFW_INCLUDE_DIRS})
+        link_directories(${GLFW_LIBRARY_DIRS})
+    endif()
 	#find_package(GLM REQUIRED)
 	#include_directories(${GLM_INCLUDE_DIR})
 
-	set(REQUIRED_LIBS ${GLFW_LIBRARIES} ${OPENGL_LIBRARY} nanovg)
+	set(REQUIRED_LIBS ${OPENGL_LIBRARY} ${GLFW_LIBRARIES} glfw nanovg)
 endif()
 
 

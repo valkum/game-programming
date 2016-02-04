@@ -10,11 +10,12 @@ MinSizeRel."
        FORCE )
 endif()
 
+
 if(NOT DEFINED ENV{TRAVIS})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 endif()
 
-set(C_FLAGS_COMMON "-Wall -Werror")
+set(C_FLAGS_COMMON "-Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g ${C_FLAGS_COMMON}")
 set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
 
@@ -40,6 +41,18 @@ set(EXECUTABLE_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
 include_directories(lib/nanovg/src)
 add_subdirectory(lib/nanovg)
 include_directories(lib/json/src)
+
+if(NOT DEFINED ENV{TRAVIS})
+  set(GLFW_BUILD_EXAMPLES OFF)
+  set(GLFW_BUILD_TESTS OFF)
+  set(GLFW_BUILD_DOCS OFF)
+  add_subdirectory(lib/glfw)
+  include_directories(lib/glfw/include)
+endif()
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Werror")
+
+
 
 add_subdirectory(src)
 
