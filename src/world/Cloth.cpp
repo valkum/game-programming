@@ -299,12 +299,12 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
   //create smooth per particle normals by adding up all the (hard) triangle normals that each particle is part of
   for(int x = 0; x<num_particles_width-1; x++){
     for(int y=0; y<num_particles_height-1; y++){
-      vec3 normal = calcTriangleNormal(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1));
+      vec3 normal = calcTriangleNormal(getParticle(x,y),getParticle(x+1,y),getParticle(x,y+1));
       getParticle(x+1,y)->addToNormal(normal);
       getParticle(x,y)->addToNormal(normal);
       getParticle(x,y+1)->addToNormal(normal);
 
-      normal = calcTriangleNormal(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1));
+      normal = calcTriangleNormal(getParticle(x+1,y),getParticle(x+1,y+1),getParticle(x,y+1));
       getParticle(x+1,y+1)->addToNormal(normal);
       getParticle(x+1,y)->addToNormal(normal);
       getParticle(x,y+1)->addToNormal(normal);

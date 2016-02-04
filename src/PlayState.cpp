@@ -161,7 +161,7 @@ void PlayState::draw(CGame *g, float *delta) {
     for (auto object: level->getObjects()) {
       object->render(debugShader, &viewProjectionMatrix);
     }
-    character->render(lightningShader, &viewProjectionMatrix);
+    character->render(debugShader, &viewProjectionMatrix);
   }
 
 
