@@ -1,6 +1,7 @@
 #include "world/Cloth.hh"
 #include <ACGL/OpenGL/GL.hh>
 #include <ACGL/Utils/Log.hh>
+#include "world/Character.hh"
 
 
 #define CONSTRAINT_ITERATIONS 5
@@ -187,14 +188,10 @@ void Cloth::addWindForcesForTriangle(Particle *p1,Particle *p2,Particle *p3, con
 
 
 /* This is a important constructor for the entire system of particles and constraints*/
-Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 modelPosition, vec3 offset, float scalar) :
-  Entity(
-      //vec3(0.0f,0.0f,-5.0f),
-      modelPosition, //+ vec3(5.0f, 0.0f, 5.0f),
-      vec3(0.0f,0.0f,0.0f)
-      ),
+Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 offset, Entity *character) :
   num_particles_width(num_particles_width),
-  num_particles_height(num_particles_height) {
+  num_particles_height(num_particles_height),
+  character(character) {
     particles.resize(num_particles_width*num_particles_height); //I am essentially using this vector as an array with room for num_particles_width*num_particles_height particles
 
     // creating particles in a grid of particles from (0,0,0) to (width,-height,0)
@@ -289,7 +286,7 @@ Cloth::Cloth(float width, float height, int num_particles_width, int num_particl
    (x,y+1) *--* (x+1,y+1)
 
 */
-void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectionMatrix, float scalar){
+void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectionMatrix){
   // reset normals (which where written to last frame)
   std::vector<Particle>::iterator particle;
   for(particle = particles.begin(); particle != particles.end(); particle++){
@@ -334,8 +331,8 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
 
 
 
-  mat4 modelMatrix = translate(getPosition()) * getRotation() *
-    scale<float>(vec3(scalar * 0.4f));
+  mat4 modelMatrix = translate(character->getPosition()) * character->getRotation() *
+    scale<float>(vec3(static_cast<Character*>(character)->getScale() * 0.4f));
   shader->setUniform("uModelMatrix", modelMatrix);
 
   mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
