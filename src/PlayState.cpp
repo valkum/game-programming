@@ -36,6 +36,10 @@ bool triggerWind = false;
 bool triggerMesh = false;
 
 float testRotationAngle = 0;
+float cameraPos = 0;
+
+bool aPressed = false;
+bool dPressed = false;
 
 PositionGUI* positionGui;
 
@@ -186,8 +190,33 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
 
 void PlayState::update(CGame *g, float dt) {
+  if(aPressed && cameraPos > -1){
+    cameraPos -= 0.05;
+    debug() << "A: \t" << cameraPos << endl;
+  }else if(dPressed && cameraPos < 1){
+    cameraPos += 0.05f;
+    debug() << "D: \t" << cameraPos << endl;
+  }else if(cameraPos < 0){
+    if(cameraPos > -0.05f){
+      cameraPos = 0;
+    }
+    cameraPos += 0.05f;
+    debug() << "-N: \t" << cameraPos << endl;
+  }else if(cameraPos > 0){
+    if(cameraPos < 0.05f){
+      cameraPos = 0;
+    }
+    cameraPos -= 0.05f;
+    debug() << "+N: \t" << cameraPos << endl;
+  }
+
+  //testRotationAngle += 5.0f;
+  float radian = cameraPos * 45 * M_PI / 180;
+  character->rotateZ(-radian);
+
   character->update(dt);
-  level->getCamera()->setPosition(character->getPosition() + vec3(0.0f, 0.5f, -5.0f));
+  character->setCharacterPosition(character->getPosition() + vec3(0.0f, 0.0f, 0.01f));
+  level->getCamera()->setPosition(character->getPosition() + vec3(-1.5f*cameraPos, 0.5f, -5.0f));
 }
 
 void PlayState::handleKeyEvents(GLFWwindow *window,
@@ -203,7 +232,10 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   double speed = 10.0;        // magic value to scale the camera speed
 
-  if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
+  aPressed = false;
+  dPressed = false;
+
+  if ((action == GLFW_PRESS) || (action == GLFW_REPEAT)) {
     if (key == GLFW_KEY_W) { // upper case!
       level->getCamera()->moveForward(timeElapsed * speed);
       positionGui->setCameraPosition(level->getCamera()->getPosition());
@@ -218,12 +250,14 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       //level->getCamera()->moveLeft(timeElapsed * speed);
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
+      aPressed = true;
     }
 
     if (key == GLFW_KEY_D) { // upper case!
       //level->getCamera()->moveRight(timeElapsed * speed);
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
+      dPressed = true;
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
@@ -251,6 +285,13 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     if (key == GLFW_KEY_R) {
 
       ShaderProgramCreator("lightningShader").update(lightningShader);
+    }
+  }else if(action == GLFW_RELEASE) {
+    if (key == GLFW_KEY_A) { 
+      aPressed = false;
+    }
+    if (key == GLFW_KEY_D) {
+      dPressed = false;
     }
   }
 }
