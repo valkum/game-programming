@@ -190,24 +190,21 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
 
 void PlayState::update(CGame *g, float dt) {
-  if(aPressed && cameraPos > -1){
-    cameraPos -= 0.05;
-    debug() << "A: \t" << cameraPos << endl;
-  }else if(dPressed && cameraPos < 1){
-    cameraPos += 0.05f;
-    debug() << "D: \t" << cameraPos << endl;
-  }else if(cameraPos < 0){
-    if(cameraPos > -0.05f){
+  if((aPressed && dPressed) || !(aPressed || dPressed)) {
+    if(cameraPos < 0.f) {
+      cameraPos += 0.05f;
+    }
+    else if(cameraPos > 0.f) {
+      cameraPos -= 0.05f;
+    }
+    if(cameraPos<0.05f && cameraPos>-0.05f){
       cameraPos = 0;
     }
-    cameraPos += 0.05f;
-    debug() << "-N: \t" << cameraPos << endl;
-  }else if(cameraPos > 0){
-    if(cameraPos < 0.05f){
-      cameraPos = 0;
-    }
+  }
+  else if(aPressed && cameraPos > -1.f) {
     cameraPos -= 0.05f;
-    debug() << "+N: \t" << cameraPos << endl;
+  }else if(dPressed && cameraPos < 1.f) {
+    cameraPos += 0.05f;
   }
 
   //testRotationAngle += 5.0f;
@@ -232,10 +229,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   double speed = 10.0;        // magic value to scale the camera speed
 
-  aPressed = false;
-  dPressed = false;
-
-  if ((action == GLFW_PRESS) || (action == GLFW_REPEAT)) {
+  if (action == GLFW_PRESS) {
     if (key == GLFW_KEY_W) { // upper case!
       level->getCamera()->moveForward(timeElapsed * speed);
       positionGui->setCameraPosition(level->getCamera()->getPosition());
@@ -251,6 +245,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
       aPressed = true;
+      debug()<<"Key A, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_D) { // upper case!
@@ -258,6 +253,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
       dPressed = true;
+      debug()<<"Key D, pressed, or repeated"<<std::endl;
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
@@ -288,10 +284,12 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
   }else if(action == GLFW_RELEASE) {
     if (key == GLFW_KEY_A) { 
+      debug()<<"Key A, released"<<std::endl;
       aPressed = false;
     }
     if (key == GLFW_KEY_D) {
       dPressed = false;
+      debug()<<"Key D, released"<<std::endl;
     }
   }
 }
