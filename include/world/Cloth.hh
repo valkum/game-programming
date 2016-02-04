@@ -22,10 +22,11 @@ struct Vertex {
   vec3 normal;
 };
 
-class Cloth : public Entity {
+class Cloth {
   private:
     int num_particles_width;
     int num_particles_height;
+    Entity *character;
 
     ACGL::OpenGL::SharedVertexArrayObject vao;
     ACGL::OpenGL::SharedArrayBuffer ab;
@@ -47,7 +48,7 @@ class Cloth : public Entity {
     void drawTriangle(Particle *p1, Particle *p2, Particle *p3);
     
   public:
-    Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 position, vec3 offset, float scalar);
+    Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 offset, Entity *character);
 
     vec3 getSphereOffset0();
     vec3 getSphereOffset1();
@@ -89,7 +90,7 @@ class Cloth : public Entity {
     float getSphereRadius17();
     float getSphereRadius18();
 
-    void render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectionMatrix, float scalar);
+    void render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectionMatrix);
 
     void timeStep(float dt);
 
