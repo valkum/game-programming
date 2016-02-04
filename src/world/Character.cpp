@@ -78,7 +78,7 @@ void Character::rotateZ(float angle){
 }
 
 void Character::update(float dt){
-  cloth->addForce(gravity); // add gravity each frame, pointing down
+  cloth->addForce(gravity*dt); // add gravity each frame, pointing down
   //cloth->windForce(vec3(0.0f, 0.05f,0.2f));
   cloth->timeStep(dt); // calculate the particle positions of the next frame
   cloth->modelCollision();
