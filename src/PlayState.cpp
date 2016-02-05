@@ -154,13 +154,14 @@ void PlayState::draw(CGame *g, float *delta) {
   lightningShader->use();
   lightningShader->setUniform("uLight.direction", vec3(-1,1.5,1));
   lightningShader->setUniform("uLight.color", vec3(0.75f, 0.75f, 0.75f));
-  lightningShader->setUniform("uLight.ambient", 0.1f);
-  lightningShader->setUniform("uLight.specular", 0.3f);
-  lightningShader->setUniform("uLight.diffuse", 0.8f);
+  lightningShader->setUniform("uLight.ambient", 0.05f);
+  lightningShader->setUniform("uLight.specular", 0.2f);
+  lightningShader->setUniform("uLight.diffuse", 0.3f);
   lightningShader->setUniform("uViewMatrix", camera->getViewMatrix());
   lightningShader->setUniform("camera", camera->getPosition());
+  openGLCriticalError();
   level->getTerrain()->render(lightningShader, &viewProjectionMatrix);
-
+  openGLCriticalError();
 
   for (auto object: level->getObjects()) {
     object->render(lightningShader, &viewProjectionMatrix);

@@ -30,21 +30,21 @@ void main () {
   vec3 specularColor = vec3(0.0, 0.0, 0.0);
 
 
-  vec3 direction = normalize(-uLight.direction);
+  vec3 direction = normalize(uLight.direction);
 
-  gl_Position = uMVP * vec4(aPosition, 1.0);
+  gl_Position = uMVP * vec4(aPosition, 1.0f);
   //vNormal     = inverse(transpose(mat3(uViewMatrix))) * aNormal;
 
   //diffuse light
   diffuseColor += clamp(dot(normalize(aNormal), direction)
-        *uLight.diffuse, 0.0, 1.0);
+        *uLight.diffuse, 0.0, 1.0f);
 
   //specular
   vec3 cameraVector = normalize(camera - vec3(aPosition));
   specularColor += clamp(pow((dot((cameraVector+direction), normalize(aNormal))/
-        (length(cameraVector+direction) * length(normalize(aNormal)))), 0.7), 0.0, 1.0)
+        (length(cameraVector+direction) * length(normalize(aNormal)))), 0.7f), 0.0, 1.0f)
         *uLight.specular;
 
-  vec3 result = (ambientColor + diffuseColor + specularColor) * vec3(0.75, 0.75, 0.75);
+  vec3 result = (ambientColor + diffuseColor + specularColor) * vec3(0.75f, 0.75f, 0.75f);
   vColor = result;
 }
