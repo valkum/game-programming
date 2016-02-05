@@ -32,8 +32,8 @@
     "rotation": [[-1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[0.0, 0.0, -1.0]]
   },
   "terrain": {
-    "a": 100.0,
-    "b": 6.0
+    "a": 27.0,
+    "b":12
   },
   "skydome": {
     "texture": "Sky.png",
@@ -43,5 +43,5 @@
     "text" : "Wake up Mr. Freeman!",
     "textColor": [255,165,0]
   },
-  "mapSize": [32, 64]
+  "mapSize": [256, 1024]
 }

@@ -38,10 +38,10 @@ void Terrain::insertQuad(std::vector<Vertex> &vertexData, float* height, int x, 
   Vertex v;
   vec3 normal;
   vec3 p1, p2, p3, p4;
-  p1 = vec3(x, height[index(x,z)], z);
-  p2 = vec3(x, height[index(x,z+1)], z+1);
-  p3 = vec3(x+1, height[index(x+1, z+1)], z+1);
-  p4 = vec3(x+1, height[index(x+1, z)], z);
+  p1 = vec3(x, height[index(x,z)]*2, z);
+  p2 = vec3(x, height[index(x,z+1)]*2, z+1);
+  p3 = vec3(x+1, height[index(x+1, z+1)]*2, z+1);
+  p4 = vec3(x+1, height[index(x+1, z)]*2, z);
   //debug()<<height[index(x,z)] << std::endl;
   if(x % 2 == 0) { // Determine in which direction the quad is split ckw or cckw.
     //Calc normals
@@ -91,8 +91,8 @@ vec3 Terrain::calcTriangleNormal(vec3 pos1, vec3 pos2, vec3 pos3)
 float* Terrain::generate(float a, float b) {
   float* height = new float[width*length];
 
-  float xFactor = 1.0f / (width - 1);
-  float yFactor = 1.0f / (length - 1);
+  float xFactor = 1.0f / (128 - 1);
+  float yFactor = 1.0f / (128 - 1);
   for( int w = 0; w < width; w++ ) {
     for( int l = 0 ; l < length; l++ ) {
       float x = xFactor * w;
