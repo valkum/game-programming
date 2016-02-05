@@ -54,15 +54,14 @@ void LoadingScreen::render(float value) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     shader->use();
+    shader->setUniform("uTime", 0.f);
     // glm:mat4 modelMatrix = glm::translate(glm::vec3(0.f, 0.f, 0.f));
     // shader->setUniform("uModelmatrix", modelMatrix);
-    shader->setUniform("uColor", glm::vec3(1.f, 1.f, 1.f));
+    
+    //shader->setUniform("uColor", glm::vec3(1.f, 1.f, 1.f));
     //backgroundVAO->render();
 
     std::vector<glm::vec3> progressVertices = getProgressbarVertices(value);
-    for(auto v : progressVertices) {
-      ACGL::Utils::debug()<< to_string(v) << std::endl;
-    }
     progressAB->setSubData(0, progressVertices.size() * sizeof(progressVertices[0]), progressVertices.data());
 
     // modelMatrix = glm::translate(glm::vec3(2.f, -2.f, 0.f)) * triangleRotation;

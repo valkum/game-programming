@@ -3,12 +3,12 @@
 
 #include <ACGL/OpenGL/Data/GeometryDataLoadStore.hh>
 #include <ACGL/OpenGL/Data/TextureLoadStore.hh>
-#include "LoadingScreen.hh"
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/random.hpp>
+#include <glm/gtc/constants.hpp>
 
 #include <iostream>
 #include <vector>
@@ -45,7 +45,7 @@ PositionGUI* positionGui;
 
 
 void PlayState::init(CGame *game) {
-  LoadingScreen* loadingScreen = new LoadingScreen();
+  loadingScreen = new LoadingScreen();
   loadingScreen->render(0.2);
   renderDebug = false;
   m_game = game;
@@ -86,6 +86,25 @@ void PlayState::init(CGame *game) {
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
   character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.3f);
 
+
+  float quadVertices[] = {
+    -1.f, -1.f, 0.f,
+    -1.f, 1.f, 0.f,
+    1.f, -1.f, 0.f,
+    1.f, 1.f, 0.f
+  };
+
+  ACGL::OpenGL::SharedArrayBuffer fullQuadAB = ACGL::OpenGL::SharedArrayBuffer(new ACGL::OpenGL::ArrayBuffer());
+  fullQuadAB->defineAttribute("aPosition", GL_FLOAT, 3);
+  fullQuadAB->setDataElements(4, quadVertices);
+
+  blendVAO = ACGL::OpenGL::SharedVertexArrayObject(new ACGL::OpenGL::VertexArrayObject());
+  blendVAO->attachAllAttributes(fullQuadAB);
+  blendVAO->setMode(GL_TRIANGLE_STRIP);
+
+  loadingScreen->render(0.7);
+
+
   // construct VAO to give shader correct Attribute locations
   SharedArrayBuffer ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
@@ -102,21 +121,26 @@ void PlayState::init(CGame *game) {
 
   debugShader =
   ShaderProgramCreator("debug").attributeLocations(vao->getAttributeLocations()).create();
-  debug() << "Shaders loaded" << endl;
+  loadingScreen->render(0.8);
 
-  debug() << "Set Textures Stage" << endl;
   skydomeShader->use();
   skydomeShader->setTexture("uTexture", level->getSkydome()->getTexture(), 2);
-  debug() << "Textures set" << endl;
+
   loadingScreen->render(0.9);
   openGLCriticalError();
   glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen->render(1);
-
-  delete loadingScreen;
+  lastTime = glfwGetTime();
+}
+float cubicOut(float t) {
+  float f = t - 1.0;
+  return f * f * f + 1.0;
 }
 
 void PlayState::draw(CGame *g, float *delta) {
+  timeSinceStart += glfwGetTime() - lastTime;
+  lastTime = glfwGetTime();
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   // @TODO: render white fade in if glfwGetTme() < levelStartTime + 1
 
@@ -172,6 +196,17 @@ void PlayState::draw(CGame *g, float *delta) {
   openGLCriticalError();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   gui->drawAll();
+  
+
+
+  if(timeSinceStart <= 3.0f) {
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    SharedShaderProgram loadingShader= loadingScreen->getShader();
+    loadingShader->use();
+    loadingShader->setUniform("uTime", timeSinceStart);
+    loadingShader->setUniform("uColor", vec3(0.99f,.99f,.99f));
+    blendVAO->render();
+  }
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

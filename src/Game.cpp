@@ -69,7 +69,7 @@ void CGame::changeState(CGameState *_game) {
   _game->init(this);
 }
 
-void CGame::draw(float *delta) {
+void CGame::draw(float* delta) {
   states.top()->draw(this, delta);
 }
 
