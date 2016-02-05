@@ -23,7 +23,10 @@ using namespace std;
 
 Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudSize(cloudSize), particleAmount(amount*cloudSize), levelWidth(width), levelLength(length) {
   //alloc particles & GRAM
+  particles.reserve(particleAmount);
   particleData.reserve(particleAmount);
+  depthSort.reserve(particleAmount);
+
   for (uint_t i = 0; i < this->particleAmount; ++i) {
     particles.push_back(CloudParticle());
     // Fülle initial die lokale Kopie des ArrayBuffers mit max anzahl an particle Position, damit
@@ -36,7 +39,7 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudS
   ab = SharedArrayBuffer(new ArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
   ab->defineAttribute("aRGBA", GL_FLOAT, 4);
-  ab->setDataElements(particleData.capacity(), particleData.data(), GL_DYNAMIC_DRAW);
+  ab->setDataElements(particleData.capacity(), particleData.data(), GL_STREAM_DRAW);
 
   vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->setMode(GL_POINTS);
@@ -154,9 +157,11 @@ void Clouds::smooth() {
   }
 }
 
+bool ceparticle_sort(std::pair<float, CloudParticle*> *p0, std::pair<float, CloudParticle*> *p1){
+  return (p0->first < p1->first);
+}
+
 void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 wind){
-  //clear VRAM buffer
-  particleData.clear();
   //clear grid
   for (uint_t i = 0; i < (max_x+1)*(max_z+1); i++) {
     grid[i].clear();
@@ -206,15 +211,15 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
       z = std::max(std::min(((uint_t)floor(floor(particle.Position.z)/(gridCellSize))),max_z),(uint_t)0); //assign z grid coord in [0, levelLength]
 
 			particle.Velocity *= 0.1f; //decay flow from last tick
-			
+
       //char collision:
       dist = distance(particle.Position, camPos+vec3(0,0,2));
       direction = particle.Position - (camPos+vec3(0,0,2));
       direction.y=0.0f;
       if(dist < 1.0f) particle.Velocity += direction/(2*dist);
-      
+
       //environment collision
-			
+
       if(glm::length(particle.Velocity)>0.0001f)
       {
         //viscosity
@@ -303,37 +308,48 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
 		}
 	}
 
-  //sort into new collection using distance to camera for depth-test
-  std::multimap<float, CloudParticle*> depthSort;
+  // sort into new collection using distance to camera for depth-test
+  depthSort.clear();
+  //clear VRAM buffer
+  particleData.clear();
   for (CloudParticle& particle : particles)
   {
-    if (particle.Life > 0.0f && particle.Position.z < (camPos.z+viewDistance))
+    if (particle.Life > 0.0f)
     {
-      depthSort.insert(std::pair<float, CloudParticle*>((viewProjectionMatrix*vec4(particle.Position,1)).z,&particle));
+      // depthSort.push_back(std::pair<float, CloudParticle*>((viewProjectionMatrix*vec4(particle.Position,1)).z,&particle));
+      depthSort.push_back(std::pair<float, CloudParticle*>(glm::length(particle.Position - camPos),&particle));
     }
   }
+  std::sort(depthSort.begin(), depthSort.end());
 
   if (depthSort.size() > 0) { //assert non-null
     // render farthest particle first up to certain distance
-    auto rit = depthSort.rbegin();
-    for (; rit->first>3.0f && rit != depthSort.rend(); rit++)
-    {
-      Data data = {rit->second->Position, vec4(1)};
+    for (auto rit = depthSort.rbegin(); rit != depthSort.rend(); rit++)
+    { 
+      Data data;
+      if(rit->first>3.0f) {
+        data = {rit->second->Position, vec4(1)};
+      } else {
+        //rit->second->Color.a = (glm::distance(camPos,rit->second->Position)/3.4f)+0.1f;
+        data = {rit->second->Position, rit->second->Color};
+      }
       particleData.push_back(data);
     }
     //apply alpha to counter view obstruction
-    for (; rit != depthSort.rend(); rit++)
-    {
-      rit->second->Color.a = (glm::distance(camPos,rit->second->Position)/3.4f)+0.1f;
-      Data data = {rit->second->Position, rit->second->Color};
-      particleData.push_back(data);
-    }
+    // for (; rit != depthSort.rend(); rit++)
+    // {
+    //   rit->second->Color.a = (glm::distance(camPos,rit->second->Position)/3.4f)+0.1f;
+    //   Data data = {rit->second->Position, rit->second->Color};
+    //   particleData.push_back(data);
+    // }
   }
 
   // Sendet die aktuellen Positionen der Particle an die Graka. Da diese sich nur beim update ändern,
   // findet das update der particleData auch dort statt.
   // @TODO: Ggf muss hier mapRange verwendet werden, damit auf der Graka auch alte points geflusht werden.
-  ab->setSubData(0, particleData.capacity() * sizeof(particleData[0]), particleData.data());
+  debug()<<particleData.capacity()<<std::endl;
+  debug()<<sizeof(particleData.at(0))<<std::endl;
+  ab->setSubData(0, particleData.capacity() * sizeof(particleData.at(0)), particleData.data());
 }
 
 void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix) {
