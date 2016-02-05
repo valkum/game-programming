@@ -36,7 +36,7 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudS
   }
 
   // Wird nurnoch für den Shaderinit in PlayState::init() benutzt.
-  ab = SharedArrayBuffer(new ArrayBuffer());
+  ab = SharedOurArrayBuffer(new OurArrayBuffer());
   ab->defineAttribute("aPosition", GL_FLOAT, 3);
   ab->defineAttribute("aRGBA", GL_FLOAT, 4);
   ab->setDataElements(particleData.capacity(), particleData.data(), GL_STREAM_DRAW);
@@ -330,7 +330,7 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
       if(rit->first>3.0f) {
         data = {rit->second->Position, vec4(1)};
       } else {
-        //rit->second->Color.a = (glm::distance(camPos,rit->second->Position)/3.4f)+0.1f;
+        rit->second->Color.a = (glm::distance(camPos,rit->second->Position)/3.4f)+0.1f;
         data = {rit->second->Position, rit->second->Color};
       }
       particleData.push_back(data);
@@ -347,9 +347,8 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
   // Sendet die aktuellen Positionen der Particle an die Graka. Da diese sich nur beim update ändern,
   // findet das update der particleData auch dort statt.
   // @TODO: Ggf muss hier mapRange verwendet werden, damit auf der Graka auch alte points geflusht werden.
-  debug()<<particleData.capacity()<<std::endl;
-  debug()<<sizeof(particleData.at(0))<<std::endl;
-  ab->setSubData(0, particleData.capacity() * sizeof(particleData.at(0)), particleData.data());
+  ab->setSize(particleData.size() * sizeof(particleData[0]));
+  ab->setSubData(0, particleData.size() * sizeof(particleData[0]), particleData.data());
 }
 
 void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMatrix, glm::mat4 *projectionMatrix) {

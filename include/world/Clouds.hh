@@ -8,6 +8,7 @@
 #include <ACGL/Types.hh>
 #include <vector>
 #include <glm/glm.hpp>
+#include "OurArrayBuffer.hh"
 
 struct Data{
   vec3 pos;
@@ -29,7 +30,7 @@ public:
 protected:
 private:
   ACGL::OpenGL::SharedVertexArrayObject vao;
-  ACGL::OpenGL::SharedArrayBuffer ab;
+  ACGL::OpenGL::SharedOurArrayBuffer ab;
   ACGL::OpenGL::SharedTexture2D cloudTex;
   uint_t cloudSize;
   uint_t particleAmount;
