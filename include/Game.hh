@@ -36,8 +36,8 @@ public:
   void handleMouseMoveEvents(GLFWwindow *window,
                              double      x,
                              double      y);
-  void update(float delta);
-  void draw(float *delta);
+  void update(float dt);
+  void draw(float *extrapolation);
 
   bool running() {
     return m_running;

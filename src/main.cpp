@@ -19,7 +19,6 @@ using namespace glm;
 using namespace ACGL;
 using namespace ACGL::Utils;
 
-
 int main(int argc, char **argv)
 {
   int opt;
@@ -157,7 +156,7 @@ int run() {
 
     // glfwGetFramebufferSize(g_window, &width, &height);
     game->draw(&extrapolation);
-    
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glfwSwapBuffers(g_window);
   }

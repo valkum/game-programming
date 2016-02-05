@@ -59,10 +59,11 @@ private:
   //int m_MouseState;
   glm::vec2   m_mousePos, m_lastMousePos;
   static PlayState m_PlayState;
-  SharedShaderProgram characterShader;
   bool renderDebug, showFrames;
   SharedShaderProgram skydomeShader;
   SharedShaderProgram lightningShader;
+  SharedShaderProgram cloudShader;
+  SharedShaderProgram clothShader;
   SharedVertexArrayObject blendVAO;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;

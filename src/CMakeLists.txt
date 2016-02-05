@@ -24,6 +24,7 @@ set(SOURCE_FILES
     world/SkyDome.cpp
     world/Terrain.cpp
     world/SkyScraper.cpp
+    world/Clouds.cpp
     GUI/common.cpp
     GUI/GUIObject.cpp
     GUI/Gui.cpp
@@ -71,18 +72,21 @@ ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 #    library
 #)
 
-if(UNIX)
+if(UNIX OR APPLE)
 	find_package(OpenGL REQUIRED)
     if(DEFINED ENV{TRAVIS})
     	find_package(PkgConfig REQUIRED)
     	pkg_search_module(GLFW REQUIRED glfw3)
     	include_directories(${GLFW_INCLUDE_DIRS})
         link_directories(${GLFW_LIBRARY_DIRS})
+        set(REQUIRED_LIBS ${OPENGL_LIBRARY} ${GLFW_LIBRARIES} nanovg)
+    else()
+        set(REQUIRED_LIBS ${OPENGL_LIBRARY} ${GLFW_LIBRARIES} glfw nanovg)
     endif()
 	#find_package(GLM REQUIRED)
 	#include_directories(${GLM_INCLUDE_DIR})
 
-	set(REQUIRED_LIBS ${OPENGL_LIBRARY} ${GLFW_LIBRARIES} glfw nanovg)
+	
 endif()
 
 

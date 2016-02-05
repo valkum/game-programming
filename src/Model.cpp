@@ -5,8 +5,7 @@ using namespace std;
 using namespace ACGL;
 using namespace ACGL::OpenGL;
 
-Model::Model(string fileName, float scale) {
-  this->scale  = scale;
+Model::Model(string fileName, float scale) : scale(scale) {
   this->object = OpenGL::VertexArrayObjectCreator(fileName).create();
 }
 

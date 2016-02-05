@@ -7,6 +7,7 @@
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
+
 #include <glm/gtc/random.hpp>
 #include <glm/gtc/constants.hpp>
 
@@ -16,10 +17,8 @@
 #include "world/Cloth.hh"
 #include "world/Character.hh"
 
-
 // 1/64 Tickrate
 #define TIME_STEPSIZE2 0.0156f
-
 
 using namespace glm;
 using namespace std;
@@ -42,7 +41,6 @@ bool aPressed = false;
 bool dPressed = false;
 
 PositionGUI* positionGui;
-
 
 void PlayState::init(CGame *game) {
   loadingScreen = new LoadingScreen();
@@ -86,6 +84,7 @@ void PlayState::init(CGame *game) {
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
   character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.3f);
 
+  debug() << "Geometry loaded" << endl;
 
   float quadVertices[] = {
     -1.f, -1.f, 0.f,
@@ -112,6 +111,8 @@ void PlayState::init(CGame *game) {
 
   SharedVertexArrayObject vao = SharedVertexArrayObject(new VertexArrayObject());
   vao->attachAllAttributes(ab);
+
+  cloudShader = ShaderProgramCreator("cloudParticle").attributeLocations(level->getClouds()->getVao()->getAttributeLocations()).create();
 
   skydomeShader = ShaderProgramCreator("skyDome").attributeLocations(
     level->getSkydome()->getModel().getVAO()->getAttributeLocations()).create();
@@ -149,8 +150,9 @@ void PlayState::draw(CGame *g, float *delta) {
   }
 
   ACGL::Scene::GenericCamera* camera = level->getCamera();
-  glm::mat4 viewProjectionMatrix = camera->getProjectionMatrix() *
-                                  camera->getViewMatrix();
+  glm::mat4 viewMatrix = camera->getViewMatrix();
+  glm::mat4 projectionMatrix = camera->getProjectionMatrix();
+  glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 
   level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
 
@@ -168,20 +170,29 @@ void PlayState::draw(CGame *g, float *delta) {
   lightningShader->use();
   lightningShader->setUniform("uLight.direction", vec3(-1,1.5,1));
   lightningShader->setUniform("uLight.color", vec3(0.75f, 0.75f, 0.75f));
-  lightningShader->setUniform("uLight.ambient", 0.1f);
-  lightningShader->setUniform("uLight.specular", 0.3f);
-  lightningShader->setUniform("uLight.diffuse", 0.8f);
+  lightningShader->setUniform("uLight.ambient", 0.05f);
+  lightningShader->setUniform("uLight.specular", 0.2f);
+  lightningShader->setUniform("uLight.diffuse", 0.3f);
   lightningShader->setUniform("uViewMatrix", camera->getViewMatrix());
   lightningShader->setUniform("camera", camera->getPosition());
+  openGLCriticalError();
   level->getTerrain()->render(lightningShader, &viewProjectionMatrix);
-
-    //sphereShader12 = ShaderProgramCreator("cloth").attributeLocations(
-    //        sphere12->getVAO()->getAttributeLocations()).create();
+  openGLCriticalError();
 
   for (auto object: level->getObjects()) {
     object->render(lightningShader, &viewProjectionMatrix);
   }
   character->render(lightningShader, &viewProjectionMatrix);
+
+  cloudShader->use();
+  cloudShader->setUniform("uTime", *delta);
+  cloudShader->setUniform("uViewMatrix", (viewMatrix));
+  cloudShader->setUniform("uProjectionMatrix", (projectionMatrix));
+  cloudShader->setUniform("uViewProjectionMatrix", (projectionMatrix) * (viewMatrix));
+  // cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
+  // cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
+  level->getClouds()->render(cloudShader, &viewMatrix, &projectionMatrix);
+  //level->getClouds()->render(cloudShader, &viewProjectionMatrix, camera->getPosition());
 
   if(renderDebug) {
     debugShader->use();
@@ -211,6 +222,7 @@ void PlayState::draw(CGame *g, float *delta) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 }
+
 
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
@@ -249,6 +261,7 @@ void PlayState::update(CGame *g, float dt) {
   character->update(dt);
   character->setCharacterPosition(character->getPosition() + vec3(0.0f, 0.0f, 0.01f));
   level->getCamera()->setPosition(character->getPosition() + vec3(-1.5f*cameraPos, 0.5f, -5.0f));
+  level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getCamera()->getProjectionMatrix() * level->getCamera()->getViewMatrix(), level->getWind() * 0.05f);
 }
 
 void PlayState::handleKeyEvents(GLFWwindow *window,

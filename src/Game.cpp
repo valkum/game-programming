@@ -5,6 +5,7 @@
 #include <ACGL/Base/Settings.hh>
 #include "Helper.hh"
 
+using namespace ACGL::Utils;
 using namespace glm;
 using namespace ACGL::Base;
 
@@ -69,12 +70,14 @@ void CGame::changeState(CGameState *_game) {
   _game->init(this);
 }
 
+
 void CGame::draw(float* delta) {
   states.top()->draw(this, delta);
 }
 
-void CGame::update(float delta) {
-  states.top()->update(this, delta);
+void CGame::update(float dt) {
+  //debug()<<std::to_string(dt)<<std::endl;
+  states.top()->update(this, dt);
 }
 
 void CGame::handleMouseButtonEvents(GLFWwindow *window,
