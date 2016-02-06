@@ -7,6 +7,8 @@
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Types.hh>
 #include <vector>
+#include <glm/glm.hpp>
+#include "OurArrayBuffer.hh"
 
 struct Data{
   vec3 pos;
@@ -28,7 +30,7 @@ public:
 protected:
 private:
   ACGL::OpenGL::SharedVertexArrayObject vao;
-  ACGL::OpenGL::SharedArrayBuffer ab;
+  ACGL::OpenGL::SharedOurArrayBuffer ab;
   ACGL::OpenGL::SharedTexture2D cloudTex;
   uint_t cloudSize;
   uint_t particleAmount;
@@ -42,6 +44,7 @@ private:
   / Sozusagen kopie des ArrayBuffers. Ein Eintrag = ein Vertex.
   / Falls mehr als die Position pro Particle Nötig ist (ggf. Größe oder farbe.) muss das hier angepasst werden. */
   std::vector<Data> particleData;
+  std::vector<std::pair<float, CloudParticle*>> depthSort;
   uint_t deadParticleAmount = 0;
   uint_t viscRange = 2; //define range influential for viscosity
   uint_t gridCellSize = viscRange; //experimental multiplier

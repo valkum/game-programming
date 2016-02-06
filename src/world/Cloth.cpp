@@ -167,7 +167,7 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
             getParticle(x,y+1)->addToNormal(normal);
         }
     }
-    
+
     std::vector<Vertex> vertexData;
     for(int x = 0; x<num_particles_width-1; x++){
         vec3 uv = vec3(0);
@@ -183,7 +183,7 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
 
         }
     }
-    
+
 	// Give our vertices to OpenGL.
 
 
