@@ -43,7 +43,7 @@ private:
   / Falls mehr als die Position pro Particle Nötig ist (ggf. Größe oder farbe.) muss das hier angepasst werden. */
   std::vector<Data> particleData;
   uint_t deadParticleAmount = 0;
-  uint_t viscRange = 1; //define range influential for viscosity
+  uint_t viscRange = 2; //define range influential for viscosity
   uint_t gridCellSize = viscRange; //experimental multiplier
   uint_t max_x;
   uint_t max_z;
