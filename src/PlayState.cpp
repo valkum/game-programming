@@ -38,6 +38,8 @@ bool freeCamera = false;
 float testRotationAngle = 0;
 float cameraPos = 0;
 
+float speedBuildUp = 0.0f;
+
 bool aPressed = false;
 bool dPressed = false;
 bool wPressed = false;
@@ -134,7 +136,9 @@ void PlayState::init(CGame *game) {
   glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen->render(1);
   lastTime = glfwGetTime();
+
 }
+
 float cubicOut(float t) {
   float f = t - 1.0;
   return f * f * f + 1.0;
@@ -219,6 +223,8 @@ void PlayState::draw(CGame *g, float *delta) {
     loadingShader->setUniform("uTime", timeSinceStart);
     loadingShader->setUniform("uColor", vec3(0.99f,.99f,.99f));
     blendVAO->render();
+
+    speedBuildUp = 0.1f;
   }
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -240,6 +246,12 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
 void PlayState::update(CGame *g, float dt) {
   vec3 charPos = vec3(0.0f, 0.0f, 0.0f);
+
+  if (speedBuildUp < 1){
+    speedBuildUp *= 1.01;
+    cout << "speedUp: \t" << speedBuildUp << endl;
+  }
+
   if((aPressed && dPressed) || !(aPressed || dPressed)) {
     if(cameraPos < 0.f) {
       cameraPos += 0.05f;
@@ -267,7 +279,7 @@ void PlayState::update(CGame *g, float dt) {
   float radian = cameraPos * 45 * M_PI / 180;
   character->rotateZ(-radian);
 
-  charPos += vec3(0.0f, 0.0f, 0.4f);
+  charPos += speedBuildUp * vec3(0.0f, 0.0f, 0.4f);
   character->update(dt);
   character->setCharacterPosition(character->getPosition() + charPos);
   if(!freeCamera){

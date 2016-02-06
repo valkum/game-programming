@@ -4,7 +4,7 @@ project (Game)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/CMake/modules )
 
 if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE None CACHE STRING
+  set( CMAKE_BUILD_TYPE Debug CACHE STRING
        "Choose the type of build, options are: None Debug Release RelWithDebInfo
 MinSizeRel."
        FORCE )
