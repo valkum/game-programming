@@ -21,7 +21,7 @@ Object::Object(Model model, vec3 position, vec3 rotation) : Entity(
   // texture->generateMipmaps();
   // texture->setMinFilter(GL_NEAREST_MIPMAP_LINEAR);
   // texture->setMagFilter(GL_LINEAR);
-  debug() << "Scale of Object: " << model.getScale() << endl;
+  //debug() << "Scale of Object: " << model.getScale() << endl;
 }
 
 Object::Object() {}

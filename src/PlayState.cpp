@@ -33,12 +33,14 @@ Character *character;
 
 bool triggerWind = false;
 bool triggerMesh = false;
+bool freeCamera = false;
 
 float testRotationAngle = 0;
 float cameraPos = 0;
 
 bool aPressed = false;
 bool dPressed = false;
+bool wPressed = false;
 
 PositionGUI* positionGui;
 
@@ -65,7 +67,7 @@ void PlayState::init(CGame *game) {
 
   gui = new Gui(vg, game->g_window);
   GUIObject* fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
-  fpsGraph->setPosition(ivec2(400,400));
+  fpsGraph->setPosition(ivec2(10,60));
   fpsGraph->setSize(ivec2(200,35));
   loadingScreen->render(0.3);
 
@@ -79,10 +81,10 @@ void PlayState::init(CGame *game) {
   loadingScreen->render(0.5);
 
   positionGui = new PositionGUI(gui, "Position");
-  positionGui->setPosition(ivec2(20, 20));
+  positionGui->setPosition(ivec2(10, 20));
     
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
-  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.3f);
+  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.05f);
 
   debug() << "Geometry loaded" << endl;
 
@@ -237,6 +239,7 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
 
 void PlayState::update(CGame *g, float dt) {
+  vec3 charPos = vec3(0.0f, 0.0f, 0.0f);
   if((aPressed && dPressed) || !(aPressed || dPressed)) {
     if(cameraPos < 0.f) {
       cameraPos += 0.05f;
@@ -248,20 +251,33 @@ void PlayState::update(CGame *g, float dt) {
       cameraPos = 0;
     }
   }
-  else if(aPressed && cameraPos > -1.f) {
-    cameraPos -= 0.05f;
-  }else if(dPressed && cameraPos < 1.f) {
-    cameraPos += 0.05f;
+  else if(aPressed) {
+    if(cameraPos > -1.0f){
+      cameraPos -= 0.025f;
+    }
+    charPos += vec3(0.2f, 0.0f, 0.0f);
+  }else if(dPressed) {
+    if(cameraPos < 1.0f){
+      cameraPos += 0.025f;
+    }
+    charPos -= vec3(0.1f, 0.0f, 0.0f);
   }
 
   //testRotationAngle += 5.0f;
   float radian = cameraPos * 45 * M_PI / 180;
   character->rotateZ(-radian);
 
+  charPos += vec3(0.0f, 0.0f, 0.4f);
   character->update(dt);
-  character->setCharacterPosition(character->getPosition() + vec3(0.0f, 0.0f, 0.01f));
-  level->getCamera()->setPosition(character->getPosition() + vec3(-1.5f*cameraPos, 0.5f, -5.0f));
+  character->setCharacterPosition(character->getPosition() + charPos);
+  if(!freeCamera){
+    level->getCamera()->setPosition(character->getPosition() + vec3(-0.5f*cameraPos, 0.3f, -0.7f));
+  }
+  if(wPressed){
+    level->getCamera()->moveForward(10.0 * 0.05);
+  }
   level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getCamera()->getProjectionMatrix() * level->getCamera()->getViewMatrix(), level->getWind() * 0.05f);
+  positionGui->setCameraPosition(level->getCamera()->getPosition());
 }
 
 void PlayState::handleKeyEvents(GLFWwindow *window,
@@ -279,8 +295,8 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   if (action == GLFW_PRESS) {
     if (key == GLFW_KEY_W) { // upper case!
-      level->getCamera()->moveForward(timeElapsed * speed);
-      positionGui->setCameraPosition(level->getCamera()->getPosition());
+      wPressed = true;
+      debug()<<"Key W, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_S) { // upper case!
@@ -311,6 +327,9 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     if (key == GLFW_KEY_P) {
       renderDebug = !renderDebug;
     }
+    if (key == GLFW_KEY_O) {
+      freeCamera = !freeCamera;
+    }
     if (key == GLFW_KEY_UP) {
       //testRoatation = testRoatation + vec3(0.0f, 0.0f, 0.2f);
       testRotationAngle += 5.0f;
@@ -331,6 +350,10 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     if (key == GLFW_KEY_D) {
       dPressed = false;
       debug()<<"Key D, released"<<std::endl;
+    }
+    if (key == GLFW_KEY_W) {
+      wPressed = false;
+      debug()<<"Key W, released"<<std::endl;
     }
   }
 }
