@@ -26,6 +26,10 @@ public:
     this->texture = texture;
   }
 
+  inline Model getModel(){
+    return this->model;
+  }
+
   ACGL::OpenGL::SharedVertexArrayObject getVAO() { return model.getVAO(); }
 
 private:
