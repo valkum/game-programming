@@ -86,7 +86,7 @@ void PlayState::init(CGame *game) {
   positionGui->setPosition(ivec2(10, 20));
     
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
-  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.01f);
+  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.02f);
 
   debug() << "Geometry loaded" << endl;
 
@@ -295,7 +295,7 @@ void PlayState::update(CGame *g, float dt) {
   character->update(dt);
   character->setCharacterPosition(character->getPosition() + charPos);
   if(!freeCamera){
-    level->getCamera()->setPosition(character->getPosition() + vec3(-0.05f*cameraPos, 0.08f, -0.20f));
+    level->getCamera()->setPosition(character->getPosition() + vec3(-0.1f*cameraPos, 0.16f, -0.40f));
   }
   if(wPressed){
     level->getCamera()->moveForward(0.1f);
