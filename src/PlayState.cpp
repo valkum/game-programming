@@ -101,7 +101,7 @@ void PlayState::init(CGame *game) {
   positionGui->setPosition(ivec2(20, 20));
     
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
-  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.3f);
+  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.055f);
 
   debug() << "Geometry loaded" << endl;
 
