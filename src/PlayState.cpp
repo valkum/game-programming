@@ -249,7 +249,7 @@ void PlayState::update(CGame *g, float dt) {
   bool collision = false;
   if(level->collisionDetection(character->getPosition(), vec3(0.0f, 0.0f, 0.0f), character->getScale())){
     collision = true;
-    cout << "COLLISION WTF MATE!!!!!!!!!!1111eins elf" << endl;
+    //cout << "COLLISION WTF MATE!!!!!!!!!!1111eins elf" << endl;
   }
       
   vec3 charPos = vec3(0.0f, 0.0f, 0.0f);
@@ -274,12 +274,12 @@ void PlayState::update(CGame *g, float dt) {
     if(cameraPos > -1.0f){
       cameraPos -= 0.025f;
     }
-    charPos += vec3(0.2f, 0.0f, 0.0f);
+    charPos += vec3(0.025f, 0.0f, 0.0f);
   }else if(dPressed) {
     if(cameraPos < 1.0f){
       cameraPos += 0.025f;
     }
-    charPos -= vec3(0.1f, 0.0f, 0.0f);
+    charPos -= vec3(0.025f, 0.0f, 0.0f);
   }
 
   //testRotationAngle += 5.0f;
@@ -320,7 +320,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
   if (action == GLFW_PRESS) {
     if (key == GLFW_KEY_W) { // upper case!
       wPressed = true;
-      debug()<<"Key W, pressed, or repeated"<<std::endl;
+      //debug()<<"Key W, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_S) { // upper case!
@@ -333,7 +333,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
       aPressed = true;
-      debug()<<"Key A, pressed, or repeated"<<std::endl;
+      //debug()<<"Key A, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_D) { // upper case!
@@ -341,7 +341,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
       dPressed = true;
-      debug()<<"Key D, pressed, or repeated"<<std::endl;
+      //debug()<<"Key D, pressed, or repeated"<<std::endl;
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
