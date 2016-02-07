@@ -11,7 +11,7 @@
 class Object : public Entity {
 public:
 
-  Object(Model model,
+  Object(Model* model,
              vec3  position,
              vec3  rotation);
   Object();
@@ -26,14 +26,14 @@ public:
     this->texture = texture;
   }
 
-  inline Model getModel(){
+  inline Model* getModel(){
     return this->model;
   }
 
-  ACGL::OpenGL::SharedVertexArrayObject getVAO() { return model.getVAO(); }
+  ACGL::OpenGL::SharedVertexArrayObject getVAO() { return model->getVAO(); }
 
 private:
-  Model model;
+  Model* model;
   ACGL::OpenGL::SharedTexture2D texture;
 };
 

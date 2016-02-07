@@ -9,13 +9,12 @@ public:
   Model(std::string fileName,
         float       scale);
   Model(ACGL::OpenGL::SharedVertexArrayObject model,
-        float       scale, int primCount);
+        float       scale);
   Model();
   ~Model();
   inline float getScale() {
     return scale;
   }
-  inline int getPrimCount() {return primCount;};
   void setScale(float scale);
   void render();
 
@@ -25,7 +24,6 @@ private:
 
   ACGL::OpenGL::SharedVertexArrayObject object;
   float scale;
-  GLsizei primCount;
 };
 
 

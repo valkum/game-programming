@@ -186,7 +186,7 @@ void PlayState::draw(CGame *g, float *delta) {
   openGLCriticalError();
   level->getTerrain()->render(lightningShader, &viewProjectionMatrix);
   openGLCriticalError();
-
+  
   for (auto object: level->getObjects()) {
     object->render(lightningShader, &viewProjectionMatrix);
   }

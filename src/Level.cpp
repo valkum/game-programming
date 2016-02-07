@@ -2,6 +2,7 @@
 
 #include <ACGL/Utils/Log.hh>
 #include <unordered_map>
+#include "Model.hh"
 
 
 using namespace ACGL::Base;
@@ -35,21 +36,19 @@ void Level::load(){
     skyDome = new SkyDome(Model("SkyDome.obj", levelJson["skydome"]["scale"]), levelJson["skydome"]["texture"]);
     terrain = new Terrain(levelJson["mapSize"].at(0), levelJson["mapSize"].at(1));
 
-    std::unordered_map<string, std::pair<ACGL::OpenGL::SharedVertexArrayObject, GLsizei>> geometries;
+    std::unordered_map<string, Model*> geometries;
     for (auto object : levelJson["objects"]) {
+      // Suche ob die geomtrie datei schon geladen wurde.
       auto search = geometries.find(object["model"]);
-      GLsizei primCount = 1;
-      if(search != geometries.end()){
-        search->second.second++;
-        primCount = search->second.second;
-        levelObjects.push_back(new Object(Model(search->second.first, object["scale"], primCount), parseVec3(object["position"]), parseVec3(object["rotation"])));
-      } else {
-        auto vao = ACGL::OpenGL::VertexArrayObjectCreator(object["model"].get<string>()).create();
-        geometries.insert(std::pair<string, std::pair<ACGL::OpenGL::SharedVertexArrayObject, GLsizei>>(object["model"].get<string>(), std::pair<ACGL::OpenGL::SharedVertexArrayObject, GLsizei>(vao, 1)));
-        levelObjects.push_back(new Object(Model(vao, object["scale"], primCount), parseVec3(object["position"]), parseVec3(object["rotation"])));
+      if(search != geometries.end()){ // Wenn ja, dann nehme dieses Model für das Object.
+        levelObjects.push_back(new Object(search->second, parseVec3(object["position"]), parseVec3(object["rotation"])));
+      } else { // Falls nicht, füge ein neues Model dazu.
+        auto model = new Model(object["model"].get<string>(), object["scale"]);
+        geometries.insert(std::pair<string, Model*>(object["model"].get<string>(), model));
+        levelObjects.push_back(new Object(model, parseVec3(object["position"]), parseVec3(object["rotation"])));
       }
-      
     }
+    debug()<<geometries.size()<<" different geometries loaded"<<std::endl;
 
     clouds = new Clouds(levelJson["clouds"].at(0), levelJson["clouds"].at(1), levelJson["mapSize"].at(0), levelJson["mapSize"].at(1));
     globalWind = parseVec3(levelJson["globalWind"]);
@@ -90,7 +89,7 @@ bool Level::collisionDetection(vec3 charPos, vec3 charRotation, float charScale)
 
   for(auto const& building: levelObjects){
     buildingPos = building->getPosition();
-    buildingScale = building->getModel().getScale();
+    buildingScale = building->getModel()->getScale();
 
 
     boundingBox buildingBox = {
