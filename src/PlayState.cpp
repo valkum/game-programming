@@ -58,6 +58,25 @@ void PlayState::init(CGame *game) {
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  // Create Texture to store Depth information
+  zBufferTexture = SharedTexture2D(new Texture2D(uvec2(256,256), GL_DEPTH_COMPONENT24));
+  zBufferTexture->setObjectLabel("zBufferTexture");
+  zBufferTexture->setMinFilter(GL_NEAREST);
+  zBufferTexture->setMagFilter(GL_NEAREST);
+  zBufferTexture->setWrapS(GL_CLAMP_TO_EDGE);
+  zBufferTexture->setWrapT(GL_CLAMP_TO_EDGE);
+  zBufferTexture->setCompareMode(GL_COMPARE_REF_TO_TEXTURE);
+
+  zBuffer = SharedFrameBufferObject(new FrameBufferObject());
+  zBuffer->setObjectLabel("zBuffer");
+  zBuffer->setDepthTexture(zBufferTexture);
+  glDrawBuffer(GL_NONE);
+  zBuffer->validate();
+
+  //Swap back to FBO 0
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDrawBuffer(GL_BACK);
+
 
   //camera.setVerticalFieldOfView(95.0);
   // camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
@@ -119,6 +138,8 @@ void PlayState::init(CGame *game) {
 
   lightningShader = ShaderProgramCreator("lightningShader").attributeLocations(
     vao->getAttributeLocations()).create();
+  depthShader = ShaderProgramCreator("depth").attributeLocations(
+    vao->getAttributeLocations()).create();
 
   debugShader =
   ShaderProgramCreator("debug").attributeLocations(vao->getAttributeLocations()).create();
@@ -141,25 +162,50 @@ float cubicOut(float t) {
 void PlayState::draw(CGame *g, float *delta) {
   timeSinceStart += glfwGetTime() - lastTime;
   lastTime = glfwGetTime();
+  ACGL::Scene::GenericCamera* camera = level->getCamera();
+  glm::mat4 viewMatrix = camera->getViewMatrix();
+  glm::mat4 projectionMatrix = camera->getProjectionMatrix();
+  glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+
+  // Render to Z Depth Buffer
+  zBuffer->bind();
+  glEnable(GL_DEPTH_TEST);
+  glDrawBuffer(GL_NONE);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glViewport(0, 0, 256,256);
+
+  depthShader->use();
+  openGLCriticalError();
+  level->getTerrain()->render(depthShader, &viewProjectionMatrix);
+  openGLCriticalError();
+
+  for (auto object: level->getObjects()) {
+    object->render(depthShader, &viewProjectionMatrix);
+  }
+  character->render(depthShader, &viewProjectionMatrix);
+
+  if(!zBuffer->isFrameBufferObjectComplete()) {
+    error()<<"Framebuffer incomplete, unknown error occured during shadow generation!"<<std::endl;
+  }
+  // Render to Screen
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDrawBuffer(GL_BACK);
+
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  glViewport(0, 0, g->g_windowSize.x,g->g_windowSize.y);
   // @TODO: render white fade in if glfwGetTme() < levelStartTime + 1
 
   if(renderDebug) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   }
 
-  ACGL::Scene::GenericCamera* camera = level->getCamera();
-  glm::mat4 viewMatrix = camera->getViewMatrix();
-  glm::mat4 projectionMatrix = camera->getProjectionMatrix();
-  glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
-
-  level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
 
   glDepthFunc(GL_LEQUAL);
   // Workarround needed somhow for nanovg, as nanovg calls glActiveTexture(...).
   // Found no proper way for use with ACGL if this is nessecary with more than one texture.
   // Saxum works without I think.
+  level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
   level->getSkydome()->getTexture()->bind(2);
   skydomeShader->use();
   level->getSkydome()->render(skydomeShader, &viewProjectionMatrix);
@@ -186,6 +232,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
   cloudShader->use();
   cloudShader->setUniform("uTime", *delta);
+  cloudShader->setTexture("uZBuffer", zBufferTexture, 4);
   cloudShader->setUniform("uViewMatrix", (viewMatrix));
   cloudShader->setUniform("uProjectionMatrix", (projectionMatrix));
   cloudShader->setUniform("uViewProjectionMatrix", (projectionMatrix) * (viewMatrix));
@@ -207,19 +254,18 @@ void PlayState::draw(CGame *g, float *delta) {
   openGLCriticalError();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   gui->drawAll();
-  
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_DEPTH_TEST);
 
 
   if(timeSinceStart <= 3.0f) {
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     SharedShaderProgram loadingShader= loadingScreen->getShader();
     loadingShader->use();
     loadingShader->setUniform("uTime", timeSinceStart);
     loadingShader->setUniform("uColor", vec3(0.99f,.99f,.99f));
     blendVAO->render();
   }
-  glEnable(GL_DEPTH_TEST);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
 }
 
@@ -277,7 +323,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   double speed = 10.0;        // magic value to scale the camera speed
 
-  if (action == GLFW_PRESS) {
+  if (action == GLFW_PRESS || action == GLFW_REPEAT) {
     if (key == GLFW_KEY_W) { // upper case!
       level->getCamera()->moveForward(timeElapsed * speed);
       positionGui->setCameraPosition(level->getCamera()->getPosition());

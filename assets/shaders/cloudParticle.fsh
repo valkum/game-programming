@@ -5,18 +5,24 @@
 // in vec2 vPosition;
 in vec2 vTexCoords;
 in vec4 gRGBA;
+in float gDepth;
 
 out vec4 oColor;
 
 uniform sampler2D uTexture;
+uniform sampler2D uZBuffer;
 uniform vec4 uColor;
 uniform float uTime;
 void main()
 { 
+    vec2 coord = gl_FragCoord.xy / vec2(640,360);
+    float depthMapDepth = -texture(uZBuffer, coord).z;
     vec4 color = texture(uTexture, vTexCoords);
+    float scale = 0.2f;
+    float fade = clamp((depthMapDepth - gDepth)*scale, 0.0, 1.0);
+
     //TODO: implement soft particles (ie whenn colliding with opaque vertices)
-    color.a *= gRGBA.a;
-    oColor = color;
+    oColor = vec4(vec3(color), color.a * fade * gRGBA.a);
 
     // vec4 color = vec4(cnoise(vPosition+17.0), cnoise(vPosition), cnoise(vPosition+24.0), 1.0);
     //oColor = color;

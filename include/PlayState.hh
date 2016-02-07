@@ -13,6 +13,7 @@
 #include "world/SkyScraper.hh"
 #include "world/Terrain.hh"
 #include "LoadingScreen.hh"
+#include <ACGL/OpenGL/Objects/FrameBufferObject.hh>
 #include <ACGL/Scene/GenericCamera.hh>
 
 #include <ACGL/OpenGL/Creator/VertexArrayObjectCreator.hh>
@@ -64,7 +65,10 @@ private:
   SharedShaderProgram lightningShader;
   SharedShaderProgram cloudShader;
   SharedShaderProgram clothShader;
+  SharedShaderProgram depthShader;
   SharedVertexArrayObject blendVAO;
+  SharedTexture2D zBufferTexture;
+  SharedFrameBufferObject zBuffer;
   SharedArrayBuffer   debug_ab;
   SharedVertexArrayObject debug_vao;
   SharedShaderProgram     debugShader;

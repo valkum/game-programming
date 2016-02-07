@@ -87,8 +87,9 @@ int createWindow() {
 
   // request an OpenGL debug context:
   // @TODO: Only to this when the Debug define is defined.
+#ifdef DEBUG
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-
+#endif
 
   /* Create a windowed mode window and its OpenGL context */
 
