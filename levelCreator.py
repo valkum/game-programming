@@ -10,15 +10,14 @@ class Skyscraper(object):
     def __init__(self, positionX, positionY):
         self.model = "SkyScraper.obj"
         self.scale = random.uniform(0.7, 1.4)
-        self.position = [positionX-128, 0.0, positionY]
+        self.position = [positionX, 0.0, positionY]
         self.rotation = [random.uniform(math.radians(-15), math.radians(15)), 0.0, 0.0]
 
 def in_circle(center_x, center_y, list, radius):
     for i in xrange(len(list)):
-        #if not (center_x == list[i][0] and center_x == list[i][1]):
         dist = math.sqrt((center_x - list[i][0]) ** 2 + (center_y - list[i][1]) ** 2)
         if(dist < radius):
-            print str(list[i][0]) + "\t" + str(list[i][1]) + "\t" + "fuck"
+            #print str(list[i][0]) + "\t" + str(list[i][1]) + "\t" + "fuck"
             return True
     return False
 
@@ -26,36 +25,33 @@ width = 256
 height = 1024
 N = 4096
 
-v1 = np.array([-width/2,height])
-v2 = np.array([width,0])
+r1 = np.random.rand(N/3)
+r2 = np.random.rand(N/3)
 
-r1 = np.random.rand(N)
-r2 = np.random.rand(N)
+x = [(-(width/2) * r1[i]) + (width * r2[i]) for i in xrange(N/3)]
+y = [(height*r1[i]/3) for i in xrange(N/3)]
 
+hull_path = Path([(0,0), (-0.5*width, 1*height/3), (0.5*width, 1*height/3)])
 
-x = [(-(width/2) * r1[i]) + (width * r2[i]) for i in xrange(N)]
-y = [(height*r1[i]) for i in xrange(N)]
+list = [(x[i],y[i]) for i in xrange(N/3) if hull_path.contains_point((x[i],y[i]))]
+sortedListShortened = [var for var in list if var[1] > 40]
 
-hull_path = Path([(0,0), (-0.5*width,1*height), (0.5*width,1*height)])
+blockList = [(random.uniform(-width/2, width/2), random.uniform(height/3, height)) for i in xrange(2*N/3)]
 
-list = [(x[i],y[i]) for i in xrange(N) if hull_path.contains_point((x[i],y[i]))]
-sortedList = sorted(list, key=lambda x: x[1])
-sortedListShortened = [var for var in sortedList if var[1] > 40]
-listLen = len(sortedListShortened)
-sortedListFinal = [sortedListShortened[i] for i in xrange(listLen-1) if not (in_circle(sortedListShortened[i][0], sortedListShortened[i][1], sortedListShortened[i+1:listLen], 2.8))]
-
-
-print [var[1] for var in sortedListFinal]
+temp = sortedListShortened + blockList
+sortedList = sorted(temp, key=lambda x: x[1])
+listLen = len(sortedList)
+sortedListFinal = [sortedList[i] for i in xrange(listLen-1) if not (in_circle(sortedList[i][0], sortedList[i][1], sortedList[i+1:listLen], 5))]
 
 colors = np.random.rand(N)
 area = 1
 
-plt.scatter(np.asarray([finalX[0] for finalX in sortedListShortened]), np.asarray([finalY[1] for finalY in sortedListShortened]), color='r' ,s=area, alpha=0.5)
+plt.scatter(np.asarray([finalX[0] for finalX in temp]), np.asarray([finalY[1] for finalY in temp]), color='r' ,s=area, alpha=0.5)
 plt.scatter(np.asarray([finalX[0] for finalX in sortedListFinal]), np.asarray([finalY[1] for finalY in sortedListFinal]), s=area, alpha=0.5)
 plt.show()
 
 #scraperList = [Skyscraper(x[i], y[i]) for i in xrange(N)]
-scraperList = [Skyscraper(x[i], y[i]) for i in xrange(N)]
+scraperList = [Skyscraper(sortedListFinal[i][0], sortedListFinal[i][1]) for i in xrange(len(sortedListFinal))]
 
 def jdefault(o):
     return o.__dict__
