@@ -23,7 +23,7 @@ else()
   set(CMAKE_C_FLAGS "-std=c11 ${C_FLAGS_COMMON}")
 endif()
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
 # ACGL setup
