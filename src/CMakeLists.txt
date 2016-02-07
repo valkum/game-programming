@@ -40,7 +40,9 @@ FILE(GLOB_RECURSE SHADER_FILES "${CMAKE_SOURCE_DIR}/assets/shader/*.*")
 #
 # all we need for ACGL:
 #
-ADD_DEFINITIONS(-DACGL_ERROR_LEVEL_EC3)
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    ADD_DEFINITIONS(-DACGL_ERROR_LEVEL_EC3)
+endif()
 INCLUDE(${CMAKE_SOURCE_DIR}/lib/acgl/CMakeListsStaticInclude.txt)
 #
 #
