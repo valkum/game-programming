@@ -37,7 +37,7 @@ private:
   int levelWidth = 0;
   float half = 0;
   int levelLength = 0;
-  int viewDistance = 100;
+  int viewDistance = 50;
   uint_t lastUsedParticle = 0;
   std::vector<CloudParticle> particles;
   /* Hier sind die Position der Particles gespeichert zum einfachen senden an die Grafikkarte. 

@@ -52,7 +52,7 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudS
   half = (width/2.0f);
 	for (uint_t i = 0; i < amount; ++i)
 	{
-		spawnCloud(cloudSize, -half, (float)width, 0.0f, std::min((float)viewDistance, (float)length));
+		spawnCloud(cloudSize, std::max(-half, -25.0f), std::min((float)width,50.0f), 0.0f, std::min((float)viewDistance, (float)length));
 	}
 
   //alloc sort grid
@@ -171,7 +171,7 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
   //respawn dead clouds
   while(deadParticleAmount > cloudSize && camPos.z+(float)viewDistance < levelLength) {
     debug()<<"spawning, free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
-    spawnCloud(cloudSize, -half, (float)levelWidth, camPos.z+(float)viewDistance, 0.0f);
+    spawnCloud(cloudSize, camPos.x-25.0f, 50.0f, camPos.z+(float)viewDistance, 0.0f);
     deadParticleAmount -= cloudSize;
   }
 
@@ -212,10 +212,10 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
       x = std::max(std::min(((uint_t)floor(floor(particle.Position.x+half)/(gridCellSize))),max_x),(uint_t)0); //assign x grid coord in [0, levelWidth]
       z = std::max(std::min(((uint_t)floor(floor(particle.Position.z)/(gridCellSize))),max_z),(uint_t)0); //assign z grid coord in [0, levelLength]
       //char collision:
-      dist = distance(particle.Position, camPos+vec3(0,0,2));
+      dist = distance(particle.Position, camPos+vec3(0,0,5));
       direction = particle.Position - (camPos+vec3(0,0,2));
       direction.y=0.0f;
-      if(dist < 1.0f) particle.Velocity += direction/(2*dist);
+      if(dist < 1.0f) particle.Velocity += direction/(5*dist);
 
       //environment collision
 
