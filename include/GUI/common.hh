@@ -30,8 +30,8 @@ public:
 struct Theme {
   Color mDropShadow                   = Color(  0,   0,   0, 128);
   Color mTransparent                  = Color(  0,   0,   0,   0);
-  Color mBorderDark                   = Color( 29,  29,  29, 255);
-  Color mBorderLight                  = Color( 92,  92,  92, 255);
+  Color mBorderDark                   = Color( 128,  128,  128, 255);
+  Color mBorderLight                  = Color( 200,  200,  200, 255);
   Color mBorderMedium                 = Color( 35,  35,  35, 255);
   Color mTextColor                    = Color(255, 255, 255, 160);
   Color mDisabledTextcolor            = Color(255, 255, 255,  80);
@@ -47,7 +47,7 @@ struct Theme {
   int mStandardFontSize                 = 16;
   int mButtonFontSize                   = 20;
   int mTextBoxFontSize                  = 20;
-  int mWindowCornerRadius               = 2;
+  int mWindowCornerRadius               = 1;
   int mWindowHeaderHeight               = 30;
   int mWindowDropShadowSize             = 10;
   int mButtonCornerRadius               = 2;

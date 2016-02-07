@@ -18,14 +18,9 @@ IntroState  IntroState::m_IntroState;
 
 class IntroState;
 void IntroState::init(CGame *game) {
-
+  glClearColor(1.0, 1.0, 1.0, 1.0);
 
   gui = new Gui(vg, game->g_window);
-
-  PerfGraph *graph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
-  graph->setBackgroundColor(Color(0,0,0,128));
-  graph->setPosition(ivec2(400,400));
-  graph->setSize(ivec2(200,35));
 
   Button *playButton = new Button(gui, "Play");
   playButton->setCallback([&] {
@@ -33,9 +28,10 @@ void IntroState::init(CGame *game) {
     CGame *g = CGame::instance();
     g->changeState(PlayState::instance());
   });
-  playButton->setBackgroundColor(Color(100, 255, 100, 128));
-  playButton->setPosition(ivec2(200, 170));
-  playButton->setSize(ivec2(170, 28));
+  playButton->setBackgroundColor(Color(255, 255, 255, 255));
+  playButton->setPosition(ivec2(20, 170));
+  playButton->setTextColor(Color(0, 0, 0, 255));
+  playButton->setSize(ivec2(170, 50));
 
   Button *closeButton = new Button(gui, "Exit!");
   closeButton->setCallback([&] {
@@ -43,9 +39,9 @@ void IntroState::init(CGame *game) {
     CGame *g = CGame::instance();
     glfwSetWindowShouldClose(g->g_window, GL_TRUE);
   });
-  closeButton->setBackgroundColor(Color(255, 0, 0, 128));
-  closeButton->setPosition(ivec2(200, 200));
-  closeButton->setSize(ivec2(170, 28));
+  closeButton->setBackgroundColor(Color(128, 0, 0, 255));
+  closeButton->setPosition(ivec2(20, 230));
+  closeButton->setSize(ivec2(170, 50));
 }
 
 void IntroState::draw(CGame *game, float *delta) {
