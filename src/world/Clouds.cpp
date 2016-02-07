@@ -49,10 +49,10 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudS
 
   cloudTex = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("cloud_particle.png"));
 
-  half = -(width/2.0f);
+  half = (width/2.0f);
 	for (uint_t i = 0; i < amount; ++i)
 	{
-		spawnCloud(cloudSize, half, (float)width, 0.0f, std::min((float)viewDistance, (float)length));
+		spawnCloud(cloudSize, std::max(-half, -25.0f), std::min((float)width,50.0f), 0.0f, std::min((float)viewDistance, (float)length));
 	}
 
   //alloc sort grid
@@ -171,7 +171,7 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
   //respawn dead clouds
   while(deadParticleAmount > cloudSize && camPos.z+(float)viewDistance < levelLength) {
     debug()<<"spawning, free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
-    spawnCloud(cloudSize, half, (float)levelWidth, camPos.z+(float)viewDistance, 0.0f);
+    spawnCloud(cloudSize, camPos.x-25.0f, 50.0f, camPos.z+(float)viewDistance, 0.0f);
     deadParticleAmount -= cloudSize;
   }
 
@@ -181,7 +181,7 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
 
   for (CloudParticle& particle : particles)
   {
-    if (particle.Position.z < (camPos.z - 5) && particle.Life > 0.0f)
+    if ((particle.Position.z < (camPos.z - 5) || abs(particle.Position.x) > 1.5f * half) && particle.Life > 0.0f)
     { //kill particles in back of camera
       particle.Life = 0.0f;
       deadParticleAmount++;
@@ -193,6 +193,8 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
       // debug()<<"x->z/max_z "<<particle.Position.z<<"->"<<z<<"/"<<max_z<<endl;
       // debug()<<"addr "<<x+(max_x*z)<<endl;
       grid[x+(max_x*z)].push_back(&particle);
+
+      particle.Velocity *= 0.1f; //decay flow from last tick. this is done here already to avoid collision with viscosity code
     }
   }
 
@@ -209,14 +211,11 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
       //calculate grid position
       x = std::max(std::min(((uint_t)floor(floor(particle.Position.x+half)/(gridCellSize))),max_x),(uint_t)0); //assign x grid coord in [0, levelWidth]
       z = std::max(std::min(((uint_t)floor(floor(particle.Position.z)/(gridCellSize))),max_z),(uint_t)0); //assign z grid coord in [0, levelLength]
-
-			particle.Velocity *= 0.1f; //decay flow from last tick
-
       //char collision:
-      dist = distance(particle.Position, camPos+vec3(0,0,2));
+      dist = distance(particle.Position, camPos+vec3(0,0,5));
       direction = particle.Position - (camPos+vec3(0,0,2));
       direction.y=0.0f;
-      if(dist < 1.0f) particle.Velocity += direction/(2*dist);
+      if(dist < 1.0f) particle.Velocity += direction/(5*dist);
 
       //environment collision
 

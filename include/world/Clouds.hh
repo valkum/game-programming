@@ -37,7 +37,7 @@ private:
   int levelWidth = 0;
   float half = 0;
   int levelLength = 0;
-  int viewDistance = 100;
+  int viewDistance = 50;
   uint_t lastUsedParticle = 0;
   std::vector<CloudParticle> particles;
   /* Hier sind die Position der Particles gespeichert zum einfachen senden an die Grafikkarte. 
@@ -46,7 +46,7 @@ private:
   std::vector<Data> particleData;
   std::vector<std::pair<float, CloudParticle*>> depthSort;
   uint_t deadParticleAmount = 0;
-  uint_t viscRange = 1; //define range influential for viscosity
+  uint_t viscRange = 2; //define range influential for viscosity
   uint_t gridCellSize = viscRange; //experimental multiplier
   uint_t max_x;
   uint_t max_z;
