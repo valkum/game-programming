@@ -59,13 +59,10 @@ void PlayState::init(CGame *game) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Create Texture to store Depth information
-  zBufferTexture = SharedTexture2D(new Texture2D(uvec2(256,256), GL_DEPTH_COMPONENT24));
+  zBufferTexture = SharedTexture2D(new Texture2D(game->g_windowSize, GL_DEPTH_COMPONENT24));
   zBufferTexture->setObjectLabel("zBufferTexture");
   zBufferTexture->setMinFilter(GL_NEAREST);
   zBufferTexture->setMagFilter(GL_NEAREST);
-  zBufferTexture->setWrapS(GL_CLAMP_TO_EDGE);
-  zBufferTexture->setWrapT(GL_CLAMP_TO_EDGE);
-  zBufferTexture->setCompareMode(GL_COMPARE_REF_TO_TEXTURE);
 
   zBuffer = SharedFrameBufferObject(new FrameBufferObject());
   zBuffer->setObjectLabel("zBuffer");
@@ -171,10 +168,12 @@ void PlayState::draw(CGame *g, float *delta) {
   zBuffer->bind();
   glEnable(GL_DEPTH_TEST);
   glDrawBuffer(GL_NONE);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glViewport(0, 0, 256,256);
+  glClear(GL_DEPTH_BUFFER_BIT);
+  glViewport(0, 0, g->g_windowSize.x,g->g_windowSize.y);
 
   depthShader->use();
+  depthShader->setUniform("zFar", camera->getFarClippingPlane());
+  depthShader->setUniform("zNear", camera->getNearClippingPlane());
   openGLCriticalError();
   level->getTerrain()->render(depthShader, &viewProjectionMatrix);
   openGLCriticalError();
@@ -202,12 +201,10 @@ void PlayState::draw(CGame *g, float *delta) {
 
 
   glDepthFunc(GL_LEQUAL);
-  // Workarround needed somhow for nanovg, as nanovg calls glActiveTexture(...).
-  // Found no proper way for use with ACGL if this is nessecary with more than one texture.
-  // Saxum works without I think.
   level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
-  level->getSkydome()->getTexture()->bind(2);
+
   skydomeShader->use();
+  skydomeShader->setTexture("uTexture", level->getSkydome()->getTexture(), 2);
   level->getSkydome()->render(skydomeShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
@@ -232,10 +229,13 @@ void PlayState::draw(CGame *g, float *delta) {
 
   cloudShader->use();
   cloudShader->setUniform("uTime", *delta);
-  cloudShader->setTexture("uZBuffer", zBufferTexture, 4);
+  cloudShader->setTexture("uZBuffer", zBufferTexture, 3);
   cloudShader->setUniform("uViewMatrix", (viewMatrix));
   cloudShader->setUniform("uProjectionMatrix", (projectionMatrix));
   cloudShader->setUniform("uViewProjectionMatrix", (projectionMatrix) * (viewMatrix));
+  cloudShader->setUniform("zFar", camera->getFarClippingPlane());
+  cloudShader->setUniform("zNear", camera->getNearClippingPlane());
+  cloudShader->setUniform("uScreenSize", vec2(g->g_windowSize));
   // cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
   // cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
   level->getClouds()->render(cloudShader, &viewMatrix, &projectionMatrix);
@@ -306,7 +306,7 @@ void PlayState::update(CGame *g, float dt) {
 
   character->update(dt);
   character->setCharacterPosition(character->getPosition() + vec3(0.0f, 0.0f, 0.01f));
-  level->getCamera()->setPosition(character->getPosition() + vec3(-1.5f*cameraPos, 0.5f, -5.0f));
+  //level->getCamera()->setPosition(character->getPosition() + vec3(-1.5f*cameraPos, 0.5f, -5.0f));
   level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getCamera()->getProjectionMatrix() * level->getCamera()->getViewMatrix(), level->getWind() * 0.05f);
 }
 
@@ -335,7 +335,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_A) { // upper case!
-      //level->getCamera()->moveLeft(timeElapsed * speed);
+      level->getCamera()->moveLeft(timeElapsed * speed);
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
       aPressed = true;
@@ -343,7 +343,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_D) { // upper case!
-      //level->getCamera()->moveRight(timeElapsed * speed);
+      level->getCamera()->moveRight(timeElapsed * speed);
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
       dPressed = true;

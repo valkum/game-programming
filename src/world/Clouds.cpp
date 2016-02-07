@@ -330,7 +330,8 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
         data = {rit->second->Position, vec4(1)};
       } else {
         rit->second->Color.a = (glm::distance(camPos,rit->second->Position)/3.4f)+0.1f;
-        data = {rit->second->Position, rit->second->Color};
+        // data = {rit->second->Position, rit->second->Color};
+        data = {rit->second->Position, vec4(1)};
       }
       particleData.push_back(data);
     }
@@ -360,6 +361,7 @@ void Clouds::render(ACGL::OpenGL::SharedShaderProgram shader, glm::mat4 *viewMat
   shader->setUniform("uModelViewMatrix", (*viewMatrix) * modelMatrix);
   shader->setUniform("uMVP", (*projectionMatrix) * (*viewMatrix) * modelMatrix);
   shader->setUniform("uSize", vec2(0.5, 0.5));
+
 
 
   // Setze die Textur für den gerade ausgewählten shader. Nur einmal nötig. Pro Shader->use, bzw texture change.

@@ -1,6 +1,9 @@
 #version 330
 
-out vec4 oColor;
+uniform float zFar;
+uniform float zNear;
+//out vec4 oColor;
 void main() {
-    oColor = vec4(1.0);
+    //oColor = vec4(1.0);
+    gl_FragDepth = gl_FragCoord.z;
 }
