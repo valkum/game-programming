@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.spatial import ConvexHull
+from matplotlib.path import Path
 import json
 import random
 import math
@@ -9,18 +11,50 @@ class Skyscraper(object):
         self.model = "SkyScraper.obj"
         self.scale = random.uniform(0.7, 1.4)
         self.position = [positionX-128, 0.0, positionY]
-        self.rotation = [random.uniform(math.radians(-25), math.radians(25)), 0.0, 0.0]
+        self.rotation = [random.uniform(math.radians(-15), math.radians(15)), 0.0, 0.0]
 
+def in_circle(center_x, center_y, list, radius):
+    for i in xrange(len(list)):
+        #if not (center_x == list[i][0] and center_x == list[i][1]):
+        dist = math.sqrt((center_x - list[i][0]) ** 2 + (center_y - list[i][1]) ** 2)
+        if(dist < radius):
+            print str(list[i][0]) + "\t" + str(list[i][1]) + "\t" + "fuck"
+            return True
+    return False
+
+width = 256
+height = 1024
 N = 4096
-x = 256*np.random.rand(N)
-y = 1024*np.random.rand(N)
+
+v1 = np.array([-width/2,height])
+v2 = np.array([width,0])
+
+r1 = np.random.rand(N)
+r2 = np.random.rand(N)
+
+
+x = [(-(width/2) * r1[i]) + (width * r2[i]) for i in xrange(N)]
+y = [(height*r1[i]) for i in xrange(N)]
+
+hull_path = Path([(0,0), (-0.5*width,1*height), (0.5*width,1*height)])
+
+list = [(x[i],y[i]) for i in xrange(N) if hull_path.contains_point((x[i],y[i]))]
+sortedList = sorted(list, key=lambda x: x[1])
+sortedListShortened = [var for var in sortedList if var[1] > 40]
+listLen = len(sortedListShortened)
+sortedListFinal = [sortedListShortened[i] for i in xrange(listLen-1) if not (in_circle(sortedListShortened[i][0], sortedListShortened[i][1], sortedListShortened[i+1:listLen], 2.8))]
+
+
+print [var[1] for var in sortedListFinal]
+
 colors = np.random.rand(N)
-#area = np.pi * (15 * np.random.rand(N))**2  # 0 to 15 point radiuses
 area = 1
 
-plt.scatter(x, y, s=area, c=colors, alpha=0.5)
+plt.scatter(np.asarray([finalX[0] for finalX in sortedListShortened]), np.asarray([finalY[1] for finalY in sortedListShortened]), color='r' ,s=area, alpha=0.5)
+plt.scatter(np.asarray([finalX[0] for finalX in sortedListFinal]), np.asarray([finalY[1] for finalY in sortedListFinal]), s=area, alpha=0.5)
 plt.show()
 
+#scraperList = [Skyscraper(x[i], y[i]) for i in xrange(N)]
 scraperList = [Skyscraper(x[i], y[i]) for i in xrange(N)]
 
 def jdefault(o):
