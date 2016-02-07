@@ -86,7 +86,7 @@ void PlayState::init(CGame *game) {
   positionGui->setPosition(ivec2(10, 20));
     
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
-  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.05f);
+  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.01f);
 
   debug() << "Geometry loaded" << endl;
 
@@ -245,6 +245,13 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
 
 void PlayState::update(CGame *g, float dt) {
+  //if(level->collisionDetection(character->getPosition(), character->getRotation(), character->getScale())){
+  bool collision = false;
+  if(level->collisionDetection(character->getPosition(), vec3(0.0f, 0.0f, 0.0f), character->getScale())){
+    collision = true;
+    cout << "COLLISION WTF MATE!!!!!!!!!!1111eins elf" << endl;
+  }
+      
   vec3 charPos = vec3(0.0f, 0.0f, 0.0f);
 
   if (speedBuildUp < 1){
@@ -280,13 +287,18 @@ void PlayState::update(CGame *g, float dt) {
   character->rotateZ(-radian);
 
   charPos += speedBuildUp * vec3(0.0f, 0.0f, 0.4f);
+  if(!collision){
+    charPos += vec3(0.0f, 0.0f, 0.005f);
+  }else{
+    charPos = vec3(0.0f, 0.0f, 0.0f);
+  }
   character->update(dt);
   character->setCharacterPosition(character->getPosition() + charPos);
   if(!freeCamera){
-    level->getCamera()->setPosition(character->getPosition() + vec3(-0.5f*cameraPos, 0.3f, -0.7f));
+    level->getCamera()->setPosition(character->getPosition() + vec3(-0.05f*cameraPos, 0.08f, -0.20f));
   }
   if(wPressed){
-    level->getCamera()->moveForward(10.0 * 0.05);
+    level->getCamera()->moveForward(0.1f);
   }
   level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getCamera()->getProjectionMatrix() * level->getCamera()->getViewMatrix(), level->getWind() * 0.05f);
   positionGui->setCameraPosition(level->getCamera()->getPosition());
