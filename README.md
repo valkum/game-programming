@@ -5,6 +5,7 @@
 - [GLFW](http://www.glfw.org/)
 - GLM
 - OpenGL
+- ACGL
 
 ## Build
 For automated build use CMake with pkg-config.

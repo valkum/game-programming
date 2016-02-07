@@ -18,49 +18,92 @@
 using namespace glm;
 
 struct Vertex {
-            vec3 position;
-            vec3 uv;
-            vec3 normal;
-        };
+  vec3 position;
+  vec3 normal;
+};
 
-class Cloth : public Entity {
-	public:
-	Cloth(float width, float height, int num_particles_width, int num_particles_height);
+class Cloth {
+  private:
+    int num_particles_width;
+    int num_particles_height;
+    Entity *character;
 
-	void render(ACGL::OpenGL::SharedShaderProgram shader,
-    mat4                             *viewProjectionMatrix);
+    ACGL::OpenGL::SharedVertexArrayObject vao;
+    ACGL::OpenGL::SharedArrayBuffer ab;
 
-	void timeStep(float dt);
+    std::vector<Particle> particles;
+    std::vector<Constraint> constraints;
 
-	void addForce(const vec3 direction);
+    Particle* getParticle(int x, int y);
+    void makeConstraint(Particle *p1, Particle *p2);
 
-	void windForce(const vec3 direction);
+    void scaleCollisionModel(float scalar);
 
-	void ballCollision(const vec3 center,const float radius );
+    void insertTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 uv, std::vector<Vertex> &vertexData);
 
-	void doFrame();
-  ACGL::OpenGL::SharedVertexArrayObject getVAO() { return vao; }
+    vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
 
-private:
-	int num_particles_width;
-	int num_particles_height;
-  
-  ACGL::OpenGL::SharedVertexArrayObject vao;
-  ACGL::OpenGL::SharedArrayBuffer ab;
+    void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 direction);
 
-	std::vector<Particle> particles; 
-	std::vector<Constraint> constraints; 
+    void drawTriangle(Particle *p1, Particle *p2, Particle *p3);
+    
+  public:
+    Cloth(float width, float height, int num_particles_width, int num_particles_height, vec3 offset, Entity *character);
 
-	Particle* getParticle(int x, int y);
-	void makeConstraint(Particle *p1, Particle *p2);
+    vec3 getSphereOffset0();
+    vec3 getSphereOffset1();
+    vec3 getSphereOffset2();
+    vec3 getSphereOffset3();
+    vec3 getSphereOffset4();
+    vec3 getSphereOffset5();
+    vec3 getSphereOffset6();
+    vec3 getSphereOffset7();
+    vec3 getSphereOffset8();
+    vec3 getSphereOffset9();
+    vec3 getSphereOffset10();
+    vec3 getSphereOffset11();
+    vec3 getSphereOffset12();
+    vec3 getSphereOffset13();
+    vec3 getSphereOffset14();
+    vec3 getSphereOffset15();
+    vec3 getSphereOffset16();
+    vec3 getSphereOffset17();
+    vec3 getSphereOffset18();
 
-	void insertTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 uv, std::vector<Vertex> &vertexData);
+    float getSphereRadius0();
+    float getSphereRadius1();
+    float getSphereRadius2();
+    float getSphereRadius3();
+    float getSphereRadius4();
+    float getSphereRadius5();
+    float getSphereRadius6();
+    float getSphereRadius7();
+    float getSphereRadius8();
+    float getSphereRadius9();
+    float getSphereRadius10();
+    float getSphereRadius11();
+    float getSphereRadius12();
+    float getSphereRadius13();
+    float getSphereRadius14();
+    float getSphereRadius15();
+    float getSphereRadius16();
+    float getSphereRadius17();
+    float getSphereRadius18();
 
-	vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
+    void render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectionMatrix);
 
-	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const vec3 direction);
+    void timeStep(float dt);
 
-	void drawTriangle(Particle *p1, Particle *p2, Particle *p3);
+    void addForce(const vec3 direction);
+
+    void windForce(const vec3 direction);
+
+    void modelCollision();
+
+    void moveAnchorPoints(vec3 v);
+
+    void doFrame();
+    ACGL::OpenGL::SharedVertexArrayObject getVAO() { return vao; }
 };
 
 #endif

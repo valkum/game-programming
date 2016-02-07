@@ -70,6 +70,7 @@ void setGLFWHintsForOpenGLVersion(unsigned int _version)
   glfwWindowHint(GLFW_OPENGL_PROFILE,        GLFW_OPENGL_CORE_PROFILE);
     # endif // ifdef ACGL_OPENGL_PROFILE_CORE
 #endif // ifdef __APPLE__
+   glfwSwapInterval(0);
 }
 
 int createWindow() {
@@ -111,6 +112,7 @@ int run() {
     glfwTerminate();
     exit(-1);
   }
+
 
   glfwSetWindowTitle(g_window, "Himmel Build: none");
   glEnable(GL_MULTISAMPLE); 
@@ -154,7 +156,7 @@ int run() {
 
     // glfwGetFramebufferSize(g_window, &width, &height);
     game->draw(&extrapolation);
-    
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glfwSwapBuffers(g_window);
   }

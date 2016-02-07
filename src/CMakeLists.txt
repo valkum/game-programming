@@ -18,12 +18,13 @@ set(SOURCE_FILES
     Level.cpp
     LoadingScreen.cpp
     world/Entity.cpp
+    world/Cloth.cpp
+    world/Character.cpp
     world/Object.cpp
     world/SkyDome.cpp
     world/Terrain.cpp
     world/SkyScraper.cpp
     world/Clouds.cpp
-    world/Cloth.cpp
     GUI/common.cpp
     GUI/GUIObject.cpp
     GUI/Gui.cpp

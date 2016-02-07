@@ -6,14 +6,17 @@
 #include <ACGL/OpenGL/Objects.hh>
 #include <ACGL/Math/Math.hh>
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 #include <glm/gtc/random.hpp>
 #include <glm/gtc/constants.hpp>
 
 #include <iostream>
 #include <vector>
 #include "Model.hh"
+#include "world/Cloth.hh"
+#include "world/Character.hh"
 
-//#define TIME_STEPSIZE2 0.25f*0.25f
 // 1/64 Tickrate
 #define TIME_STEPSIZE2 0.0156f
 
@@ -26,6 +29,16 @@ using namespace ACGL::Scene;
 
 class PlayState;
 PlayState PlayState::m_PlayState;
+Character *character;
+
+bool triggerWind = false;
+bool triggerMesh = false;
+
+float testRotationAngle = 0;
+float cameraPos = 0;
+
+bool aPressed = false;
+bool dPressed = false;
 
 PositionGUI* positionGui;
 
@@ -67,6 +80,9 @@ void PlayState::init(CGame *game) {
 
   positionGui = new PositionGUI(gui, "Position");
   positionGui->setPosition(ivec2(20, 20));
+    
+  //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
+  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.055f);
 
   debug() << "Geometry loaded" << endl;
 
@@ -166,6 +182,7 @@ void PlayState::draw(CGame *g, float *delta) {
   for (auto object: level->getObjects()) {
     object->render(lightningShader, &viewProjectionMatrix);
   }
+  character->render(lightningShader, &viewProjectionMatrix);
 
   cloudShader->use();
   cloudShader->setUniform("uTime", *delta);
@@ -174,7 +191,6 @@ void PlayState::draw(CGame *g, float *delta) {
   cloudShader->setUniform("uViewProjectionMatrix", (projectionMatrix) * (viewMatrix));
   // cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
   // cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
-  glPointSize(10.f);
   level->getClouds()->render(cloudShader, &viewMatrix, &projectionMatrix);
   //level->getClouds()->render(cloudShader, &viewProjectionMatrix, camera->getPosition());
 
@@ -184,12 +200,9 @@ void PlayState::draw(CGame *g, float *delta) {
     for (auto object: level->getObjects()) {
       object->render(debugShader, &viewProjectionMatrix);
     }
+    character->render(debugShader, &viewProjectionMatrix);
   }
 
-  //glFlush();
-  // bring backbuffer to foreground
-  // SDL_GL_SwapBuffers();
-  //SwapBuffers(g_HDC);
 
   openGLCriticalError();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -210,15 +223,7 @@ void PlayState::draw(CGame *g, float *delta) {
 
 }
 
-void PlayState::update(CGame *g, float dt) {
 
-  level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getCamera()->getProjectionMatrix() * level->getCamera()->getViewMatrix(), level->getWind() * 0.05f);
-
-  // cloth->addForce(vec3(0.0f,-9.0f,0.0f)*dt); // add gravity each frame, pointing down
-  // glm::vec3 random = sphericalRand(0.5f);
-  // cloth->windForce((level->getWind()*0.03f+random)*dt); // generate some wind each frame
-  // cloth->timeStep(dt); // calculate the particle positions of the next frame
-}
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
   m_lastMousePos = m_mousePos;
@@ -230,11 +235,34 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
   positionGui->setCameraDirection(level->getCamera()->getForwardDirection());
 }
 
-void PlayState::handleMouseButtonEvents(GLFWwindow *window,
-                                        glm::vec2   mousePos,
-                                        int         button,
-                                        int         action,
-                                        int         mods) {}
+
+void PlayState::update(CGame *g, float dt) {
+  if((aPressed && dPressed) || !(aPressed || dPressed)) {
+    if(cameraPos < 0.f) {
+      cameraPos += 0.05f;
+    }
+    else if(cameraPos > 0.f) {
+      cameraPos -= 0.05f;
+    }
+    if(cameraPos<0.05f && cameraPos>-0.05f){
+      cameraPos = 0;
+    }
+  }
+  else if(aPressed && cameraPos > -1.f) {
+    cameraPos -= 0.05f;
+  }else if(dPressed && cameraPos < 1.f) {
+    cameraPos += 0.05f;
+  }
+
+  //testRotationAngle += 5.0f;
+  float radian = cameraPos * 45 * M_PI / 180;
+  character->rotateZ(-radian);
+
+  character->update(dt);
+  character->setCharacterPosition(character->getPosition() + vec3(0.0f, 0.0f, 0.01f));
+  level->getCamera()->setPosition(character->getPosition() + vec3(-1.5f*cameraPos, 0.5f, -5.0f));
+  level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getCamera()->getProjectionMatrix() * level->getCamera()->getViewMatrix(), level->getWind() * 0.05f);
+}
 
 void PlayState::handleKeyEvents(GLFWwindow *window,
                                 int         key,
@@ -249,7 +277,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   double speed = 10.0;        // magic value to scale the camera speed
 
-  if ((action == GLFW_PRESS) | (action == GLFW_REPEAT)) {
+  if (action == GLFW_PRESS) {
     if (key == GLFW_KEY_W) { // upper case!
       level->getCamera()->moveForward(timeElapsed * speed);
       positionGui->setCameraPosition(level->getCamera()->getPosition());
@@ -261,27 +289,48 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_A) { // upper case!
-      level->getCamera()->moveLeft(timeElapsed * speed);
-      positionGui->setCameraPosition(level->getCamera()->getPosition());
+      //level->getCamera()->moveLeft(timeElapsed * speed);
+      //positionGui->setCameraPosition(level->getCamera()->getPosition());
+      character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
+      aPressed = true;
+      debug()<<"Key A, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_D) { // upper case!
-      level->getCamera()->moveRight(timeElapsed * speed);
-      positionGui->setCameraPosition(level->getCamera()->getPosition());
+      //level->getCamera()->moveRight(timeElapsed * speed);
+      //positionGui->setCameraPosition(level->getCamera()->getPosition());
+      character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
+      dPressed = true;
+      debug()<<"Key D, pressed, or repeated"<<std::endl;
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
       if(showFrames) positionGui->show(); else positionGui->hide(); 
     }
-    if (key == GLFW_KEY_V) {
-      debug() << level->getCamera()->storeStateToString() << std::endl;
-    }
 
     if (key == GLFW_KEY_P) {
       renderDebug = !renderDebug;
     }
-    if (key == GLFW_KEY_R) {
-      ShaderProgramCreator("lightningShader").update(lightningShader);
+    if (key == GLFW_KEY_UP) {
+      //testRoatation = testRoatation + vec3(0.0f, 0.0f, 0.2f);
+      testRotationAngle += 5.0f;
+      float radian = testRotationAngle * M_PI / 180;
+      character->rotateZ(radian);
+    }
+    if (key == GLFW_KEY_DOWN) {
+      //testRoatation = testRoatation + vec3(0.0f, 0.0f, -0.2f);
+      testRotationAngle -= 5.0f;
+      float radian = testRotationAngle * M_PI / 180;
+      character->rotateZ(radian);
+    }
+  }else if(action == GLFW_RELEASE) {
+    if (key == GLFW_KEY_A) { 
+      debug()<<"Key A, released"<<std::endl;
+      aPressed = false;
+    }
+    if (key == GLFW_KEY_D) {
+      dPressed = false;
+      debug()<<"Key D, released"<<std::endl;
     }
   }
 }
@@ -291,3 +340,9 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 void PlayState::handleResizeEvents(GLFWwindow *window, glm::uvec2 windowSize) {
   level->getCamera()->resize(windowSize.x, windowSize.y);
 }
+
+void PlayState::handleMouseButtonEvents(GLFWwindow *window,
+                                        glm::vec2   mousePos,
+                                        int         button,
+                                        int         action,
+                                        int         mods) {}

@@ -11,7 +11,7 @@ std::string getExePath() {
     #ifdef __APPLE__
   _NSGetExecutablePath(exe_path, &bufsize);
     #else // ifdef __APPLE__
-  readlink("/proc/self/exe", exe_path, bufsize);
+  if(readlink("/proc/self/exe", exe_path, bufsize) == -1) return "";
     #endif // ifdef __APPLE__
   return dirname(exe_path);
 }

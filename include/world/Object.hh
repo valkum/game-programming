@@ -26,8 +26,9 @@ public:
     this->texture = texture;
   }
 
-private:
+  ACGL::OpenGL::SharedVertexArrayObject getVAO() { return model.getVAO(); }
 
+private:
   Model model;
   ACGL::OpenGL::SharedTexture2D texture;
 };
