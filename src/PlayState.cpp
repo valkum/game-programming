@@ -44,6 +44,8 @@ bool aPressed = false;
 bool dPressed = false;
 bool wPressed = false;
 
+bool collision = false;
+
 PositionGUI* positionGui;
 
 void PlayState::init(CGame *game) {
@@ -234,71 +236,79 @@ void PlayState::draw(CGame *g, float *delta) {
 
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
-  m_lastMousePos = m_mousePos;
-  m_mousePos = mousePos;
+  if(freeCamera){
+    m_lastMousePos = m_mousePos;
+    m_mousePos = mousePos;
 
-  //Update FPS Camera for Debug:
-  vec2 mouseDelta = (m_lastMousePos - m_mousePos);
-  level->getCamera()->FPSstyleLookAround(-mouseDelta.x/m_game->g_windowSize.x, -mouseDelta.y/m_game->g_windowSize.y);
-  positionGui->setCameraDirection(level->getCamera()->getForwardDirection());
+    //Update FPS Camera for Debug:
+    vec2 mouseDelta = (m_lastMousePos - m_mousePos);
+    level->getCamera()->FPSstyleLookAround(-mouseDelta.x/m_game->g_windowSize.x, -mouseDelta.y/m_game->g_windowSize.y);
+    positionGui->setCameraDirection(level->getCamera()->getForwardDirection());
+  }
 }
 
 
 void PlayState::update(CGame *g, float dt) {
-  //if(level->collisionDetection(character->getPosition(), character->getRotation(), character->getScale())){
-  bool collision = false;
-  if(level->collisionDetection(character->getPosition(), vec3(0.0f, 0.0f, 0.0f), character->getScale())){
-    collision = true;
-    //cout << "COLLISION WTF MATE!!!!!!!!!!1111eins elf" << endl;
-  }
-      
-  vec3 charPos = vec3(0.0f, 0.0f, 0.0f);
+  if (!collision){
+    if(level->collisionDetection(character->getPosition(), vec3(0.0f, 0.0f, 0.0f), character->getScale())){
+      collision = true;
+      //cout << "COLLISION WTF MATE!!!!!!!!!!1111eins elf" << endl;
+    }
 
-  if (speedBuildUp < 1){
-    speedBuildUp *= 1.01;
-    cout << "speedUp: \t" << speedBuildUp << endl;
-  }
+    vec3 charPos = vec3(0.0f, 0.0f, 0.0f);
 
-  if((aPressed && dPressed) || !(aPressed || dPressed)) {
-    if(cameraPos < 0.f) {
-      cameraPos += 0.05f;
+    if (speedBuildUp < 1){
+      speedBuildUp *= 1.01;
+      //cout << "speedUp: \t" << speedBuildUp << endl;
     }
-    else if(cameraPos > 0.f) {
-      cameraPos -= 0.05f;
-    }
-    if(cameraPos<0.05f && cameraPos>-0.05f){
-      cameraPos = 0;
-    }
-  }
-  else if(aPressed) {
-    if(cameraPos > -1.0f){
-      cameraPos -= 0.025f;
-    }
-    charPos += vec3(0.025f, 0.0f, 0.0f);
-  }else if(dPressed) {
-    if(cameraPos < 1.0f){
-      cameraPos += 0.025f;
-    }
-    charPos -= vec3(0.025f, 0.0f, 0.0f);
-  }
 
-  //testRotationAngle += 5.0f;
-  float radian = cameraPos * 45 * M_PI / 180;
-  character->rotateZ(-radian);
+    if((aPressed && dPressed) || !(aPressed || dPressed)) {
+      if(cameraPos < 0.f) {
+        cameraPos += 0.05f;
+      }
+      else if(cameraPos > 0.f) {
+        cameraPos -= 0.05f;
+      }
+      if(cameraPos<0.05f && cameraPos>-0.05f){
+        cameraPos = 0;
+      }
+    }
+    else if(aPressed) {
+      if(cameraPos > -1.0f){
+        cameraPos -= 0.025f;
+      }
+      charPos += vec3(0.025f, 0.0f, 0.0f);
+    }else if(dPressed) {
+      if(cameraPos < 1.0f){
+        cameraPos += 0.025f;
+      }
+      charPos -= vec3(0.025f, 0.0f, 0.0f);
+    }
 
-  charPos += speedBuildUp * vec3(0.0f, 0.0f, 0.4f);
-  if(!collision){
-    charPos += vec3(0.0f, 0.0f, 0.005f);
+    //testRotationAngle += 5.0f;
+    float radian = cameraPos * 45 * M_PI / 180;
+    character->rotateZ(-radian);
+
+    charPos += speedBuildUp * vec3(0.0f, 0.0f, 0.4f);
+    if(!collision){
+      charPos += vec3(0.0f, 0.0f, 0.005f);
+    }else{
+      charPos = vec3(0.0f, 0.0f, 0.0f);
+    }
+    character->update(dt);
+    character->setCharacterPosition(character->getPosition() + charPos);
+    if(!freeCamera){
+      level->getCamera()->setPosition(character->getPosition() + vec3(-0.1f*cameraPos, 0.16f, -0.40f));
+    }
+    if(wPressed){
+      level->getCamera()->moveForward(0.1f);
+    }
   }else{
-    charPos = vec3(0.0f, 0.0f, 0.0f);
-  }
-  character->update(dt);
-  character->setCharacterPosition(character->getPosition() + charPos);
-  if(!freeCamera){
-    level->getCamera()->setPosition(character->getPosition() + vec3(-0.1f*cameraPos, 0.16f, -0.40f));
-  }
-  if(wPressed){
-    level->getCamera()->moveForward(0.1f);
+    if(level->getCamera()->getPosition().y < 30 && !freeCamera){
+      level->getCamera()->setPosition(level->getCamera()->getPosition() + vec3(0.0f, 0.05f, 0.0f));
+    }else if(wPressed){
+      level->getCamera()->moveForward(0.1f);
+    }
   }
   level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getCamera()->getProjectionMatrix() * level->getCamera()->getViewMatrix(), level->getWind() * 0.05f);
   positionGui->setCameraPosition(level->getCamera()->getPosition());
