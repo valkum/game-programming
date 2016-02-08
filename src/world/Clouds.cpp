@@ -79,13 +79,15 @@ void Clouds::spawnCloud(uint_t size, float x, float width, float z, float length
     debug()<<" "<<count<<endl;
     }*/
 
+    std::vector<CloudParticle> toSmooth;
   	for (uint_t i = 0; i < size; ++i) {
     	CloudParticle &p = particles[firstUnusedParticle()];
+      toSmooth.push_back(p);
    		respawnParticle(p, lastPos, 0.0f, vec3(linearRand(0.0f, 1.0f), linearRand(0.0f, 0.4f), linearRand(0.0f, 1.0f)), 1.0f, 1.0f/*linearRand(10.0f, 15.0f)*/);
    		lastPos = p.Position;
    		if (abs(glm::distance(position, lastPos)) > 2.0f || distance(position.y, lastPos.y) > .4f) lastPos = position;
   	}
-  	smooth();
+  	smooth(toSmooth);
 }
 
 uint_t Clouds::firstUnusedParticle() {
@@ -119,15 +121,15 @@ void Clouds::respawnParticle(CloudParticle &particle, vec3 pos, float randomOffs
     particle.Velocity = velocity;
 }
 
-void Clouds::smooth() {
+void Clouds::smooth(std::vector<CloudParticle> toSmooth) {
   float distance = 0.0f;
   float neighbors;
   // Update all particles
-  for (uint_t i = 0; i < this->particleAmount; ++i)
+  for (CloudParticle& p : toSmooth)
   {
-      CloudParticle &p = this->particles[i];
-      if (p.Life > 0.0f) // particle is alive, thus update
-      {
+      // only alive particles should be in toSmooth
+      // if (p.Life > 0.0f) // particle is alive, thus update
+      // {
           neighbors = 0;
           //todo: optimize usingsearchgrid
           for (uint_t j = 0; j < this->particleAmount; ++j) // calculate liveness based on density of neighboring particles
@@ -151,7 +153,7 @@ void Clouds::smooth() {
           // debug() << "after: " << p.Life << endl;
           // p.Color.a -= tanh(p.Life);
           p.Color.a *= density;
-      }
+      // }
   }
 }
 

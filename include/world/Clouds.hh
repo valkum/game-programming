@@ -55,7 +55,7 @@ private:
   void spawnCloud(uint_t size = 100, float x = 0.0f, float width = 0.0f, float z = 0.0f, float length = 0.0f, float y = 1.5f, float height = 0.5f);
   uint_t firstUnusedParticle();
   void respawnParticle(CloudParticle &particle, vec3 pos, float randomOffset = 0.0f, glm::vec3 offset = vec3(0.0f), float alpha = 1.0f, float life = 10.0f, vec3 velocity = vec3(0));
-  void smooth();
+  void smooth(std::vector<CloudParticle> toSmooth);
 };
 
 #endif // CLOUD_HH
