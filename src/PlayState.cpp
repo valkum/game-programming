@@ -297,12 +297,14 @@ void PlayState::draw(CGame *g, float *delta) {
     if(win){
       Text* msg =new Text(eventGui, "You win!");
       msg->draw(eventGui->getContext());
-      msg->setPosition(ivec2(400, 300));
+      msg->setFontSize(55.0f);
+      msg->setPosition(ivec2(230, 250));
     }
     if(collision){
       Text* msg =new Text(eventGui, "You died!");
       msg->draw(eventGui->getContext());
-      msg->setPosition(ivec2(400, 300));
+      msg->setFontSize(55.0f);
+      msg->setPosition(ivec2(230, 250));
     }
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
     blendVAO->render();
