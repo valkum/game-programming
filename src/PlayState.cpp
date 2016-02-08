@@ -227,6 +227,18 @@ void PlayState::draw(CGame *g, float *delta) {
 
     speedBuildUp = 0.1f;
   }
+  if((win || collision) && level->getCamera()->getPosition().y >= 15.0f){
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    SharedShaderProgram loadingShader= loadingScreen->getShader();
+    loadingShader->use();
+    fadeOutOpacity *= 1.1f;
+    if (fadeOutOpacity >= 1.0f) {
+      fadeOutOpacity = 1.0f;
+    } 
+    loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
+    blendVAO->render();
+  }
+
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -310,18 +322,6 @@ void PlayState::update(CGame *g, float dt) {
     if(level->getCamera()->getPosition().y < 30 && !freeCamera){
       level->getCamera()->setPosition(level->getCamera()->getPosition() + vec3(0.0f, 0.05f, 0.0f));
 
-      if(level->getCamera()->getPosition().y > 15){
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        SharedShaderProgram loadingShader= loadingScreen->getShader();
-        loadingShader->use();
-        fadeOutOpacity *= 1.1f;
-        if(fadeOutOpacity >= 1.0f){
-          fadeOutOpacity = 1.0f;
-        }
-        cout << std::to_string(fadeOutOpacity) << endl;
-        loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, 1.0f));
-        blendVAO->render();
-      }
     }else if(wPressed && freeCamera){
       level->getCamera()->moveForward(0.1f);
     }
