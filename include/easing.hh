@@ -14,6 +14,9 @@ float cubicOut(float t) {
   return f * f * f + 1.0;
 }
 
+float cubicIn(float t) {
+  return t * t * t;
+}
 
 float quarticInOut(float t) {
   return t < 0.5

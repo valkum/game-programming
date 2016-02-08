@@ -308,7 +308,25 @@ void PlayState::update(CGame *g, float dt) {
   }else{
     if(level->getCamera()->getPosition().y < 30 && !freeCamera){
       level->getCamera()->setPosition(level->getCamera()->getPosition() + vec3(0.0f, 0.05f, 0.0f));
-    }else if(wPressed){
+
+      timeSinceStart = 0;
+      if(level->getCamera()->getPosition().y > 15){
+        timeSinceStart += glfwGetTime() - lastTime;
+        lastTime = glfwGetTime();
+        if(timeSinceStart >= 2){
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          SharedShaderProgram loadingShader= loadingScreen->getShader();
+          loadingShader->use();
+          float opacity = cubicIn(timeSinceStart/2); //3sec opacity from 1 to 0
+          if(timeSinceStart/2 >= 1){
+            opacity = 1.0f;
+          }
+          cout << std::to_string(opacity) << endl;
+          loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, opacity));
+          blendVAO->render();
+        }
+      }
+    }else if(wPressed && freeCamera){
       level->getCamera()->moveForward(0.1f);
     }
   }
