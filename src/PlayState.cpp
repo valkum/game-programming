@@ -137,6 +137,7 @@ void PlayState::init(CGame *game) {
   glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen->render(1);
   lastTime = glfwGetTime();
+  timeSinceStart = 0.0f;
 }
 
 void PlayState::draw(CGame *g, float *delta) {
@@ -380,6 +381,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       collision = false;
       speedBuildUp = 0.0f;
       fadeOutOpacity = 0.001f;
+      timeSinceStart = 0.0f;
     }
     if (key == GLFW_KEY_R) {
       level->reloadLevel();
