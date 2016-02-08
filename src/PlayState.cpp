@@ -51,9 +51,6 @@ bool wPressed = false;
 bool win = false;
 bool collision = false;
 
-PositionGUI* positionGui;
-GUIObject* fpsGraph;
-
 void PlayState::init(CGame *game) {
   loadingScreen = new LoadingScreen();
   loadingScreen->render(0.2);
@@ -91,11 +88,15 @@ void PlayState::init(CGame *game) {
   // camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
   // camera.setStateFromString("ACGL_GenericCamera | 1 | (-0.152289,1.16336,2.27811) | ((-0.999868,-0.00162319,-0.0161718),(0,0.995,-0.0998699),(0.0162531,-0.0998567,-0.994869)) | PERSPECTIVE_PROJECTION | MONO | EYE_LEFT | 75 | 1.33333 | 0.064 | 0.1 | 5000 | 500 | (0,0)");
 
-  eventGui = new Gui(vg, game->g_window);
+
   gui = new Gui(vg, game->g_window);
   fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
   fpsGraph->setPosition(ivec2(10,60));
   fpsGraph->setSize(ivec2(200,35));
+
+  eventGui = new Gui(vg, game->g_window);
+  msg = new Text(eventGui, "You win!");
+  msg->setFontSize(30.f);
   loadingScreen->render(0.3);
 
   level = new Level(game->cli_settings.levelId);
@@ -167,14 +168,17 @@ void PlayState::init(CGame *game) {
 void PlayState::draw(CGame *g, float *delta) {
   timeSinceStart += glfwGetTime() - lastTime;
   lastTime = glfwGetTime();
+
   ACGL::Scene::GenericCamera* camera = level->getCamera();
   glm::mat4 viewMatrix = camera->getViewMatrix();
   glm::mat4 projectionMatrix = camera->getProjectionMatrix();
   glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 
+
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   // Render to Z Depth Buffer
   zBuffer->bind();
-  // glDrawBuffer(GL_NONE);
+  glDrawBuffer(GL_NONE);
   glEnable(GL_DEPTH_TEST);
   glClear(GL_DEPTH_BUFFER_BIT);
   glViewport(0, 0, g->g_windowSize.x,g->g_windowSize.y);
@@ -263,24 +267,23 @@ void PlayState::draw(CGame *g, float *delta) {
   openGLCriticalError();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   gui->drawAll();
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  
+  glDisable(GL_DEPTH_TEST);
 
 
   if(timeSinceStart <= 3.0f) {
-    SharedShaderProgram loadingShader= loadingScreen->getShader();
+    SharedShaderProgram loadingShader = loadingScreen->getShader();
     loadingShader->use();
     float opacity = 1 - quarticInOut(timeSinceStart/3); //3sec opacity from 1 to 0
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, opacity));
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     blendVAO->render();
 
     speedBuildUp = 0.1f;
   }
   if((win || collision) && level->getCamera()->getPosition().y >= 15.0f){
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     SharedShaderProgram loadingShader= loadingScreen->getShader();
     loadingShader->use();
-    fadeOutOpacity *= 1.1f;
+    fadeOutOpacity *= 1.05f;
     if (fadeOutOpacity >= 1.0f) {
       fadeOutOpacity = 1.0f;
       // Hacky methode um wieder zum Menu zu kommen.
@@ -295,16 +298,17 @@ void PlayState::draw(CGame *g, float *delta) {
       fadeOutOpacity = 0.001f;
     } 
     if(win){
-      Text* msg =new Text(eventGui, "You win!");
-      msg->draw(eventGui->getContext());
-      msg->setPosition(ivec2(400, 300));
+      msg->setCaption("You won!");
+      msg->setPosition(ivec2(300, 250));
+      msg->setTextColor(vec4(0.75f, 0.75f, 0.75f, 1.f));
     }
     if(collision){
-      Text* msg =new Text(eventGui, "You died!");
-      msg->draw(eventGui->getContext());
-      msg->setPosition(ivec2(400, 300));
+      msg->setCaption("You died! Sad story.");
+      msg->setPosition(ivec2(200, 250));
+      msg->setTextColor(vec4(0.75f, 0.f, 0.f, 1.f));
     }
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     blendVAO->render();
     eventGui->drawAll();
   }
