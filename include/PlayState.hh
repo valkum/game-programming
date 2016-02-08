@@ -79,6 +79,9 @@ private:
   float lastTime;
 
   Gui* eventGui;
+  PositionGUI* positionGui;
+  GUIObject* fpsGraph;
+  Text* msg;
 
 };
 #endif // ifndef PLAYSTATE_H
