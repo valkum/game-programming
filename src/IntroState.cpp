@@ -22,6 +22,15 @@ void IntroState::init(CGame *game) {
 
   gui = new Gui(vg, game->g_window);
 
+  Text *title = new Text(gui, "HIMMEL");
+  title->setPosition(ivec2(200, 50));
+  title->setFontSize(55.f);
+  title->setTextColor(vec4(0.75f,0.75f,0.75f, 1.0f));
+
+  Text *copyright = new Text(gui, "Copyright by Rudi Floren, Sebastian Bockholt and Kim Brose");
+  copyright->setPosition(ivec2(200, 80));
+  copyright->setTextColor(vec4(0.75f,0.75f,0.75f, 1.0f));
+
   Button *playButton1 = new Button(gui, "Play Level 1");
   playButton1->setCallback([&] {
     CGame *g = CGame::instance();
