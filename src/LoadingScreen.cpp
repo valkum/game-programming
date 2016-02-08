@@ -65,7 +65,7 @@ void LoadingScreen::render(float value) {
 
     // modelMatrix = glm::translate(glm::vec3(2.f, -2.f, 0.f)) * triangleRotation;
     // shader->setUniform("uModelmatrix", modelMatrix);
-    shader->setUniform("uColor", glm::vec4(0.f, 0.f, 0.f, 0.0f));
+    shader->setUniform("uColor", glm::vec4(0.f, 0.f, 0.f, 1.0f));
     progressVAO->render();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

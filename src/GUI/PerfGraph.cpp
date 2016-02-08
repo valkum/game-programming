@@ -86,6 +86,9 @@ float PerfGraph::getGraphAverage()
 void PerfGraph::draw(NVGcontext* vg)
 {
 	GUIObject::draw(vg);
+	if(!mRender) {
+        return;
+    }
 	int i;
 	float avg;
 	char str[64];

@@ -68,6 +68,22 @@ void PlayState::init(CGame *game) {
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  // Create Texture to store Depth information
+  zBufferTexture = SharedTexture2D(new Texture2D(game->g_windowSize, GL_DEPTH_COMPONENT24));
+  zBufferTexture->setObjectLabel("zBufferTexture");
+  zBufferTexture->setMinFilter(GL_NEAREST);
+  zBufferTexture->setMagFilter(GL_NEAREST);
+
+  zBuffer = SharedFrameBufferObject(new FrameBufferObject());
+  zBuffer->setObjectLabel("zBuffer");
+  zBuffer->setDepthTexture(zBufferTexture);
+  glDrawBuffer(GL_NONE);
+  zBuffer->validate();
+
+  //Swap back to FBO 0
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDrawBuffer(GL_BACK);
+
 
   //camera.setVerticalFieldOfView(95.0);
   // camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
@@ -124,6 +140,8 @@ void PlayState::init(CGame *game) {
 
   lightningShader = ShaderProgramCreator("lightningShader").attributeLocations(
     vao->getAttributeLocations()).create();
+  depthShader = ShaderProgramCreator("depth").attributeLocations(
+    vao->getAttributeLocations()).create();
 
   debugShader =
   ShaderProgramCreator("debug").attributeLocations(vao->getAttributeLocations()).create();
@@ -143,27 +161,52 @@ void PlayState::init(CGame *game) {
 void PlayState::draw(CGame *g, float *delta) {
   timeSinceStart += glfwGetTime() - lastTime;
   lastTime = glfwGetTime();
+  ACGL::Scene::GenericCamera* camera = level->getCamera();
+  glm::mat4 viewMatrix = camera->getViewMatrix();
+  glm::mat4 projectionMatrix = camera->getProjectionMatrix();
+  glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+
+  // Render to Z Depth Buffer
+  zBuffer->bind();
+  // glDrawBuffer(GL_NONE);
+  glEnable(GL_DEPTH_TEST);
+  glClear(GL_DEPTH_BUFFER_BIT);
+  glViewport(0, 0, g->g_windowSize.x,g->g_windowSize.y);
+
+  depthShader->use();
+  depthShader->setUniform("zFar", camera->getFarClippingPlane());
+  depthShader->setUniform("zNear", camera->getNearClippingPlane());
+  openGLCriticalError();
+  level->getTerrain()->render(depthShader, &viewProjectionMatrix);
+  openGLCriticalError();
+
+  for (auto object: level->getObjects()) {
+    object->render(depthShader, &viewProjectionMatrix);
+  }
+  character->render(depthShader, &viewProjectionMatrix);
+
+  if(!zBuffer->isFrameBufferObjectComplete()) {
+    error()<<"Framebuffer incomplete, unknown error occured during shadow generation!"<<std::endl;
+  }
+  // Render to Screen
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  //glDrawBuffer(GL_BACK);
+
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  // glViewport(0, 0, g->g_windowSize.x,g->g_windowSize.y);
   // @TODO: render white fade in if glfwGetTme() < levelStartTime + 1
 
   if(renderDebug) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   }
 
-  ACGL::Scene::GenericCamera* camera = level->getCamera();
-  glm::mat4 viewMatrix = camera->getViewMatrix();
-  glm::mat4 projectionMatrix = camera->getProjectionMatrix();
-  glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
-
-  level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
 
   glDepthFunc(GL_LEQUAL);
-  // Workarround needed somhow for nanovg, as nanovg calls glActiveTexture(...).
-  // Found no proper way for use with ACGL if this is nessecary with more than one texture.
-  // Saxum works without I think.
-  level->getSkydome()->getTexture()->bind(2);
+  level->getSkydome()->setPosition(vec3(camera->getPosition().x, 0.0f, camera->getPosition().z));
+
   skydomeShader->use();
+  skydomeShader->setTexture("uTexture", level->getSkydome()->getTexture(), 2);
   level->getSkydome()->render(skydomeShader, &viewProjectionMatrix);
   glDepthFunc(GL_LESS);
 
@@ -189,9 +232,13 @@ void PlayState::draw(CGame *g, float *delta) {
 
   cloudShader->use();
   cloudShader->setUniform("uTime", *delta);
+  cloudShader->setTexture("uZBuffer", zBufferTexture, 3);
   cloudShader->setUniform("uViewMatrix", (viewMatrix));
   cloudShader->setUniform("uProjectionMatrix", (projectionMatrix));
   cloudShader->setUniform("uViewProjectionMatrix", (projectionMatrix) * (viewMatrix));
+  cloudShader->setUniform("zFar", camera->getFarClippingPlane());
+  cloudShader->setUniform("zNear", camera->getNearClippingPlane());
+  cloudShader->setUniform("uScreenSize", vec2(g->g_windowSize));
   // cloudShader->setUniform("uCameraRight_worldspace", vec3(camera->getViewMatrix()[0][0], camera->getViewMatrix()[1][0], camera->getViewMatrix()[2][0]));
   // cloudShader->setUniform("uCameraUp_worldspace", vec3(camera->getViewMatrix()[0][1], camera->getViewMatrix()[1][1], camera->getViewMatrix()[2][1]));
   level->getClouds()->render(cloudShader, &viewMatrix, &projectionMatrix);
@@ -210,11 +257,11 @@ void PlayState::draw(CGame *g, float *delta) {
   openGLCriticalError();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   gui->drawAll();
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   
 
 
   if(timeSinceStart <= 3.0f) {
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     SharedShaderProgram loadingShader= loadingScreen->getShader();
     loadingShader->use();
     float opacity = 1 - quarticInOut(timeSinceStart/3); //3sec opacity from 1 to 0
@@ -244,9 +291,7 @@ void PlayState::draw(CGame *g, float *delta) {
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
     blendVAO->render();
   }
-
   glEnable(GL_DEPTH_TEST);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 }
 
@@ -329,6 +374,7 @@ void PlayState::update(CGame *g, float dt) {
     if(level->getCamera()->getPosition().y < 30 && !freeCamera){
       level->getCamera()->setPosition(level->getCamera()->getPosition() + vec3(0.0f, 0.05f, 0.0f));
 
+
     }else if(wPressed && freeCamera){
       level->getCamera()->moveForward(0.1f);
     }
@@ -350,7 +396,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   double speed = 10.0;        // magic value to scale the camera speed
 
-  if (action == GLFW_PRESS) {
+  if (action == GLFW_PRESS || action == GLFW_REPEAT) {
     if (key == GLFW_KEY_W) { // upper case!
       wPressed = true;
     }
@@ -361,11 +407,17 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_A) { // upper case!
+      if(freeCamera){
+        level->getCamera()->moveLeft(timeElapsed * speed);
+      }
       character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
       aPressed = true;
     }
 
     if (key == GLFW_KEY_D) { // upper case!
+      if(freeCamera){
+        level->getCamera()->moveRight(timeElapsed * speed);
+      }
       character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
       dPressed = true;
     }
