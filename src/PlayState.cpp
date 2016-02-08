@@ -78,11 +78,8 @@ void PlayState::init(CGame *game) {
   fpsGraph->setSize(ivec2(200,35));
   loadingScreen->render(0.3);
 
-  if(game->cli_settings.flagLevel) {
-    level = new Level(game->cli_settings.levelId);
-  }else {
-    level = new Level("00000-00001");
-  }
+  level = new Level(game->cli_settings.levelId);
+
   //Level* level = new Level("00000-00001");
   level->load();
   loadingScreen->render(0.5);

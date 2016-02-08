@@ -22,15 +22,38 @@ void IntroState::init(CGame *game) {
 
   gui = new Gui(vg, game->g_window);
 
-  Button *playButton = new Button(gui, "Play Level 1");
-  playButton->setCallback([&] {
+  Button *playButton1 = new Button(gui, "Play Level 1");
+  playButton1->setCallback([&] {
     CGame *g = CGame::instance();
+    g->cli_settings.levelId = "00000-00001";
     g->changeState(PlayState::instance());
   });
-  playButton->setBackgroundColor(Color(230, 230, 230, 255));
-  playButton->setPosition(ivec2(20, 170));
-  playButton->setTextColor(Color(40, 40, 40, 255));
-  playButton->setSize(ivec2(170, 50));
+  playButton1->setBackgroundColor(Color(230, 230, 230, 255));
+  playButton1->setPosition(ivec2(20, 170));
+  playButton1->setTextColor(Color(40, 40, 40, 255));
+  playButton1->setSize(ivec2(170, 50));
+
+  Button *playButton2 = new Button(gui, "Play Level 2");
+  playButton2->setCallback([&] {
+    CGame *g = CGame::instance();
+    g->cli_settings.levelId = "00000-00002";
+    g->changeState(PlayState::instance());
+  });
+  playButton2->setBackgroundColor(Color(230, 230, 230, 255));
+  playButton2->setPosition(ivec2(20, 230));
+  playButton2->setTextColor(Color(40, 40, 40, 255));
+  playButton2->setSize(ivec2(170, 50));
+
+  Button *playButton3 = new Button(gui, "Play Level 3");
+  playButton3->setCallback([&] {
+    CGame *g = CGame::instance();
+    g->cli_settings.levelId = "00000-00003";
+    g->changeState(PlayState::instance());
+  });
+  playButton3->setBackgroundColor(Color(230, 230, 230, 255));
+  playButton3->setPosition(ivec2(20, 290));
+  playButton3->setTextColor(Color(40, 40, 40, 255));
+  playButton3->setSize(ivec2(170, 50));
 
   Button *closeButton = new Button(gui, "Return to Desktop");
   closeButton->setCallback([&] {
@@ -38,7 +61,7 @@ void IntroState::init(CGame *game) {
     glfwSetWindowShouldClose(g->g_window, GL_TRUE);
   });
   closeButton->setBackgroundColor(Color(100, 0, 0, 255));
-  closeButton->setPosition(ivec2(20, 230));
+  closeButton->setPosition(ivec2(20, 350));
   closeButton->setSize(ivec2(170, 50));
 }
 
