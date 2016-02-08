@@ -88,7 +88,6 @@ int createWindow() {
   // request an OpenGL debug context:
   // @TODO: Only to this when the Debug define is defined.
 #ifdef DEBUG
-  printf("test");
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
 

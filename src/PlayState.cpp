@@ -90,10 +90,8 @@ void PlayState::init(CGame *game) {
   positionGui = new PositionGUI(gui, "Position");
   positionGui->setPosition(ivec2(10, 20));
     
-  //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
   character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.02f);
 
-  debug() << "Geometry loaded" << endl;
 
   float quadVertices[] = {
     -1.f, -1.f, 0.f,
@@ -396,16 +394,13 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
   }else if(action == GLFW_RELEASE) {
     if (key == GLFW_KEY_A) { 
-      debug()<<"Key A, released"<<std::endl;
       aPressed = false;
     }
     if (key == GLFW_KEY_D) {
       dPressed = false;
-      debug()<<"Key D, released"<<std::endl;
     }
     if (key == GLFW_KEY_W) {
       wPressed = false;
-      debug()<<"Key W, released"<<std::endl;
     }
   }
 }

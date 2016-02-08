@@ -30,8 +30,8 @@ public:
 struct Theme {
   Color mDropShadow                   = Color(  0,   0,   0, 128);
   Color mTransparent                  = Color(  0,   0,   0,   0);
-  Color mBorderDark                   = Color( 29,  29,  29, 255);
-  Color mBorderLight                  = Color( 92,  92,  92, 255);
+  Color mBorderDark                   = Color( 128,  128,  128, 255);
+  Color mBorderLight                  = Color( 200,  200,  200, 255);
   Color mBorderMedium                 = Color( 35,  35,  35, 255);
   Color mTextColor                    = Color(255, 255, 255, 160);
   Color mDisabledTextcolor            = Color(255, 255, 255,  80);
@@ -39,15 +39,15 @@ struct Theme {
   Color mIconColor                    = Color(255, 255, 255, 160);
   Color mButtonGradientTopFocused     = Color( 64,  64,  64, 255);
   Color mButtonGradientBotFocused     = Color( 48,  48,  48, 255);
-  Color mButtonGradientTopUnfocused   = Color( 74,  74,  74, 255);
-  Color mButtonGradientBotUnfocused   = Color( 58,  58,  58, 255);
+  Color mButtonGradientTopUnfocused   = Color( 82,  82,  82, 100);
+  Color mButtonGradientBotUnfocused   = Color( 58,  58,  58, 100);
   Color mButtonGradientTopPushed      = Color( 41,  41,  41, 255);
   Color mButtonGradientBotPushed      = Color( 29,  29,  29, 255);
 
   int mStandardFontSize                 = 16;
   int mButtonFontSize                   = 20;
   int mTextBoxFontSize                  = 20;
-  int mWindowCornerRadius               = 2;
+  int mWindowCornerRadius               = 1;
   int mWindowHeaderHeight               = 30;
   int mWindowDropShadowSize             = 10;
   int mButtonCornerRadius               = 2;
