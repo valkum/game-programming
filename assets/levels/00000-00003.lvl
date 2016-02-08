@@ -23898,7 +23898,7 @@
   },
   "clouds": [20, 100],
   "skydome": {
-    "texture": "Sky.png",
+    "texture": "Sky3.png",
     "scale": 60.0
   },
   "loadingScreen": {
