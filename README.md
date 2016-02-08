@@ -5,6 +5,7 @@ Game Programming WS15/16 project by Rudi Floren 318099, Kim Brose 322935, Sebast
 ![Demo Screenshot Menu](assets/images/screenshot1.png)
 ![Demo Screenshot Game](assets/images/screenshot2.png)
 ![Demo Screenshot Game](assets/images/screenshot.png)
+![Demo webm](assets/videos/game.webm)
 
 ## Instructions
 You are a generic superhero flying through a city skyline!
