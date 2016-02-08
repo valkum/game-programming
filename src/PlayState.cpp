@@ -81,7 +81,7 @@ void PlayState::init(CGame *game) {
   if(game->cli_settings.flagLevel) {
     level = new Level(game->cli_settings.levelId);
   }else {
-    level = new Level("fffff-00000");
+    level = new Level("00000-00001");
   }
   //Level* level = new Level("00000-00001");
   level->load();
@@ -263,14 +263,12 @@ void PlayState::update(CGame *g, float dt) {
   if (!collision && !win){
     if(level->collisionDetection(character->getPosition(), vec3(0.0f, 0.0f, 0.0f), character->getScale())){
       collision = true;
-      //cout << "COLLISION WTF MATE!!!!!!!!!!1111eins elf" << endl;
     }
 
     vec3 charPos = vec3(0.0f, 0.0f, 0.0f);
 
     if (speedBuildUp < 1){
       speedBuildUp *= 1.01;
-      //cout << "speedUp: \t" << speedBuildUp << endl;
     }
 
     if((aPressed && dPressed) || !(aPressed || dPressed)) {
@@ -288,12 +286,12 @@ void PlayState::update(CGame *g, float dt) {
       if(cameraPos > -1.0f){
         cameraPos -= 0.025f;
       }
-      charPos += vec3(0.025f, 0.0f, 0.0f);
+      charPos += vec3(0.05f, 0.0f, 0.0f);
     }else if(dPressed) {
       if(cameraPos < 1.0f){
         cameraPos += 0.025f;
       }
-      charPos -= vec3(0.025f, 0.0f, 0.0f);
+      charPos -= vec3(0.05f, 0.0f, 0.0f);
     }
 
     //testRotationAngle += 5.0f;
