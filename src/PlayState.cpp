@@ -52,6 +52,7 @@ bool win = false;
 bool collision = false;
 
 void PlayState::init(CGame *game) {
+  glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen = new LoadingScreen();
   loadingScreen->render(0.2);
   renderDebug = false;
@@ -159,7 +160,6 @@ void PlayState::init(CGame *game) {
 
   loadingScreen->render(0.9);
   openGLCriticalError();
-  glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen->render(1);
   lastTime = glfwGetTime();
   timeSinceStart = 0.0f;
