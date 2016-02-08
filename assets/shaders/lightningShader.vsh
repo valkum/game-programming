@@ -22,6 +22,7 @@ uniform mat4 uViewMatrix;
 uniform mat3 uNormalMatrix;
 uniform vec3 camera;
 uniform Light uLight;
+uniform vec3 uColor;
 
 
 void main () {
@@ -45,6 +46,6 @@ void main () {
         (length(cameraVector+direction) * length(normalize(aNormal)))), 0.7f), 0.0, 1.0f)
         *uLight.specular;
 
-  vec3 result = (ambientColor + diffuseColor + specularColor) * vec3(0.75f, 0.75f, 0.75f);
+  vec3 result = (ambientColor + diffuseColor + specularColor) * uColor;
   vColor = result;
 }

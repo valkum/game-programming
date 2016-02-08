@@ -183,6 +183,7 @@ void PlayState::draw(CGame *g, float *delta) {
   lightningShader->setUniform("uLight.diffuse", 0.3f);
   lightningShader->setUniform("uViewMatrix", camera->getViewMatrix());
   lightningShader->setUniform("camera", camera->getPosition());
+  lightningShader->setUniform("uColor", vec3(0.75f, 0.75f, 0.75f));
   openGLCriticalError();
   level->getTerrain()->render(lightningShader, &viewProjectionMatrix);
   openGLCriticalError();
