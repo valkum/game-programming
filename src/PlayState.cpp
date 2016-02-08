@@ -36,6 +36,7 @@ Character *character;
 bool triggerWind = false;
 bool triggerMesh = false;
 bool freeCamera = false;
+bool debugInfo = false;
 
 float testRotationAngle = 0;
 float cameraPos = 0;
@@ -51,6 +52,7 @@ bool win = false;
 bool collision = false;
 
 PositionGUI* positionGui;
+GUIObject* fpsGraph;
 
 void PlayState::init(CGame *game) {
   loadingScreen = new LoadingScreen();
@@ -89,8 +91,9 @@ void PlayState::init(CGame *game) {
   // camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
   // camera.setStateFromString("ACGL_GenericCamera | 1 | (-0.152289,1.16336,2.27811) | ((-0.999868,-0.00162319,-0.0161718),(0,0.995,-0.0998699),(0.0162531,-0.0998567,-0.994869)) | PERSPECTIVE_PROJECTION | MONO | EYE_LEFT | 75 | 1.33333 | 0.064 | 0.1 | 5000 | 500 | (0,0)");
 
+  eventGui = new Gui(vg, game->g_window);
   gui = new Gui(vg, game->g_window);
-  GUIObject* fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
+  fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
   fpsGraph->setPosition(ivec2(10,60));
   fpsGraph->setSize(ivec2(200,35));
   loadingScreen->render(0.3);
@@ -104,6 +107,9 @@ void PlayState::init(CGame *game) {
   positionGui = new PositionGUI(gui, "Position");
   positionGui->setPosition(ivec2(10, 20));
     
+  positionGui->hide(); 
+  fpsGraph->hide();
+
   character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.02f);
 
 
@@ -288,8 +294,19 @@ void PlayState::draw(CGame *g, float *delta) {
       speedBuildUp = 0.0f;
       fadeOutOpacity = 0.001f;
     } 
+    if(win){
+      Text* msg =new Text(eventGui, "You win!");
+      msg->draw(eventGui->getContext());
+      msg->setPosition(ivec2(400, 300));
+    }
+    if(collision){
+      Text* msg =new Text(eventGui, "You died!");
+      msg->draw(eventGui->getContext());
+      msg->setPosition(ivec2(400, 300));
+    }
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
     blendVAO->render();
+    eventGui->drawAll();
   }
   glEnable(GL_DEPTH_TEST);
 
@@ -373,8 +390,6 @@ void PlayState::update(CGame *g, float dt) {
     }
     if(level->getCamera()->getPosition().y < 30 && !freeCamera){
       level->getCamera()->setPosition(level->getCamera()->getPosition() + vec3(0.0f, 0.05f, 0.0f));
-
-
     }else if(wPressed && freeCamera){
       level->getCamera()->moveForward(0.1f);
     }
@@ -423,7 +438,13 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
-      if(showFrames) positionGui->show(); else positionGui->hide(); 
+      if(showFrames){
+        positionGui->show(); 
+        fpsGraph->show();
+      }else {
+        positionGui->hide(); 
+        fpsGraph->hide();
+      }
     }
 
     if (key == GLFW_KEY_P) {

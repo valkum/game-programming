@@ -60,7 +60,8 @@ private:
   //int m_MouseState;
   glm::vec2   m_mousePos, m_lastMousePos;
   static PlayState m_PlayState;
-  bool renderDebug, showFrames;
+  bool renderDebug;
+  bool showFrames = false;
   SharedShaderProgram skydomeShader;
   SharedShaderProgram lightningShader;
   SharedShaderProgram cloudShader;
@@ -77,6 +78,7 @@ private:
   float timeSinceStart = 0.f;
   float lastTime;
 
+  Gui* eventGui;
 
 };
 #endif // ifndef PLAYSTATE_H
