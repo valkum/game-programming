@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <vector>
+#include "easing.hh"
 #include "Model.hh"
 #include "world/Cloth.hh"
 #include "world/Character.hh"
@@ -142,11 +143,6 @@ void PlayState::init(CGame *game) {
 
 }
 
-float cubicOut(float t) {
-  float f = t - 1.0;
-  return f * f * f + 1.0;
-}
-
 void PlayState::draw(CGame *g, float *delta) {
   timeSinceStart += glfwGetTime() - lastTime;
   lastTime = glfwGetTime();
@@ -184,6 +180,7 @@ void PlayState::draw(CGame *g, float *delta) {
   lightningShader->setUniform("uLight.diffuse", 0.3f);
   lightningShader->setUniform("uViewMatrix", camera->getViewMatrix());
   lightningShader->setUniform("camera", camera->getPosition());
+  lightningShader->setUniform("uColor", vec3(0.75f, 0.75f, 0.75f));
   openGLCriticalError();
   level->getTerrain()->render(lightningShader, &viewProjectionMatrix);
   openGLCriticalError();
@@ -223,8 +220,8 @@ void PlayState::draw(CGame *g, float *delta) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     SharedShaderProgram loadingShader= loadingScreen->getShader();
     loadingShader->use();
-    loadingShader->setUniform("uTime", timeSinceStart);
-    loadingShader->setUniform("uColor", vec3(0.99f,.99f,.99f));
+    float opacity = 1 - quarticInOut(timeSinceStart/3); //3sec opacity from 1 to 0
+    loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, opacity));
     blendVAO->render();
 
     speedBuildUp = 0.1f;

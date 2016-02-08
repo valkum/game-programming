@@ -54,7 +54,6 @@ void LoadingScreen::render(float value) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     shader->use();
-    shader->setUniform("uTime", 0.f);
     // glm:mat4 modelMatrix = glm::translate(glm::vec3(0.f, 0.f, 0.f));
     // shader->setUniform("uModelmatrix", modelMatrix);
     
@@ -66,7 +65,7 @@ void LoadingScreen::render(float value) {
 
     // modelMatrix = glm::translate(glm::vec3(2.f, -2.f, 0.f)) * triangleRotation;
     // shader->setUniform("uModelmatrix", modelMatrix);
-    shader->setUniform("uColor", glm::vec3(0.f, 0.f, 0.f));
+    shader->setUniform("uColor", glm::vec4(0.f, 0.f, 0.f, 0.0f));
     progressVAO->render();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
