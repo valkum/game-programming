@@ -3,10 +3,10 @@
   "uuid": "0000000003",
   "globalLight" : {
     "direction" : [-1,1.5,1],
-    "color" : [0.75, 0.75, 0.75],
-    "ambient" : 0.05,
+    "color" : [0.00, 0.35, 0.00],
+    "ambient" : 0.20,
     "specular" : 0.2,
-    "diffuse" : 0.3
+    "diffuse" : 0.2
   },
   "objects":
   [
