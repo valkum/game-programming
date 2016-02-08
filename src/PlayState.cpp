@@ -280,22 +280,24 @@ void PlayState::draw(CGame *g, float *delta) {
 
     speedBuildUp = 0.1f;
   }
-  if((win || collision) && level->getCamera()->getPosition().y >= 15.0f){
+  if((win || collision) && level->getCamera()->getPosition().y >= 10.0f){
     SharedShaderProgram loadingShader= loadingScreen->getShader();
     loadingShader->use();
     fadeOutOpacity *= 1.05f;
     if (fadeOutOpacity >= 1.0f) {
       fadeOutOpacity = 1.0f;
-      // Hacky methode um wieder zum Menu zu kommen.
-      win = false;
-      collision = false;
+      if(level->getCamera()->getPosition().y >= 30.f) {
+        // Hacky methode um wieder zum Menu zu kommen.
+        win = false;
+        collision = false;
 
-      CGame *g = CGame::instance();
-      g->changeState(IntroState::instance());
-      collision = false;
-      win = false;
-      speedBuildUp = 0.0f;
-      fadeOutOpacity = 0.001f;
+        CGame *g = CGame::instance();
+        g->changeState(IntroState::instance());
+        collision = false;
+        win = false;
+        speedBuildUp = 0.0f;
+        fadeOutOpacity = 0.001f;
+      }
     } 
     if(win){
       msg->setCaption("You won!");
