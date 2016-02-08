@@ -4,13 +4,13 @@ Game Programming WS15/16 project by Rudi Floren 318099, Kim Brose 322935, Sebast
 ## Screenshot
 ![Demo Screenshot Menu](assets/images/screenshot1.png)
 ![Demo Screenshot Game](assets/images/screenshot2.png)
-![Demo Screenshot Game2](assets/images/screenshot3.png)
+![Demo Screenshot Game](assets/images/screenshot.png)
 
 ## Instructions
 You are a generic superhero flying through a city skyline!
 
 Use **A** and **D** keys to move left or right respectively and evade buildings in your way.  
-Use Esc to quit.
+Use Esc to quit. Return to Menu with **M**.
 
 ### Debug keys:
 - **P** to switch to wireframe debug view
@@ -21,8 +21,8 @@ Use Esc to quit.
 - GLM
 - OpenGL
 - ACGL
-- json
-- nanovg
+- [json](https://github.com/nlohmann/json)
+- [nanovg](https://github.com/memononen/nanovg)
 
 ## Build
 [![Build Status](https://magnum.travis-ci.com/valkum/game-programming.svg?token=fG6GG7VSsLF7HUxqCHii&branch=master)](https://magnum.travis-ci.com/valkum/game-programming)
