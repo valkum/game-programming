@@ -298,27 +298,14 @@ void PlayState::draw(CGame *g, float *delta) {
       fadeOutOpacity = 0.001f;
     } 
     if(win){
-<<<<<<< HEAD
-      Text* msg =new Text(eventGui, "You win!");
-      msg->draw(eventGui->getContext());
-      msg->setFontSize(55.0f);
-      msg->setPosition(ivec2(230, 250));
-    }
-    if(collision){
-      Text* msg =new Text(eventGui, "You died!");
-      msg->draw(eventGui->getContext());
-      msg->setFontSize(55.0f);
-      msg->setPosition(ivec2(230, 250));
-=======
       msg->setCaption("You won!");
-      msg->setPosition(ivec2(300, 250));
+      msg->setPosition(ivec2(250, 250));
       msg->setTextColor(vec4(0.75f, 0.75f, 0.75f, 1.f));
     }
     if(collision){
       msg->setCaption("You died! Sad story.");
       msg->setPosition(ivec2(200, 250));
       msg->setTextColor(vec4(0.75f, 0.f, 0.f, 1.f));
->>>>>>> 764d75b894dd0a6a5ee9ceaca442d24976970eaa
     }
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -392,7 +379,7 @@ void PlayState::update(CGame *g, float dt) {
     character->update(dt);
     character->setCharacterPosition(character->getPosition() + charPos);
 
-    if(character->getPosition().z >= 980){
+    if(character->getPosition().z >= 900){
       win = true;
     }
     if(!freeCamera){
