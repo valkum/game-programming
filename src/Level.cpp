@@ -48,7 +48,7 @@ void Level::load(){
         levelObjects.push_back(new Object(model, parseVec3(object["position"]), parseVec3(object["rotation"])));
       }
     }
-    debug()<<geometries.size()<<" different geometries loaded"<<std::endl;
+    //debug()<<geometries.size()<<" different geometries loaded"<<std::endl;
 
     clouds = new Clouds(levelJson["clouds"].at(0), levelJson["clouds"].at(1), levelJson["mapSize"].at(0), levelJson["mapSize"].at(1));
     globalWind = parseVec3(levelJson["globalWind"]);

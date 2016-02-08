@@ -45,8 +45,6 @@ Clouds::Clouds (uint_t amount, uint_t cloudSize, int width, int length) : cloudS
   vao->setMode(GL_POINTS);
   vao->attachAllAttributes(ab);
 
-  std::cout << ab->getSize() << std::endl;
-
   cloudTex = ACGL::OpenGL::Texture2DFileManager::the()->get(ACGL::OpenGL::Texture2DCreator("cloud_particle.png"));
 
   half = (width/2.0f);
@@ -69,7 +67,7 @@ void Clouds::spawnCloud(uint_t size, float x, float width, float z, float length
 		x = glm::linearRand(x, x+width);
 		y = glm::linearRand(y, y+height);
 		z = glm::linearRand(z, z+length);
-    debug()<<"spawning cloud at "<<x<<" "<<y<<" "<<z<<endl;
+    //debug()<<"spawning cloud at "<<x<<" "<<y<<" "<<z<<endl;
 
 		//spawn particles around center
 		vec3 position = vec3(x, y, z);
@@ -170,7 +168,7 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
 
   //respawn dead clouds
   while(deadParticleAmount > cloudSize && camPos.z+(float)viewDistance < levelLength) {
-    debug()<<"spawning, free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
+    //debug()<<"spawning, free: " << deadParticleAmount << "/" << cloudSize <<std::endl;
     spawnCloud(cloudSize, camPos.x-25.0f, 50.0f, camPos.z+(float)viewDistance, 0.0f);
     deadParticleAmount -= cloudSize;
   }
