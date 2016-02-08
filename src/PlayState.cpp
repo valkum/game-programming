@@ -44,6 +44,7 @@ bool aPressed = false;
 bool dPressed = false;
 bool wPressed = false;
 
+bool win = false;
 bool collision = false;
 
 PositionGUI* positionGui;
@@ -249,7 +250,7 @@ void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
 
 
 void PlayState::update(CGame *g, float dt) {
-  if (!collision){
+  if (!collision && !win){
     if(level->collisionDetection(character->getPosition(), vec3(0.0f, 0.0f, 0.0f), character->getScale())){
       collision = true;
       //cout << "COLLISION WTF MATE!!!!!!!!!!1111eins elf" << endl;
@@ -297,6 +298,15 @@ void PlayState::update(CGame *g, float dt) {
     }
     character->update(dt);
     character->setCharacterPosition(character->getPosition() + charPos);
+
+    cout << "==========" << endl;
+    cout << glm::to_string(character->getPosition()) << endl;
+    cout << std::to_string(character->getPosition().z >= 980) << endl;
+    cout << "==========" << endl;
+
+    if(character->getPosition().z >= 980){
+      win = true;
+    }
     if(!freeCamera){
       level->getCamera()->setPosition(character->getPosition() + vec3(-0.1f*cameraPos, 0.16f, -0.40f));
     }
