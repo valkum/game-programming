@@ -32,7 +32,9 @@ class Level {
 public:
   Level(std::string levelId);
   ~Level();
+  void reloadLevel();
   void load();
+  void loadLight();
   vec3 parseVec3(json a) { return vec3(a.at(0), a.at(1), a.at(2)); };
   mat3 parseMat3(json a) {
     return mat3(
@@ -52,6 +54,7 @@ protected:
 private:
   std::string levelId;
   std::vector<Object*> levelObjects;
+  json levelJson;
   //Cloth cloth;
   Clouds* clouds;
   vec3 globalWind;

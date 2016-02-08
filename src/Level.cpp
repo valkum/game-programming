@@ -12,10 +12,9 @@ class Level;
 Level::Level(std::string levelId) : levelId(levelId) {
 
 }
-void Level::load(){
+void Level::reloadLevel() {
   std::string levelDir = Settings::the()->getResourcePath() + "levels/";
   std::fstream levelFile;
-  json levelJson;
 
   levelFile.open(levelDir + levelId + ".lvl");
   if(levelFile.is_open()) {
@@ -27,7 +26,20 @@ void Level::load(){
   }else {
     error() << "File: " << levelDir + levelId + ".lvl could not be opened." << std::endl;
   }
-
+}
+void Level::loadLight() {
+  try {
+    light.direction = parseVec3(levelJson["globalLight"]["direction"]);
+    light.color = parseVec3(levelJson["globalLight"]["color"]);
+    light.ambient = levelJson["globalLight"]["ambient"];
+    light.specular = levelJson["globalLight"]["specular"];
+    light.diffuse = levelJson["globalLight"]["diffuse"];
+  } catch (exception e) {
+    error() << "parsing" << std::endl;
+  }
+}
+void Level::load(){
+  reloadLevel();
   try {
     camera = new ACGL::Scene::GenericCamera();
     camera->setPosition(parseVec3(levelJson["camera"]["position"]));
@@ -36,11 +48,7 @@ void Level::load(){
     skyDome = new SkyDome(Model("SkyDome.obj", levelJson["skydome"]["scale"]), levelJson["skydome"]["texture"]);
     terrain = new Terrain(levelJson["mapSize"].at(0), levelJson["mapSize"].at(1));
 
-    light.direction = parseVec3(levelJson["globalLight"]["direction"]);
-    light.color = parseVec3(levelJson["globalLight"]["color"]);
-    light.ambient = levelJson["globalLight"]["ambient"];
-    light.specular = levelJson["globalLight"]["specular"];
-    light.diffuse = levelJson["globalLight"]["diffuse"];
+    loadLight();
 
     std::unordered_map<string, Model*> geometries;
     for (auto object : levelJson["objects"]) {

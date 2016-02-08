@@ -377,6 +377,10 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     if (key == GLFW_KEY_P) {
       renderDebug = !renderDebug;
     }
+    if (key == GLFW_KEY_R) {
+      level->reloadLevel();
+      level->loadLight();
+    }
     if (key == GLFW_KEY_O) {
       freeCamera = !freeCamera;
     }
