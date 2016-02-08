@@ -337,6 +337,7 @@ void Cloth::render(ACGL::OpenGL::SharedShaderProgram shader, mat4 *viewProjectio
 
   mat4 mvp = (*viewProjectionMatrix) * modelMatrix;
   shader->setUniform("uMVP",         mvp);
+  shader->setUniform("uColor", vec3(0.75f, 0.f, 0.f));
 
 
 

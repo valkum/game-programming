@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <vector>
+#include "easing.hh"
 #include "Model.hh"
 #include "world/Cloth.hh"
 #include "world/Character.hh"
@@ -33,12 +34,19 @@ Character *character;
 
 bool triggerWind = false;
 bool triggerMesh = false;
+bool freeCamera = false;
 
 float testRotationAngle = 0;
 float cameraPos = 0;
 
+float speedBuildUp = 0.0f;
+
 bool aPressed = false;
 bool dPressed = false;
+bool wPressed = false;
+
+bool win = false;
+bool collision = false;
 
 PositionGUI* positionGui;
 
@@ -65,7 +73,7 @@ void PlayState::init(CGame *game) {
 
   gui = new Gui(vg, game->g_window);
   GUIObject* fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
-  fpsGraph->setPosition(ivec2(400,400));
+  fpsGraph->setPosition(ivec2(10,60));
   fpsGraph->setSize(ivec2(200,35));
   loadingScreen->render(0.3);
 
@@ -79,10 +87,10 @@ void PlayState::init(CGame *game) {
   loadingScreen->render(0.5);
 
   positionGui = new PositionGUI(gui, "Position");
-  positionGui->setPosition(ivec2(20, 20));
+  positionGui->setPosition(ivec2(10, 20));
     
   //character = new Character(vec3(0.0f, 4.0f, 10.0f), vec3(0.0f, 3.2f, 0.0f), 0.5f);
-  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.055f);
+  character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.02f);
 
   debug() << "Geometry loaded" << endl;
 
@@ -132,10 +140,7 @@ void PlayState::init(CGame *game) {
   glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen->render(1);
   lastTime = glfwGetTime();
-}
-float cubicOut(float t) {
-  float f = t - 1.0;
-  return f * f * f + 1.0;
+
 }
 
 void PlayState::draw(CGame *g, float *delta) {
@@ -175,10 +180,11 @@ void PlayState::draw(CGame *g, float *delta) {
   lightningShader->setUniform("uLight.diffuse", 0.3f);
   lightningShader->setUniform("uViewMatrix", camera->getViewMatrix());
   lightningShader->setUniform("camera", camera->getPosition());
+  lightningShader->setUniform("uColor", vec3(0.75f, 0.75f, 0.75f));
   openGLCriticalError();
   level->getTerrain()->render(lightningShader, &viewProjectionMatrix);
   openGLCriticalError();
-
+  
   for (auto object: level->getObjects()) {
     object->render(lightningShader, &viewProjectionMatrix);
   }
@@ -214,9 +220,11 @@ void PlayState::draw(CGame *g, float *delta) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     SharedShaderProgram loadingShader= loadingScreen->getShader();
     loadingShader->use();
-    loadingShader->setUniform("uTime", timeSinceStart);
-    loadingShader->setUniform("uColor", vec3(0.99f,.99f,.99f));
+    float opacity = 1 - quarticInOut(timeSinceStart/3); //3sec opacity from 1 to 0
+    loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, opacity));
     blendVAO->render();
+
+    speedBuildUp = 0.1f;
   }
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -226,42 +234,91 @@ void PlayState::draw(CGame *g, float *delta) {
 
 
 void PlayState::handleMouseMoveEvents(GLFWwindow *window, glm::vec2 mousePos) {
-  m_lastMousePos = m_mousePos;
-  m_mousePos = mousePos;
+  if(freeCamera){
+    m_lastMousePos = m_mousePos;
+    m_mousePos = mousePos;
 
-  //Update FPS Camera for Debug:
-  vec2 mouseDelta = (m_lastMousePos - m_mousePos);
-  level->getCamera()->FPSstyleLookAround(-mouseDelta.x/m_game->g_windowSize.x, -mouseDelta.y/m_game->g_windowSize.y);
-  positionGui->setCameraDirection(level->getCamera()->getForwardDirection());
+    //Update FPS Camera for Debug:
+    vec2 mouseDelta = (m_lastMousePos - m_mousePos);
+    level->getCamera()->FPSstyleLookAround(-mouseDelta.x/m_game->g_windowSize.x, -mouseDelta.y/m_game->g_windowSize.y);
+    positionGui->setCameraDirection(level->getCamera()->getForwardDirection());
+  }
 }
 
 
 void PlayState::update(CGame *g, float dt) {
-  if((aPressed && dPressed) || !(aPressed || dPressed)) {
-    if(cameraPos < 0.f) {
-      cameraPos += 0.05f;
+  if (!collision && !win){
+    if(level->collisionDetection(character->getPosition(), vec3(0.0f, 0.0f, 0.0f), character->getScale())){
+      collision = true;
+      //cout << "COLLISION WTF MATE!!!!!!!!!!1111eins elf" << endl;
     }
-    else if(cameraPos > 0.f) {
-      cameraPos -= 0.05f;
+
+    vec3 charPos = vec3(0.0f, 0.0f, 0.0f);
+
+    if (speedBuildUp < 1){
+      speedBuildUp *= 1.01;
+      //cout << "speedUp: \t" << speedBuildUp << endl;
     }
-    if(cameraPos<0.05f && cameraPos>-0.05f){
-      cameraPos = 0;
+
+    if((aPressed && dPressed) || !(aPressed || dPressed)) {
+      if(cameraPos < 0.f) {
+        cameraPos += 0.05f;
+      }
+      else if(cameraPos > 0.f) {
+        cameraPos -= 0.05f;
+      }
+      if(cameraPos<0.05f && cameraPos>-0.05f){
+        cameraPos = 0;
+      }
+    }
+    else if(aPressed) {
+      if(cameraPos > -1.0f){
+        cameraPos -= 0.025f;
+      }
+      charPos += vec3(0.025f, 0.0f, 0.0f);
+    }else if(dPressed) {
+      if(cameraPos < 1.0f){
+        cameraPos += 0.025f;
+      }
+      charPos -= vec3(0.025f, 0.0f, 0.0f);
+    }
+
+    //testRotationAngle += 5.0f;
+    float radian = cameraPos * 45 * M_PI / 180;
+    character->rotateZ(-radian);
+
+    charPos += speedBuildUp * vec3(0.0f, 0.0f, 0.4f);
+    if(!collision){
+      charPos += vec3(0.0f, 0.0f, 0.005f);
+    }else{
+      charPos = vec3(0.0f, 0.0f, 0.0f);
+    }
+    character->update(dt);
+    character->setCharacterPosition(character->getPosition() + charPos);
+
+    cout << "==========" << endl;
+    cout << glm::to_string(character->getPosition()) << endl;
+    cout << std::to_string(character->getPosition().z >= 980) << endl;
+    cout << "==========" << endl;
+
+    if(character->getPosition().z >= 980){
+      win = true;
+    }
+    if(!freeCamera){
+      level->getCamera()->setPosition(character->getPosition() + vec3(-0.1f*cameraPos, 0.16f, -0.40f));
+    }
+    if(wPressed){
+      level->getCamera()->moveForward(0.1f);
+    }
+  }else{
+    if(level->getCamera()->getPosition().y < 30 && !freeCamera){
+      level->getCamera()->setPosition(level->getCamera()->getPosition() + vec3(0.0f, 0.05f, 0.0f));
+    }else if(wPressed){
+      level->getCamera()->moveForward(0.1f);
     }
   }
-  else if(aPressed && cameraPos > -1.f) {
-    cameraPos -= 0.05f;
-  }else if(dPressed && cameraPos < 1.f) {
-    cameraPos += 0.05f;
-  }
-
-  //testRotationAngle += 5.0f;
-  float radian = cameraPos * 45 * M_PI / 180;
-  character->rotateZ(-radian);
-
-  character->update(dt);
-  character->setCharacterPosition(character->getPosition() + vec3(0.0f, 0.0f, 0.01f));
-  level->getCamera()->setPosition(character->getPosition() + vec3(-1.5f*cameraPos, 0.5f, -5.0f));
   level->getClouds()->update(dt, level->getCamera()->getPosition(), level->getCamera()->getProjectionMatrix() * level->getCamera()->getViewMatrix(), level->getWind() * 0.05f);
+  positionGui->setCameraPosition(level->getCamera()->getPosition());
 }
 
 void PlayState::handleKeyEvents(GLFWwindow *window,
@@ -279,8 +336,8 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
   if (action == GLFW_PRESS) {
     if (key == GLFW_KEY_W) { // upper case!
-      level->getCamera()->moveForward(timeElapsed * speed);
-      positionGui->setCameraPosition(level->getCamera()->getPosition());
+      wPressed = true;
+      //debug()<<"Key W, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_S) { // upper case!
@@ -293,7 +350,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
       aPressed = true;
-      debug()<<"Key A, pressed, or repeated"<<std::endl;
+      //debug()<<"Key A, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_D) { // upper case!
@@ -301,7 +358,7 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
       dPressed = true;
-      debug()<<"Key D, pressed, or repeated"<<std::endl;
+      //debug()<<"Key D, pressed, or repeated"<<std::endl;
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
@@ -310,6 +367,9 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
     if (key == GLFW_KEY_P) {
       renderDebug = !renderDebug;
+    }
+    if (key == GLFW_KEY_O) {
+      freeCamera = !freeCamera;
     }
     if (key == GLFW_KEY_UP) {
       //testRoatation = testRoatation + vec3(0.0f, 0.0f, 0.2f);
@@ -331,6 +391,10 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     if (key == GLFW_KEY_D) {
       dPressed = false;
       debug()<<"Key D, released"<<std::endl;
+    }
+    if (key == GLFW_KEY_W) {
+      wPressed = false;
+      debug()<<"Key W, released"<<std::endl;
     }
   }
 }

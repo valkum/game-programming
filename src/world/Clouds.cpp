@@ -315,8 +315,8 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
   {
     if (particle.Life > 0.0f)
     {
-      // depthSort.push_back(std::pair<float, CloudParticle*>((viewProjectionMatrix*vec4(particle.Position,1)).z,&particle));
-      depthSort.push_back(std::pair<float, CloudParticle*>(glm::length(particle.Position - camPos),&particle));
+      depthSort.push_back(std::pair<float, CloudParticle*>((viewProjectionMatrix*vec4(particle.Position,1)).z,&particle));
+      //depthSort.push_back(std::pair<float, CloudParticle*>(glm::length(particle.Position - camPos),&particle));
     }
   }
   std::sort(depthSort.begin(), depthSort.end());

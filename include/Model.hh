@@ -8,6 +8,8 @@ public:
 
   Model(std::string fileName,
         float       scale);
+  Model(ACGL::OpenGL::SharedVertexArrayObject model,
+        float       scale);
   Model();
   ~Model();
   inline float getScale() {

@@ -12,6 +12,15 @@
 
 using json = nlohmann::json;
 
+struct boundingBox{
+  float minX;
+  float maxX;
+  float minY;
+  float maxY;
+  float minZ;
+  float maxZ;
+};
+
 class Level {
 public:
   Level(std::string levelId);
@@ -30,6 +39,7 @@ public:
   Terrain* getTerrain() { return terrain; };
   Clouds* getClouds() { return clouds; };
   vec3 getWind() { return globalWind; };
+  bool collisionDetection(vec3 charPos, vec3 charRotation, float charScale);
 protected:
 private:
   std::string levelId;
@@ -42,6 +52,8 @@ private:
   ACGL::Scene::GenericCamera* camera;
   Terrain* terrain;
   //Light settings
+  bool boundingBoxCollision(boundingBox a, boundingBox b);
+  std::string boundingBoxToString(boundingBox bBox);
 };
 
 

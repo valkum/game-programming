@@ -1,4 +1,5 @@
 #include "Model.hh"
+#include <ACGL/Utils/Log.hh>
 
 
 using namespace std;
@@ -6,7 +7,10 @@ using namespace ACGL;
 using namespace ACGL::OpenGL;
 
 Model::Model(string fileName, float scale) : scale(scale) {
-  this->object = OpenGL::VertexArrayObjectCreator(fileName).create();
+  this->object = VertexArrayObjectCreator(fileName).create();
+}
+Model::Model(SharedVertexArrayObject model, float scale) : scale(scale) {
+  this->object = model;
 }
 
 Model::Model() {}
