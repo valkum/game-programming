@@ -137,7 +137,7 @@ void PlayState::init(CGame *game) {
   glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen->render(1);
   lastTime = glfwGetTime();
-
+  timeSinceStart = 0;
 }
 
 void PlayState::draw(CGame *g, float *delta) {
@@ -230,10 +230,13 @@ void PlayState::draw(CGame *g, float *delta) {
     fadeOutOpacity *= 1.1f;
     if (fadeOutOpacity >= 1.0f) {
       fadeOutOpacity = 1.0f;
-      
+      // Hacky methode um wieder zum Menu zu kommen.
+      win = false;
+      collision = false;
+
       CGame *g = CGame::instance();
       g->changeState(IntroState::instance());
-    } 
+    }
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
     blendVAO->render();
   }
@@ -375,6 +378,9 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       renderDebug = !renderDebug;
     }
     if (key == GLFW_KEY_M) {
+
+      win = false;
+      collision = false;
       CGame *g = CGame::instance();
       g->changeState(IntroState::instance());
     }
