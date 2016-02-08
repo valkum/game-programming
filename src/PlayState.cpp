@@ -296,11 +296,6 @@ void PlayState::update(CGame *g, float dt) {
     character->update(dt);
     character->setCharacterPosition(character->getPosition() + charPos);
 
-    cout << "==========" << endl;
-    cout << glm::to_string(character->getPosition()) << endl;
-    cout << std::to_string(character->getPosition().z >= 980) << endl;
-    cout << "==========" << endl;
-
     if(character->getPosition().z >= 980){
       win = true;
     }
