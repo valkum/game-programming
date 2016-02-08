@@ -215,6 +215,7 @@ void Clouds::update(float dt, vec3 camPos, glm::mat4 viewProjectionMatrix, vec3 
       dist = distance(particle.Position, camPos+vec3(0,0,5));
       direction = particle.Position - (camPos+vec3(0,0,2));
       direction.y=0.0f;
+      direction = min((direction/glm::length(direction)), direction);
       if(dist < 1.0f) particle.Velocity += direction/(5*dist);
 
       //environment collision
