@@ -23,7 +23,7 @@ def in_circle(center_x, center_y, list, radius):
 
 width = 256
 height = 1024
-N = 4096
+N = 2*4096
 
 r1 = np.random.rand(N/3)
 r2 = np.random.rand(N/3)
