@@ -20,6 +20,13 @@ struct boundingBox{
   float minZ;
   float maxZ;
 };
+struct Light {
+  vec3 direction;
+  float ambient;
+  vec3 color;
+  float diffuse;
+  float specular;
+};
 
 class Level {
 public:
@@ -39,6 +46,7 @@ public:
   Terrain* getTerrain() { return terrain; };
   Clouds* getClouds() { return clouds; };
   vec3 getWind() { return globalWind; };
+  Light getLight() {return light;};
   bool collisionDetection(vec3 charPos, vec3 charRotation, float charScale);
 protected:
 private:
@@ -51,6 +59,7 @@ private:
   SkyDome* skyDome;
   ACGL::Scene::GenericCamera* camera;
   Terrain* terrain;
+  Light light;
   //Light settings
   bool boundingBoxCollision(boundingBox a, boundingBox b);
   std::string boundingBoxToString(boundingBox bBox);
