@@ -299,7 +299,7 @@ void PlayState::draw(CGame *g, float *delta) {
     } 
     if(win){
       msg->setCaption("You won!");
-      msg->setPosition(ivec2(300, 250));
+      msg->setPosition(ivec2(250, 250));
       msg->setTextColor(vec4(0.75f, 0.75f, 0.75f, 1.f));
     }
     if(collision){
@@ -379,7 +379,7 @@ void PlayState::update(CGame *g, float dt) {
     character->update(dt);
     character->setCharacterPosition(character->getPosition() + charPos);
 
-    if(character->getPosition().z >= 980){
+    if(character->getPosition().z >= 900){
       win = true;
     }
     if(!freeCamera){
