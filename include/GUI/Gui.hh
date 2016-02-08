@@ -36,6 +36,10 @@ public:
 
   void updateFocus(GUIObject *child);
 
+  NVGcontext* getContext(){
+    return mNVGContext;
+  };
+
   ivec2 mousePosition() {return mMousePos; }
 
 protected:

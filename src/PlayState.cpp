@@ -36,6 +36,7 @@ Character *character;
 bool triggerWind = false;
 bool triggerMesh = false;
 bool freeCamera = false;
+bool debugInfo = false;
 
 float testRotationAngle = 0;
 float cameraPos = 0;
@@ -50,9 +51,8 @@ bool wPressed = false;
 bool win = false;
 bool collision = false;
 
-PositionGUI* positionGui;
-
 void PlayState::init(CGame *game) {
+  glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen = new LoadingScreen();
   loadingScreen->render(0.2);
   renderDebug = false;
@@ -89,10 +89,15 @@ void PlayState::init(CGame *game) {
   // camera.setPosition(vec3(0.0f, 2.0f, 0.0f));
   // camera.setStateFromString("ACGL_GenericCamera | 1 | (-0.152289,1.16336,2.27811) | ((-0.999868,-0.00162319,-0.0161718),(0,0.995,-0.0998699),(0.0162531,-0.0998567,-0.994869)) | PERSPECTIVE_PROJECTION | MONO | EYE_LEFT | 75 | 1.33333 | 0.064 | 0.1 | 5000 | 500 | (0,0)");
 
+
   gui = new Gui(vg, game->g_window);
-  GUIObject* fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
+  fpsGraph = new PerfGraph(gui, GRAPH_RENDER_FPS, "FPS meter");
   fpsGraph->setPosition(ivec2(10,60));
   fpsGraph->setSize(ivec2(200,35));
+
+  eventGui = new Gui(vg, game->g_window);
+  msg = new Text(eventGui, "You win!");
+  msg->setFontSize(30.f);
   loadingScreen->render(0.3);
 
   level = new Level(game->cli_settings.levelId);
@@ -104,6 +109,9 @@ void PlayState::init(CGame *game) {
   positionGui = new PositionGUI(gui, "Position");
   positionGui->setPosition(ivec2(10, 20));
     
+  positionGui->hide(); 
+  fpsGraph->hide();
+
   character = new Character(vec3(0.0f, 2.0f, 5.0f), vec3(0.0f, M_PI, 0.0f), 0.02f);
 
 
@@ -152,23 +160,25 @@ void PlayState::init(CGame *game) {
 
   loadingScreen->render(0.9);
   openGLCriticalError();
-  glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen->render(1);
   lastTime = glfwGetTime();
-  timeSinceStart = 0;
+  timeSinceStart = 0.0f;
 }
 
 void PlayState::draw(CGame *g, float *delta) {
   timeSinceStart += glfwGetTime() - lastTime;
   lastTime = glfwGetTime();
+
   ACGL::Scene::GenericCamera* camera = level->getCamera();
   glm::mat4 viewMatrix = camera->getViewMatrix();
   glm::mat4 projectionMatrix = camera->getProjectionMatrix();
   glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 
+
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   // Render to Z Depth Buffer
   zBuffer->bind();
-  // glDrawBuffer(GL_NONE);
+  glDrawBuffer(GL_NONE);
   glEnable(GL_DEPTH_TEST);
   glClear(GL_DEPTH_BUFFER_BIT);
   glViewport(0, 0, g->g_windowSize.x,g->g_windowSize.y);
@@ -257,24 +267,23 @@ void PlayState::draw(CGame *g, float *delta) {
   openGLCriticalError();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   gui->drawAll();
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  
+  glDisable(GL_DEPTH_TEST);
 
 
   if(timeSinceStart <= 3.0f) {
-    SharedShaderProgram loadingShader= loadingScreen->getShader();
+    SharedShaderProgram loadingShader = loadingScreen->getShader();
     loadingShader->use();
     float opacity = 1 - quarticInOut(timeSinceStart/3); //3sec opacity from 1 to 0
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, opacity));
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     blendVAO->render();
 
     speedBuildUp = 0.1f;
   }
   if((win || collision) && level->getCamera()->getPosition().y >= 15.0f){
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     SharedShaderProgram loadingShader= loadingScreen->getShader();
     loadingShader->use();
-    fadeOutOpacity *= 1.1f;
+    fadeOutOpacity *= 1.05f;
     if (fadeOutOpacity >= 1.0f) {
       fadeOutOpacity = 1.0f;
       // Hacky methode um wieder zum Menu zu kommen.
@@ -283,9 +292,25 @@ void PlayState::draw(CGame *g, float *delta) {
 
       CGame *g = CGame::instance();
       g->changeState(IntroState::instance());
+      collision = false;
+      win = false;
+      speedBuildUp = 0.0f;
+      fadeOutOpacity = 0.001f;
+    } 
+    if(win){
+      msg->setCaption("You won!");
+      msg->setPosition(ivec2(300, 250));
+      msg->setTextColor(vec4(0.75f, 0.75f, 0.75f, 1.f));
+    }
+    if(collision){
+      msg->setCaption("You died! Sad story.");
+      msg->setPosition(ivec2(200, 250));
+      msg->setTextColor(vec4(0.75f, 0.f, 0.f, 1.f));
     }
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     blendVAO->render();
+    eventGui->drawAll();
   }
   glEnable(GL_DEPTH_TEST);
 
@@ -360,14 +385,15 @@ void PlayState::update(CGame *g, float dt) {
     if(!freeCamera){
       level->getCamera()->setPosition(character->getPosition() + vec3(-0.1f*cameraPos, 0.16f, -0.40f));
     }
-    if(wPressed){
+    if(wPressed && freeCamera){
       level->getCamera()->moveForward(0.1f);
     }
   }else{
+    if(win){
+      character->setPosition(character->getPosition() + vec3(0.0f, 0.0f, 0.1f));
+    }
     if(level->getCamera()->getPosition().y < 30 && !freeCamera){
       level->getCamera()->setPosition(level->getCamera()->getPosition() + vec3(0.0f, 0.05f, 0.0f));
-
-
     }else if(wPressed && freeCamera){
       level->getCamera()->moveForward(0.1f);
     }
@@ -392,7 +418,6 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
   if (action == GLFW_PRESS || action == GLFW_REPEAT) {
     if (key == GLFW_KEY_W) { // upper case!
       wPressed = true;
-      //debug()<<"Key W, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_S) { // upper case!
@@ -401,23 +426,29 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_A) { // upper case!
-      level->getCamera()->moveLeft(timeElapsed * speed);
-      //positionGui->setCameraPosition(level->getCamera()->getPosition());
+      if(freeCamera){
+        level->getCamera()->moveLeft(timeElapsed * speed);
+      }
       character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
       aPressed = true;
-      //debug()<<"Key A, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_D) { // upper case!
-      level->getCamera()->moveRight(timeElapsed * speed);
-      //positionGui->setCameraPosition(level->getCamera()->getPosition());
+      if(freeCamera){
+        level->getCamera()->moveRight(timeElapsed * speed);
+      }
       character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
       dPressed = true;
-      //debug()<<"Key D, pressed, or repeated"<<std::endl;
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
-      if(showFrames) positionGui->show(); else positionGui->hide(); 
+      if(showFrames){
+        positionGui->show(); 
+        fpsGraph->show();
+      }else {
+        positionGui->hide(); 
+        fpsGraph->hide();
+      }
     }
 
     if (key == GLFW_KEY_P) {
@@ -429,6 +460,11 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
       collision = false;
       CGame *g = CGame::instance();
       g->changeState(IntroState::instance());
+      win = false;
+      collision = false;
+      speedBuildUp = 0.0f;
+      fadeOutOpacity = 0.001f;
+      timeSinceStart = 0.0f;
     }
     if (key == GLFW_KEY_R) {
       level->reloadLevel();
