@@ -137,7 +137,6 @@ void PlayState::init(CGame *game) {
   glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadingScreen->render(1);
   lastTime = glfwGetTime();
-
 }
 
 void PlayState::draw(CGame *g, float *delta) {
@@ -233,6 +232,10 @@ void PlayState::draw(CGame *g, float *delta) {
       
       CGame *g = CGame::instance();
       g->changeState(IntroState::instance());
+      collision = false;
+      win = false;
+      speedBuildUp = 0.0f;
+      fadeOutOpacity = 0.001f;
     } 
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
     blendVAO->render();
@@ -312,10 +315,13 @@ void PlayState::update(CGame *g, float dt) {
     if(!freeCamera){
       level->getCamera()->setPosition(character->getPosition() + vec3(-0.1f*cameraPos, 0.16f, -0.40f));
     }
-    if(wPressed){
+    if(wPressed && freeCamera){
       level->getCamera()->moveForward(0.1f);
     }
   }else{
+    if(win){
+      character->setPosition(character->getPosition() + vec3(0.0f, 0.0f, 0.1f));
+    }
     if(level->getCamera()->getPosition().y < 30 && !freeCamera){
       level->getCamera()->setPosition(level->getCamera()->getPosition() + vec3(0.0f, 0.05f, 0.0f));
 
@@ -343,7 +349,6 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
   if (action == GLFW_PRESS) {
     if (key == GLFW_KEY_W) { // upper case!
       wPressed = true;
-      //debug()<<"Key W, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_S) { // upper case!
@@ -352,19 +357,13 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     }
 
     if (key == GLFW_KEY_A) { // upper case!
-      //level->getCamera()->moveLeft(timeElapsed * speed);
-      //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(0.05f, 0.0f, 0.0f));
       aPressed = true;
-      //debug()<<"Key A, pressed, or repeated"<<std::endl;
     }
 
     if (key == GLFW_KEY_D) { // upper case!
-      //level->getCamera()->moveRight(timeElapsed * speed);
-      //positionGui->setCameraPosition(level->getCamera()->getPosition());
       character->setCharacterPosition(character->getPosition() + vec3(-0.05f, 0.0f, 0.0f));
       dPressed = true;
-      //debug()<<"Key D, pressed, or repeated"<<std::endl;
     }
     if (key == GLFW_KEY_F) {
       showFrames = !showFrames;
@@ -377,6 +376,10 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
     if (key == GLFW_KEY_M) {
       CGame *g = CGame::instance();
       g->changeState(IntroState::instance());
+      win = false;
+      collision = false;
+      speedBuildUp = 0.0f;
+      fadeOutOpacity = 0.001f;
     }
     if (key == GLFW_KEY_R) {
       level->reloadLevel();
