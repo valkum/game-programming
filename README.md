@@ -30,3 +30,6 @@ Automated build using CMake with pkg-config.
 
 Use the included bash script *./build.sh* for the simplest experience.  
 The executable output is *./bin/Game*
+
+On rare occasions the GUI libary evokes a segmentation fault.
+If this is the case, just start the game again.
