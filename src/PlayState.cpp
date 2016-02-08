@@ -1,4 +1,5 @@
 #include "PlayState.hh"
+#include "IntroState.hh"
 #include <ACGL/OpenGL/Creator/ShaderProgramCreator.hh>
 
 #include <ACGL/OpenGL/Data/GeometryDataLoadStore.hh>
@@ -229,6 +230,9 @@ void PlayState::draw(CGame *g, float *delta) {
     fadeOutOpacity *= 1.1f;
     if (fadeOutOpacity >= 1.0f) {
       fadeOutOpacity = 1.0f;
+      
+      CGame *g = CGame::instance();
+      g->changeState(IntroState::instance());
     } 
     loadingShader->setUniform("uColor", vec4(0.99f,.99f,.99f, fadeOutOpacity));
     blendVAO->render();
@@ -369,6 +373,10 @@ void PlayState::handleKeyEvents(GLFWwindow *window,
 
     if (key == GLFW_KEY_P) {
       renderDebug = !renderDebug;
+    }
+    if (key == GLFW_KEY_M) {
+      CGame *g = CGame::instance();
+      g->changeState(IntroState::instance());
     }
     if (key == GLFW_KEY_R) {
       level->reloadLevel();

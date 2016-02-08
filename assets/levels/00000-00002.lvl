@@ -2,7 +2,7 @@
   "name": "Second",
   "uuid": "0000000002",
   "globalLight" : {
-    "direction" : [-1,1.5,1],
+    "direction" : [1,1.5,1],
     "color" : [0.75, 0.75, 0.75],
     "ambient" : 0.05,
     "specular" : 0.2,

@@ -63,6 +63,7 @@ void IntroState::init(CGame *game) {
   closeButton->setBackgroundColor(Color(100, 0, 0, 255));
   closeButton->setPosition(ivec2(20, 350));
   closeButton->setSize(ivec2(170, 50));
+  glfwSetInputMode(game->g_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void IntroState::draw(CGame *game, float *delta) {
@@ -97,6 +98,7 @@ void IntroState::handleKeyEvents(GLFWwindow *window,
 
   if ((key == GLFW_KEY_SPACE) && (action == GLFW_PRESS)) {
     CGame *g = CGame::instance();
+    g->cli_settings.levelId = "00000-00001";
     g->changeState(PlayState::instance());
   }
 }
