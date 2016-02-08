@@ -39,8 +39,8 @@ struct Theme {
   Color mIconColor                    = Color(255, 255, 255, 160);
   Color mButtonGradientTopFocused     = Color( 64,  64,  64, 255);
   Color mButtonGradientBotFocused     = Color( 48,  48,  48, 255);
-  Color mButtonGradientTopUnfocused   = Color( 74,  74,  74, 255);
-  Color mButtonGradientBotUnfocused   = Color( 58,  58,  58, 255);
+  Color mButtonGradientTopUnfocused   = Color( 82,  82,  82, 100);
+  Color mButtonGradientBotUnfocused   = Color( 58,  58,  58, 100);
   Color mButtonGradientTopPushed      = Color( 41,  41,  41, 255);
   Color mButtonGradientBotPushed      = Color( 29,  29,  29, 255);
 

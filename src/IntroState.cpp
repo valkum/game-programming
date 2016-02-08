@@ -22,24 +22,22 @@ void IntroState::init(CGame *game) {
 
   gui = new Gui(vg, game->g_window);
 
-  Button *playButton = new Button(gui, "Play");
+  Button *playButton = new Button(gui, "Play Level 1");
   playButton->setCallback([&] {
-    cout << "Button Play Clicked" << endl;
     CGame *g = CGame::instance();
     g->changeState(PlayState::instance());
   });
-  playButton->setBackgroundColor(Color(255, 255, 255, 255));
+  playButton->setBackgroundColor(Color(230, 230, 230, 255));
   playButton->setPosition(ivec2(20, 170));
-  playButton->setTextColor(Color(0, 0, 0, 255));
+  playButton->setTextColor(Color(40, 40, 40, 255));
   playButton->setSize(ivec2(170, 50));
 
-  Button *closeButton = new Button(gui, "Exit!");
+  Button *closeButton = new Button(gui, "Return to Desktop");
   closeButton->setCallback([&] {
-    cout << "Button Exit Clicked" << endl;
     CGame *g = CGame::instance();
     glfwSetWindowShouldClose(g->g_window, GL_TRUE);
   });
-  closeButton->setBackgroundColor(Color(128, 0, 0, 255));
+  closeButton->setBackgroundColor(Color(100, 0, 0, 255));
   closeButton->setPosition(ivec2(20, 230));
   closeButton->setSize(ivec2(170, 50));
 }

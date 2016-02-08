@@ -47,7 +47,7 @@ void Button::draw(NVGcontext *ctx) {
     nvgBeginPath(ctx);
 
     nvgRoundedRect(ctx, mPosition.x + 1, mPosition.y + 1, mSize.x - 2,
-                   mSize.y - 2, Theme.mButtonCornerRadius - 1);
+                   mSize.y - 2, Theme.mButtonCornerRadius);
 
     if (mBackgroundColor.a != 0) {
         nvgFillColor(ctx, Color(mBackgroundColor.r, mBackgroundColor.g, mBackgroundColor.b, 1.f));
@@ -55,8 +55,8 @@ void Button::draw(NVGcontext *ctx) {
         if (mPushed) {
             gradTop.a = gradBot.a = 0.8f;
         } else {
-            double v = 1 - mBackgroundColor.a;
-            gradTop.a = gradBot.a = mEnabled ? v : v * .5f + .5f;
+            double v = 1 - mBackgroundColor.a/2;
+            gradTop.a = gradBot.a = mEnabled ? v : v * .5f + 0.5f;
         }
     }
 
@@ -65,17 +65,17 @@ void Button::draw(NVGcontext *ctx) {
     nvgFillPaint(ctx, bg);
     nvgFill(ctx);
 
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPosition.x + 0.5f, mPosition.y + (mPushed ? 0.5f : 1.5f), mSize.x - 1,
-                   mSize.y - 1 - (mPushed ? 0.0f : 1.0f), Theme.mButtonCornerRadius);
-    nvgStrokeColor(ctx, Theme.mBorderLight);
-    nvgStroke(ctx);
+    // nvgBeginPath(ctx);
+    // nvgRoundedRect(ctx, mPosition.x + 0.5f, mPosition.y + (mPushed ? 0.5f : 1.5f), mSize.x - 1,
+    //                mSize.y - 1 - (mPushed ? 0.0f : 1.0f), Theme.mButtonCornerRadius);
+    // nvgStrokeColor(ctx, Theme.mBorderLight);
+    // nvgStroke(ctx);
 
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPosition.x + 0.5f, mPosition.y + 0.5f, mSize.x - 1,
-                   mSize.y - 2, Theme.mButtonCornerRadius);
-    nvgStrokeColor(ctx, Theme.mBorderDark);
-    nvgStroke(ctx);
+    // nvgBeginPath(ctx);
+    // nvgRoundedRect(ctx, mPosition.x + 0.5f, mPosition.y + 0.5f, mSize.x - 1,
+    //                mSize.y - 2, Theme.mButtonCornerRadius);
+    // nvgStrokeColor(ctx, Theme.mBorderDark);
+    // nvgStroke(ctx);
 
     int fontSize = mFontSize == -1 ? Theme.mButtonFontSize : mFontSize;
     nvgFontSize(ctx, fontSize);
@@ -123,8 +123,8 @@ void Button::draw(NVGcontext *ctx) {
     nvgFontSize(ctx, fontSize);
     nvgFontFace(ctx, "sans-bold");
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-    nvgFillColor(ctx, Theme.mTextColorShadow);
-    nvgText(ctx, textPos.x, textPos.y, mCaption.c_str(), nullptr);
+    // nvgFillColor(ctx, Theme.mTextColorShadow);
+    // nvgText(ctx, textPos.x, textPos.y, mCaption.c_str(), nullptr);
     nvgFillColor(ctx, textColor);
     nvgText(ctx, textPos.x, textPos.y + 1, mCaption.c_str(), nullptr);
 }
