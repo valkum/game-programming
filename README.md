@@ -10,7 +10,7 @@ Game Programming WS15/16 project by Rudi Floren 318099, Kim Brose 322935, Sebast
 You are a generic superhero flying through a city skyline!
 
 Use **A** and **D** keys to move left or right respectively and evade buildings in your way.  
-Use Esc to quit. Return to Menu with **M**.
+Use **Esc** to quit. Return to Menu with **M**.
 
 ### Debug keys:
 - **P** to switch to wireframe debug view
@@ -29,7 +29,7 @@ Use Esc to quit. Return to Menu with **M**.
 Automated build using CMake with pkg-config.
 
 Use the included bash script *./build.sh* for the simplest experience.  
-The executable output is *./bin/Game*
+The executable output is *./bin/Game*.
 
 On rare occasions the GUI libary evokes a segmentation fault.
 If this is the case, just start the game again.
