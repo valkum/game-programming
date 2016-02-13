@@ -20,28 +20,28 @@ Gui::Gui(NVGcontext *ctx, GLFWwindow * window) : GUIObject(nullptr) {
   int mFontNormal =
     nvgCreateFont(ctx, "sans",
                   (Helper::getExePath() +
-                   "/assets/fonts/Roboto-Regular.ttf").c_str());
+                   "assets\\fonts\\Roboto-Regular.ttf").c_str());
 
   if (mFontNormal == -1) {
     debug()  << "Could not load Roboto-Regular.ttf from " <<
-    (Helper::getExePath() + "/assets/fonts/Roboto-Regular.ttf") << std::endl;
+    (Helper::getExePath() + "assets\\fonts\\Roboto-Regular.ttf") << std::endl;
   }
   int mFontBold =
     nvgCreateFont(ctx, "sans-bold",
                   (Helper::getExePath() +
-                   "/assets/fonts/Roboto-Bold.ttf").c_str());
+                   "assets\\fonts\\Roboto-Bold.ttf").c_str());
 
   if (mFontBold == -1) {
     debug()  << "Could not load Roboto-Bold.ttf from " <<
-    (Helper::getExePath() + "/assets/fonts/Roboto-Bold.ttf") << std::endl;
+    (Helper::getExePath() + "assets\\fonts\\Roboto-Bold.ttf") << std::endl;
   }
   int mFontItem =
     nvgCreateFont(ctx, "icons",
-                  (Helper::getExePath() + "/assets/fonts/entypo.ttf").c_str());
+                  (Helper::getExePath() + "assets\\fonts\\entypo.ttf").c_str());
 
   if (mFontItem == -1) {
     debug()  << "Could not load entypo.ttf from " <<
-    (Helper::getExePath() + "/assets/fonts/entypo.ttf") << std::endl;
+    (Helper::getExePath() + "\\assets\\fonts\\entypo.ttf") << std::endl;
   }
 
 }

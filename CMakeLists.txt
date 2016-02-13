@@ -11,9 +11,9 @@ MinSizeRel."
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-  if(NOT DEFINED ENV{TRAVIS})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-  endif()
+#  if(NOT DEFINED ENV{TRAVIS})
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+#  endif()
 
   set(C_FLAGS_COMMON "-Wall")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g ${C_FLAGS_COMMON} -fno-strict-aliasing -O3")
@@ -24,6 +24,8 @@ else()
 endif()
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
 
 
 # ACGL setup

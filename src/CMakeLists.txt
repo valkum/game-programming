@@ -92,6 +92,7 @@ if(UNIX OR APPLE)
 	
 endif()
 
+set(REQUIRED_LIBS ${OPENGL_LIBRARY} ${GLFW_LIBRARIES} glfw nanovg)
 
 #add_executable(Game ${SRCS})
 

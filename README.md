@@ -28,8 +28,10 @@ Use **Esc** to quit. Return to Menu with **M**.
 [![Build Status](https://magnum.travis-ci.com/valkum/game-programming.svg?token=fG6GG7VSsLF7HUxqCHii&branch=master)](https://magnum.travis-ci.com/valkum/game-programming)
 Automated build using CMake with pkg-config.
 
+Windows cross compile uses g++.
+
 Use the included bash script *./build.sh* for the simplest experience.  
-The executable output is *./bin/Game*.
+The executable output is *./bin/Game.exe*.
 
 On rare occasions the GUI libary evokes a segmentation fault.
 If this is the case, just start the game again.

@@ -21,10 +21,12 @@
  *   - Enabled vsync
  */
 
-#if defined(_MSC_VER)
- // Make MS math.h define M_PI
- #define _USE_MATH_DEFINES
-#endif
+// #if defined(_MSC_VER)
+//  // Make MS math.h define M_PI
+//  #define _USE_MATH_DEFINES
+// #endif
+
+#define M_PI 3.14159265358979323846
 
 #include <math.h>
 #include <stdlib.h>
