@@ -89,7 +89,9 @@ if(UNIX OR APPLE)
 	#find_package(GLM REQUIRED)
 	#include_directories(${GLM_INCLUDE_DIR})
 
-	
+else()
+    find_package(OpenGL REQUIRED) 
+    set(REQUIRED_LIBS ${OPENGL_LIBRARY} ${GLFW_LIBRARIES} glfw nanovg)	
 endif()
 
 

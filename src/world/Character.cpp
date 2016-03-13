@@ -17,10 +17,6 @@ Character::Character(vec3 position, vec3 rotation, float scale) : Entity(positio
     model(Model("low_poly_man.obj", scale)), 
     rotation(rotation) {
     setScale(scale);
-  Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
-  Settings::the()->setShaderPath("shaders/");
-  Settings::the()->setGeometryPath("geometry/");
-
 
   //setup cloth
   //cloth = new Cloth(8,15,24,24, position, scalar * clothOffset, this->scalar);

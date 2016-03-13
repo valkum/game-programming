@@ -12,7 +12,9 @@ endif()
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   if(NOT DEFINED ENV{TRAVIS})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    if(UNIX OR APPLE)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+    endif()
   endif()
 
   set(C_FLAGS_COMMON "-Wall")

@@ -55,10 +55,10 @@ void CGame::init(GLFWwindow *_g_window) {
   }
                                  );
 
-  Settings::the()->setResourcePath(Helper::getExePath() + "/assets/");
-  Settings::the()->setShaderPath("shaders/");
-  Settings::the()->setGeometryPath("geometry/");
-  Settings::the()->setTexturePath("textures/");
+  Settings::the()->setResourcePath(Helper::getExePath() + "assets\\");
+  Settings::the()->setShaderPath("shaders\\");
+  Settings::the()->setGeometryPath("geometry\\");
+  Settings::the()->setTexturePath("textures\\");
 }
 
 void CGame::cleanup() {
