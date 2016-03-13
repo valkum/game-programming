@@ -1,0 +1,14 @@
+language: latex
+compiler: xelatex
+notifications:
+      slack: gamepros:2yOy9oL38mPeTvjm6hNB9hGR
+os:
+    - linux
+addons:
+  apt:
+    packages:
+      - pandoc
+      - texlive-full
+
+
+script: ./build.sh
