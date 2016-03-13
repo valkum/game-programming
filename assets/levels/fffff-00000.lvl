@@ -1,0 +1,62 @@
+{
+  "name": "Debug Level",
+  "uuid": "fffff-00000",
+  "objects": [
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.5,
+      "position": [0.0,0.0,10.0],
+      "rotation": [0.0,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.45,
+      "position": [5.0,0.0,5.0],
+      "rotation": [0.0,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.55,
+      "position": [-5.0,0.0,10.0],
+      "rotation": [0.0,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 1.0,
+      "position": [10.0,0.0,10.0],
+      "rotation": [0.2,0.0,0.0]
+    },
+    {
+      "model": "SkyScraper.obj",
+      "scale": 0.5,
+      "position": [4.0,0.0,20.0],
+      "rotation": [0.0,0.0,0.0]
+    }
+  ],
+  "camera": {
+    "position": [-0.152289, 1.16336, 2.27811],
+    "rotation": [[-1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[0.0, 0.0, -1.0]]
+  },
+  "terrain": {
+    "a": 27.0,
+    "b":12
+  },
+  "clouds": [20, 100],
+  "skydome": {
+    "texture": "Sky.png",
+    "scale": 60.0
+  },
+  "loadingScreen": {
+    "text" : "Wake up Mr. Freeman!",
+    "textColor": [255,165,0]
+  },
+  "globalLight" : {
+    "direction" : [-1,1.5,1],
+    "color" : [0.75, 0.75, 0.75],
+    "ambient" : 0.05,
+    "specular" : 0.2,
+    "diffuse" : 0.3
+  },
+  "globalWind": [1, 0, 1],
+  "mapSize": [256, 1024]
+}
